@@ -279,18 +279,20 @@ export default function JewelCase({
                 background: "linear-gradient(160deg, #f8f8f8 0%, #efefef 100%)",
                 position: "relative",
                 borderRight: "1px solid #ddd",
+                overflow: "visible",
               }}>
-                {/* Corner clips — 4 positions */}
+                {/* Corner clips — sitting ON the edge (half inside, half outside) */}
                 {[
-                  { top: 10, left: 10 }, { top: 10, right: 10 },
-                  { bottom: 10, left: 10 }, { bottom: 10, right: 10 },
+                  { top: -10, left: 28 }, { top: -10, right: 28 },
+                  { bottom: -10, left: 28 }, { bottom: -10, right: 28 },
                 ].map((pos, i) => (
                   <div key={i} style={{
                     position: "absolute", ...pos,
-                    width: 18, height: 18, borderRadius: "50%",
-                    background: "linear-gradient(135deg, #e8e8ea, #f5f5f7)",
-                    border: "1px solid #ccc",
-                    boxShadow: "inset 0 1px 2px rgba(0,0,0,0.12), 0 1px 2px rgba(255,255,255,0.8)",
+                    width: 20, height: 20, borderRadius: "50%",
+                    background: "linear-gradient(135deg, #e0e0e2, #f0f0f2)",
+                    border: "1px solid #bbb",
+                    boxShadow: "inset 0 1px 3px rgba(0,0,0,0.15), 0 1px 0 rgba(255,255,255,0.9)",
+                    zIndex: 4,
                   }} />
                 ))}
 
