@@ -368,6 +368,7 @@ function JewelCaseWrapper({ playlist }: { playlist: ReturnType<typeof decodePlay
         from={(playlist as { from: string }).from}
         message={(playlist as { message: string }).message}
         bgColor={(playlist as { bgColor?: string }).bgColor}
+        coverImage={(playlist as { coverImage?: string }).coverImage}
         isPlaying={isPlaying}
         ready={ready}
         onTogglePlay={togglePlay}

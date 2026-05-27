@@ -60,6 +60,7 @@ export default function Home() {
   const [searching, setSearching] = useState(false);
 
   const [bgColor, setBgColor] = useState("#FFE4E8");
+  const [coverImage, setCoverImage] = useState<string | null>(null);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
 
   const PASTEL_COLOURS = [
@@ -99,10 +100,16 @@ export default function Home() {
 
   const handleRemoveSong = (i: number) => setSongs(prev => prev.filter((_, idx) => idx !== i));
 
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setCoverImage(await compressImage(file));
+  };
+
   const handleGenerate = () => {
     if (!to.trim()) { alert("Please enter who this is for!"); return; }
     if (songs.length === 0) { alert("Add at least one song!"); return; }
-    const encoded = encodePlaylist({ to: to.trim(), from: from.trim(), message: message.trim(), songs, bgColor });
+    const encoded = encodePlaylist({ to: to.trim(), from: from.trim(), message: message.trim(), songs, bgColor, ...(coverImage ? { coverImage } : {}) });
     setShareUrl(`${window.location.origin}/share?d=${encoded}`);
   };
 
@@ -223,6 +230,45 @@ export default function Home() {
                 outlineOffset: 2, cursor: "pointer",
               }} />
             ))}
+          </div>
+        </div>
+
+        {/* Cover photo */}
+        <div style={card}>
+          <p style={sectionTitle}>Cover photo</p>
+          <p style={{ fontFamily: F, fontSize: 12, color: "#999", marginBottom: 14, lineHeight: 1.5 }}>
+            This photo will appear on the front of the closed CD case
+          </p>
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            {coverImage ? (
+              <Image src={coverImage} alt="Cover" width={64} height={64}
+                style={{ borderRadius: 10, objectFit: "cover", flexShrink: 0, border: "1px solid #eee" }} />
+            ) : (
+              <div style={{
+                width: 64, height: 64, borderRadius: 10, background: "#f0f0f2",
+                border: "1.5px dashed #ccc", flexShrink: 0,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 22, color: "#ccc",
+              }}>📷</div>
+            )}
+            <div style={{ flex: 1 }}>
+              <label style={{ display: "block" }}>
+                <div style={{
+                  fontFamily: F, fontSize: 14, fontWeight: 500, color: "#111",
+                  background: "#f0f0f2", borderRadius: 10, padding: "10px 16px",
+                  cursor: "pointer", textAlign: "center",
+                }}>
+                  {coverImage ? "Change photo" : "Upload photo"}
+                </div>
+                <input type="file" accept="image/*" style={{ display: "none" }} onChange={handleCoverUpload} />
+              </label>
+              {coverImage && (
+                <button onClick={() => setCoverImage(null)} style={{
+                  fontFamily: F, fontSize: 12, color: "#aaa", background: "none",
+                  border: "none", cursor: "pointer", marginTop: 6, display: "block", width: "100%",
+                }}>Remove</button>
+              )}
+            </div>
           </div>
         </div>
 

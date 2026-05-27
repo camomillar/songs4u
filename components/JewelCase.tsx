@@ -14,6 +14,7 @@ interface Props {
   onNext: () => void;
   song: { title: string; artist: string; albumArt?: string };
   songs: { title: string; artist: string }[];
+  coverImage?: string;
   total: number;
   onBack: () => void;
 }
@@ -27,7 +28,7 @@ type Phase = "closed" | "opening" | "open";
 export default function JewelCase({
   to, from, message, bgColor,
   isPlaying, ready, onTogglePlay, onNext,
-  song, songs, total, onBack,
+  song, songs, coverImage, total, onBack,
 }: Props) {
   const [phase, setPhase] = useState<Phase>("closed");
 
@@ -230,7 +231,7 @@ export default function JewelCase({
               ))}
             </div>
 
-            {/* ── FRONT FACE — clear plastic ── */}
+            {/* ── FRONT FACE — clear plastic / cover photo ── */}
             <div style={{
               position: "absolute", inset: 0,
               background: "#e2e2e4",
@@ -238,6 +239,15 @@ export default function JewelCase({
               overflow: "hidden",
               border: "1px solid rgba(0,0,0,0.1)",
             }}>
+              {/* Cover photo (if uploaded) */}
+              {coverImage && (
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={coverImage} alt="cover" style={{ position: "absolute", left: 18, top: 0, right: 0, bottom: 0, width: "calc(100% - 18px)", height: "100%", objectFit: "cover" }} />
+                  {/* Plastic sheen over photo */}
+                  <div style={{ position: "absolute", left: 18, top: 0, right: 0, bottom: 0, background: "linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 40%)", pointerEvents: "none" }} />
+                </>
+              )}
               {/* Spine strip on front face */}
               <div style={{
                 position: "absolute", left: 0, top: 0, bottom: 0, width: 18,
