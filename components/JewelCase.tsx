@@ -78,34 +78,112 @@ export default function JewelCase({
         }}>←</button>
       )}
 
-      {/* ── CLOSED: single square image ── */}
+      {/* ── CLOSED: CSS mockup of a jewel case ── */}
       {(phase === "closed" || phase === "opening") && (
         <div
           onClick={handleOpen}
           style={{
             cursor: phase === "closed" ? "pointer" : "default",
             animation: phase === "opening" ? "caseFoldOut 0.42s ease-in forwards" : undefined,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 16,
+            display: "flex", flexDirection: "column", alignItems: "center", gap: 20,
           }}
         >
-          <Image
-            src="/case-closed.png"
-            alt="CD Case"
-            width={300}
-            height={300}
-            style={{ objectFit: "contain", display: "block" }}
-            priority
-            draggable={false}
-          />
+          {/* The case */}
+          <div style={{
+            width: 260, height: 260,
+            transform: "perspective(700px) rotateY(-16deg) rotateX(4deg)",
+            position: "relative",
+            boxShadow: "14px 18px 40px rgba(0,0,0,0.45), 4px 6px 12px rgba(0,0,0,0.3)",
+            borderRadius: 3,
+            flexShrink: 0,
+          }}>
+            {/* ── Spine (left edge) ── */}
+            <div style={{
+              position: "absolute", left: 0, top: 0, bottom: 0, width: 14,
+              background: "linear-gradient(to right, #050505 0%, #161616 100%)",
+              borderRadius: "3px 0 0 3px",
+              zIndex: 3,
+            }} />
+
+            {/* ── Front face ── */}
+            <div style={{
+              position: "absolute", left: 14, top: 0, right: 0, bottom: 0,
+              background: "#141414",
+              borderRadius: "0 3px 3px 0",
+              overflow: "hidden",
+            }}>
+              {/* Inner tray inset */}
+              <div style={{
+                position: "absolute", top: 7, bottom: 7, left: 7, right: 7,
+                background: "#0e0e0e",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                {/* CD disc silhouette (faintly visible through clear plastic) */}
+                <div style={{
+                  width: 158, height: 158, borderRadius: "50%",
+                  background: "conic-gradient(from 0deg, rgba(130,130,170,0.08), rgba(170,150,200,0.06), rgba(130,160,180,0.09), rgba(150,130,170,0.07), rgba(130,130,170,0.08))",
+                  border: "1px solid rgba(255,255,255,0.04)",
+                  position: "relative",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}>
+                  {/* Hub */}
+                  <div style={{
+                    width: 22, height: 22, borderRadius: "50%",
+                    background: "#090909",
+                    border: "1px solid rgba(255,255,255,0.05)",
+                    boxShadow: "0 0 0 8px rgba(255,255,255,0.015)",
+                  }} />
+                  {/* Ring grooves */}
+                  {[60, 90, 120].map(r => (
+                    <div key={r} style={{
+                      position: "absolute",
+                      width: r, height: r,
+                      borderRadius: "50%",
+                      border: "1px solid rgba(255,255,255,0.025)",
+                    }} />
+                  ))}
+                </div>
+              </div>
+
+              {/* Plastic sheen reflection */}
+              <div style={{
+                position: "absolute", inset: 0, pointerEvents: "none",
+                background: "linear-gradient(135deg, rgba(255,255,255,0.07) 0%, transparent 45%, rgba(0,0,0,0.12) 100%)",
+              }} />
+
+              {/* Top highlight */}
+              <div style={{
+                position: "absolute", top: 0, left: 0, right: 0, height: 1,
+                background: "rgba(255,255,255,0.08)",
+              }} />
+            </div>
+
+            {/* ── Top thin edge (visible from above) ── */}
+            <div style={{
+              position: "absolute",
+              top: -4, left: 10, right: 0, height: 4,
+              background: "linear-gradient(to bottom, #2a2a2a, #1a1a1a)",
+              transformOrigin: "bottom center",
+              transform: "rotateX(90deg)",
+            }} />
+
+            {/* ── Right thin edge ── */}
+            <div style={{
+              position: "absolute",
+              top: 0, right: -3, bottom: 0, width: 3,
+              background: "linear-gradient(to right, #1a1a1a, #2a2a2a)",
+              transformOrigin: "left center",
+              transform: "rotateY(90deg)",
+            }} />
+          </div>
+
           {phase === "closed" && (
-            <p style={{
-              fontFamily: "'Lora', serif", fontStyle: "italic",
-              fontSize: 15, color: "#aaa", cursor: "pointer",
-              letterSpacing: 0.3, borderBottom: "1px solid #ddd", paddingBottom: 2,
-            }}
+            <p
+              style={{
+                fontFamily: "'Lora', serif", fontStyle: "italic",
+                fontSize: 15, color: "#aaa", cursor: "pointer",
+                letterSpacing: 0.3, borderBottom: "1px solid #ddd", paddingBottom: 2,
+              }}
               onMouseEnter={(e) => (e.currentTarget.style.color = "#e03050")}
               onMouseLeave={(e) => (e.currentTarget.style.color = "#aaa")}
             >
