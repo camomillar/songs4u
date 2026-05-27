@@ -18,6 +18,7 @@ export function useYouTube() {
   const readyRef = useRef(false);
   const loadedIdRef = useRef<string | null>(null);
   const isPlayingRef = useRef(false);
+  const pendingRef = useRef<string | null>(null); // video to play once ready
   const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
@@ -32,7 +33,15 @@ export function useYouTube() {
       playerRef.current = new YT.Player(div, {
         playerVars: { playsinline: 1, controls: 0 },
         events: {
-          onReady: () => { readyRef.current = true; },
+          onReady: () => {
+            readyRef.current = true;
+            // Fire any queued play request
+            if (pendingRef.current) {
+              playerRef.current.loadVideoById(pendingRef.current);
+              loadedIdRef.current = pendingRef.current;
+              pendingRef.current = null;
+            }
+          },
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           onStateChange: (e: any) => {
             const state = (window as W).YT?.PlayerState;
@@ -62,9 +71,13 @@ export function useYouTube() {
     };
   }, []);
 
-  /** Play a video — resumes if same song, loads fresh if different */
+  /** Play a video — queues if player not ready yet */
   const play = (videoId: string) => {
-    if (!readyRef.current || !playerRef.current) return;
+    if (!readyRef.current || !playerRef.current) {
+      // Player still loading — queue it
+      pendingRef.current = videoId;
+      return;
+    }
     if (loadedIdRef.current === videoId) {
       playerRef.current.playVideo();
     } else {
