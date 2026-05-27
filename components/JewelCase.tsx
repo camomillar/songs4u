@@ -270,7 +270,7 @@ export default function JewelCase({
               maxWidth: "95vw",
               boxShadow: "0 16px 48px rgba(0,0,0,0.28), 0 4px 12px rgba(0,0,0,0.15)",
               borderRadius: 3,
-              overflow: "hidden",
+              overflow: "visible",
             }}>
 
               {/* ── LEFT: Liner notes panel ── */}
