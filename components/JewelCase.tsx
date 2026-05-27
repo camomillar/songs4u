@@ -528,17 +528,17 @@ export default function JewelCase({
           </div>
 
           <p style={{
-            fontFamily: "system-ui", fontSize: 11, color: "#bbb",
+            fontFamily: "system-ui", fontSize: 11, color: "#555",
             position: "fixed", bottom: 20, left: "50%", transform: "translateX(-50%)",
             whiteSpace: "nowrap", zIndex: 10,
           }}>
             made with ♥ by{" "}
             <a href="https://www.instagram.com/caahmills/" target="_blank" rel="noopener noreferrer"
-              style={{ color: "#bbb", textDecoration: "none", borderBottom: "1px solid #ddd" }}>
+              style={{ color: "#444", textDecoration: "none", borderBottom: "1px solid #aaa" }}>
               caahmills
             </a>
             {" "}·{" "}
-            <a href="/" style={{ color: "#bbb", textDecoration: "none" }}>make your own playlist for someone special</a>
+            <a href="/" style={{ color: "#555", textDecoration: "none" }}>make your own playlist for someone special</a>
           </p>
         </>
       )}
