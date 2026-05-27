@@ -17,8 +17,8 @@ interface Props {
   onBack: () => void;
 }
 
-const W = 560;
-const H = 270;
+const W = 700;
+const H = 340;
 const PW = W / 2;
 
 type Phase = "closed" | "opening" | "open";
