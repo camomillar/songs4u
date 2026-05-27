@@ -414,7 +414,7 @@ function ShareContent() {
 
   // Login screen
   if (!isAuthed) {
-    const loginUrl = `/api/auth/login?redirect=${encodeURIComponent(typeof window !== "undefined" ? window.location.href : "/share")}`;
+    const loginUrl = `/api/auth/login?context=player&redirect=${encodeURIComponent(typeof window !== "undefined" ? window.location.href : "/share")}`;
     return (
       <div style={{
         minHeight: "100vh",
