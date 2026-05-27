@@ -258,67 +258,150 @@ export default function JewelCase({
             perspective: "1200px",
             animation: "caseUnfold 0.45s ease-out forwards",
           }}>
+            {/* ── OPEN CASE MOCKUP ── */}
             <div style={{
-              position: "relative",
-              width: W, height: H,
+              display: "flex",
               maxWidth: "95vw",
-              boxShadow: "0 20px 60px rgba(0,0,0,0.25)",
+              boxShadow: "0 16px 48px rgba(0,0,0,0.28), 0 4px 12px rgba(0,0,0,0.15)",
+              borderRadius: 3,
+              overflow: "hidden",
             }}>
-              {/* RIGHT PANEL: CD tray */}
+
+              {/* ── LEFT: Liner notes panel ── */}
               <div style={{
-                position: "absolute", right: 0, width: PW, height: H,
-                background: "linear-gradient(150deg, #1e1e1e 0%, #0d0d0d 100%)",
-                display: "flex", alignItems: "center", justifyContent: "center",
+                width: PW, height: H,
+                background: "linear-gradient(160deg, #f8f8f8 0%, #efefef 100%)",
+                position: "relative",
+                borderRight: "1px solid #ddd",
               }}>
-                <div style={{
-                  width: H * 0.88, height: H * 0.88, borderRadius: "50%",
-                  background: "radial-gradient(circle at 40% 40%, #2a2a2a 0%, #111 60%, #080808 100%)",
-                  boxShadow: "inset 0 4px 20px rgba(0,0,0,0.7)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  position: "relative",
-                }}>
-                  <Image
-                    src="/cd.png"
-                    alt="CD"
-                    width={Math.round(H * 0.78)}
-                    height={Math.round(H * 0.78)}
-                    style={{
-                      borderRadius: "50%", objectFit: "cover",
-                      animation: isPlaying ? "cd-spin 4s linear infinite" : undefined,
-                    }}
-                  />
-                  <div style={{
-                    position: "absolute", width: 18, height: 18, borderRadius: "50%",
-                    background: "#0a0a0a", boxShadow: "0 0 0 3px #1a1a1a", zIndex: 2,
+                {/* Corner clips — 4 positions */}
+                {[
+                  { top: 10, left: 10 }, { top: 10, right: 10 },
+                  { bottom: 10, left: 10 }, { bottom: 10, right: 10 },
+                ].map((pos, i) => (
+                  <div key={i} style={{
+                    position: "absolute", ...pos,
+                    width: 18, height: 18, borderRadius: "50%",
+                    background: "linear-gradient(135deg, #e8e8ea, #f5f5f7)",
+                    border: "1px solid #ccc",
+                    boxShadow: "inset 0 1px 2px rgba(0,0,0,0.12), 0 1px 2px rgba(255,255,255,0.8)",
                   }} />
+                ))}
+
+                {/* Letter content */}
+                <div style={{
+                  position: "absolute", inset: 0,
+                  fontFamily: "'Breathing', cursive",
+                  padding: "24px 22px",
+                  display: "flex", flexDirection: "column", justifyContent: "center",
+                  backgroundImage: "repeating-linear-gradient(transparent 0px, transparent 28px, rgba(200,130,130,0.1) 28px, rgba(200,130,130,0.1) 29px)",
+                }}>
+                  <p style={{ fontSize: 15, color: "#1d3d8e", lineHeight: 1.5, marginBottom: 10 }}>My dearest {to},</p>
+                  {message && <p style={{ fontSize: 12, color: "#1d3d8e", lineHeight: 1.65, marginBottom: 10 }}>{message}</p>}
+                  {from && (
+                    <>
+                      <p style={{ fontSize: 12, color: "#1d3d8e", lineHeight: 1.65 }}>Forever yours,</p>
+                      <p style={{ fontSize: 12, color: "#1d3d8e", marginTop: 2 }}>{from}</p>
+                    </>
+                  )}
                 </div>
               </div>
 
-              {/* LEFT PANEL: Letter */}
+              {/* ── CENTER HINGE ── */}
               <div style={{
-                position: "absolute", left: 0, width: PW, height: H,
-                background: "#fafafa",
-                fontFamily: "'Breathing', cursive",
-                padding: "20px 18px",
-                display: "flex", flexDirection: "column", justifyContent: "center",
-                backgroundImage: "repeating-linear-gradient(transparent 0px, transparent 28px, rgba(200,130,130,0.13) 28px, rgba(200,130,130,0.13) 29px)",
-                borderRight: "3px solid rgba(200,130,130,0.15)",
-                zIndex: 2,
-              }}>
-                <p style={{ fontSize: 15, color: "#1d3d8e", lineHeight: 1.5, marginBottom: 10 }}>My dearest {to},</p>
-                {message && <p style={{ fontSize: 12, color: "#1d3d8e", lineHeight: 1.65, marginBottom: 10 }}>{message}</p>}
-                {from && (
-                  <>
-                    <p style={{ fontSize: 12, color: "#1d3d8e", lineHeight: 1.65 }}>Forever yours,</p>
-                    <p style={{ fontSize: 12, color: "#1d3d8e", marginTop: 2 }}>{from}</p>
-                  </>
-                )}
-              </div>
+                width: 10, height: H, flexShrink: 0,
+                background: "linear-gradient(to right, #1a1a1a, #3a3a3a 50%, #1a1a1a)",
+              }} />
 
-              {/* Spine */}
-              <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 8, background: "linear-gradient(to right, #050505, #181818)", zIndex: 4 }} />
-              {/* Hinge */}
-              <div style={{ position: "absolute", left: PW - 4, top: 0, bottom: 0, width: 8, background: "linear-gradient(to right, #080808, #282828, #080808)", zIndex: 1 }} />
+              {/* ── RIGHT: CD tray ── */}
+              <div style={{
+                width: PW, height: H,
+                background: "linear-gradient(160deg, #3a3a3c 0%, #252527 100%)",
+                position: "relative",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                flexShrink: 0,
+              }}>
+                {/* Tray corner bumps */}
+                {[
+                  { top: 8, left: 8 }, { top: 8, right: 8 },
+                  { bottom: 8, left: 8 }, { bottom: 8, right: 8 },
+                  { top: "50%", left: 6, transform: "translateY(-50%)" },
+                  { top: "50%", right: 6, transform: "translateY(-50%)" },
+                ].map((pos, i) => (
+                  <div key={i} style={{
+                    position: "absolute", ...pos,
+                    width: 10, height: 10, borderRadius: "50%",
+                    background: "radial-gradient(circle at 35% 35%, #4a4a4c, #1a1a1c)",
+                    boxShadow: "inset 0 1px 2px rgba(0,0,0,0.6)",
+                  }} />
+                ))}
+
+                {/* Tray recess ring */}
+                <div style={{
+                  position: "absolute",
+                  width: H * 0.9, height: H * 0.9,
+                  borderRadius: "50%",
+                  boxShadow: "inset 0 3px 10px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(0,0,0,0.4)",
+                }} />
+
+                {/* CD disc — white printable side */}
+                <div style={{
+                  width: H * 0.84, height: H * 0.84,
+                  borderRadius: "50%",
+                  background: "radial-gradient(circle, #f0f0f2 0%, #e8e8ea 60%, #d8d8dc 100%)",
+                  boxShadow: "0 2px 10px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.6)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  position: "relative",
+                  animation: isPlaying ? "cd-spin 4s linear infinite" : undefined,
+                  flexShrink: 0,
+                }}>
+                  {/* Groove rings */}
+                  {[30, 45, 60, 75].map(r => (
+                    <div key={r} style={{
+                      position: "absolute",
+                      width: `${r}%`, height: `${r}%`,
+                      borderRadius: "50%",
+                      border: "0.5px solid rgba(0,0,0,0.05)",
+                    }} />
+                  ))}
+                  {/* Hub area */}
+                  <div style={{
+                    width: "32%", height: "32%",
+                    borderRadius: "50%",
+                    background: "radial-gradient(circle, #888890 0%, #7a7a82 50%, #6a6a72 100%)",
+                    boxShadow: "0 1px 4px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    position: "relative",
+                    zIndex: 2,
+                  }}>
+                    {/* Hub mechanism — spider/star */}
+                    <div style={{
+                      width: "55%", height: "55%",
+                      borderRadius: "50%",
+                      background: "radial-gradient(circle, #2a2a2e 0%, #3a3a3e 100%)",
+                      boxShadow: "0 1px 3px rgba(0,0,0,0.5)",
+                    }} />
+                    {/* Star spokes */}
+                    {[0, 45, 90, 135].map(angle => (
+                      <div key={angle} style={{
+                        position: "absolute",
+                        width: "80%", height: 2,
+                        background: "rgba(40,40,44,0.7)",
+                        transform: `rotate(${angle}deg)`,
+                        borderRadius: 1,
+                      }} />
+                    ))}
+                  </div>
+                  {/* Stacking ring */}
+                  <div style={{
+                    position: "absolute",
+                    width: "38%", height: "38%",
+                    borderRadius: "50%",
+                    border: "1px solid rgba(0,0,0,0.1)",
+                    zIndex: 1,
+                  }} />
+                </div>
+              </div>
             </div>
           </div>
 
