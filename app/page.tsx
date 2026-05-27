@@ -314,8 +314,7 @@ export default function Home() {
       {/* Footer */}
       <p style={{
         fontFamily: F, fontSize: 11, color: "#555",
-        position: "fixed", bottom: 20, left: "50%", transform: "translateX(-50%)",
-        whiteSpace: "nowrap", zIndex: 10,
+        textAlign: "center", padding: "16px 0 32px",
       }}>
         made with ♥ by{" "}
         <a href="https://www.instagram.com/caahmills/" target="_blank" rel="noopener noreferrer"
