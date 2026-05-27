@@ -98,13 +98,20 @@ export default function Home() {
             <p style={{ fontSize: 8, color: "var(--text2)", marginBottom: 24, lineHeight: 2 }}>
               make a playlist for someone special
             </p>
-            <button
-              className="pixel-btn green large"
-              style={{ width: "100%" }}
-              onClick={() => { window.location.href = "/api/auth/login"; }}
-            >
-              Login with Spotify ♥
-            </button>
+            <form action="/api/auth/login" method="GET" style={{ width: "100%" }}>
+              <button type="submit" className="pixel-btn green large" style={{ width: "100%" }}>
+                Login with Spotify ♥
+              </button>
+            </form>
+            <p style={{ fontSize: 7, color: "var(--text2)", marginTop: 12 }}>
+              or open directly:{" "}
+              <a
+                href="http://127.0.0.1:3000/api/auth/login"
+                style={{ color: "var(--accent2)" }}
+              >
+                click here
+              </a>
+            </p>
           </div>
         </div>
       </div>
