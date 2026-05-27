@@ -23,7 +23,7 @@ const W = 700;
 const H = 340;
 const PW = W / 2;
 
-type Phase = "closed" | "opening" | "open";
+type Phase = "closed" | "opening" | "open" | "closing";
 
 export default function JewelCase({
   to, from, message, bgColor,
@@ -111,6 +111,10 @@ export default function JewelCase({
           from { transform: perspective(900px) rotateY(90deg); opacity: 0; }
           to   { transform: perspective(900px) rotateY(0deg); opacity: 1; }
         }
+        @keyframes caseFoldClose {
+          from { transform: perspective(900px) rotateY(0deg); opacity: 1; }
+          to   { transform: perspective(900px) rotateY(90deg); opacity: 0; }
+        }
         @keyframes fadeUp {
           from { opacity: 0; transform: translateY(12px); }
           to   { opacity: 1; transform: translateY(0); }
@@ -121,41 +125,6 @@ export default function JewelCase({
         }
       `}</style>
 
-      {/* Back button (open state only) */}
-      {phase === "open" && (
-        <button
-          onClick={() => setPhase("closed")}
-          style={{
-            position: "fixed", top: 24, left: 24,
-            display: "flex", alignItems: "center", gap: 6,
-            background: "rgba(255,255,255,0.85)",
-            backdropFilter: "blur(8px)",
-            border: "1px solid rgba(0,0,0,0.1)",
-            borderRadius: 20,
-            padding: "8px 16px",
-            cursor: "pointer",
-            fontFamily: "system-ui, sans-serif",
-            fontSize: 13, fontWeight: 500,
-            color: "#333",
-            boxShadow: "0 2px 12px rgba(0,0,0,0.1)",
-            zIndex: 10,
-            transition: "box-shadow 0.2s, background 0.2s",
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.98)";
-            (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(0,0,0,0.15)";
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.85)";
-            (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 2px 12px rgba(0,0,0,0.1)";
-          }}
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M10 12L6 8L10 4" stroke="#333" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          back
-        </button>
-      )}
 
       {/* ── CLOSED: CSS mockup of a jewel case ── */}
       {(phase === "closed" || phase === "opening") && (
@@ -241,33 +210,31 @@ export default function JewelCase({
             }}>
               {/* Cover photo (if uploaded) */}
               {coverImage && (
-                <>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={coverImage} alt="cover" style={{ position: "absolute", left: 18, top: 0, right: 0, bottom: 0, width: "calc(100% - 18px)", height: "100%", objectFit: "cover", imageRendering: "auto" }} />
-                  {/* Plastic sheen over photo */}
-                  <div style={{ position: "absolute", left: 18, top: 0, right: 0, bottom: 0, background: "linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 40%)", pointerEvents: "none" }} />
-                </>
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={coverImage} alt="cover" style={{ position: "absolute", left: 18, top: 0, right: 0, bottom: 0, width: "calc(100% - 18px)", height: "100%", objectFit: "cover", imageRendering: "auto" }} />
               )}
               {/* Spine strip on front face */}
               <div style={{
                 position: "absolute", left: 0, top: 0, bottom: 0, width: 18,
                 background: "linear-gradient(to right, #1a1a1a, #333 50%, #1a1a1a)",
               }} />
-              {/* Clear plastic sheen */}
-              <div style={{ position: "absolute", left: 18, top: 0, right: 0, bottom: 0 }}>
-                <div style={{
-                  position: "absolute", inset: 0,
-                  background: "linear-gradient(135deg, rgba(255,255,255,0.85) 0%, rgba(240,240,242,0.3) 55%, rgba(210,210,215,0.5) 100%)",
-                }} />
-                <div style={{
-                  position: "absolute", top: 0, right: 0, width: "55%", height: "50%",
-                  background: "radial-gradient(ellipse at top right, rgba(255,255,255,0.9) 0%, transparent 70%)",
-                }} />
-                <div style={{
-                  position: "absolute", inset: 6,
-                  border: "1px solid rgba(0,0,0,0.05)",
-                }} />
-              </div>
+              {/* Clear plastic sheen — only when no cover photo */}
+              {!coverImage && (
+                <div style={{ position: "absolute", left: 18, top: 0, right: 0, bottom: 0 }}>
+                  <div style={{
+                    position: "absolute", inset: 0,
+                    background: "linear-gradient(135deg, rgba(255,255,255,0.85) 0%, rgba(240,240,242,0.3) 55%, rgba(210,210,215,0.5) 100%)",
+                  }} />
+                  <div style={{
+                    position: "absolute", top: 0, right: 0, width: "55%", height: "50%",
+                    background: "radial-gradient(ellipse at top right, rgba(255,255,255,0.9) 0%, transparent 70%)",
+                  }} />
+                  <div style={{
+                    position: "absolute", inset: 6,
+                    border: "1px solid rgba(0,0,0,0.05)",
+                  }} />
+                </div>
+              )}
             </div>
 
           </div>
@@ -293,19 +260,25 @@ export default function JewelCase({
       )}
 
       {/* ── OPEN: two-panel layout ── */}
-      {phase === "open" && (
+      {(phase === "open" || phase === "closing") && (
         <>
-          <HeartParticles color={bgColor ? darkenHex(bgColor) : undefined} />
+          {phase === "open" && <HeartParticles color={bgColor ? darkenHex(bgColor) : undefined} />}
           <div style={{
             perspective: "1200px",
-            animation: "caseUnfold 0.45s ease-out forwards",
+            animation: phase === "closing"
+              ? "caseFoldClose 0.42s ease-in forwards"
+              : "caseUnfold 0.45s ease-out forwards",
           }}>
-            {/* ── OPEN CASE MOCKUP ── */}
-            <div style={{
+            {/* ── OPEN CASE MOCKUP — click to close ── */}
+            <div
+              onClick={() => { setPhase("closing"); setTimeout(() => setPhase("closed"), 420); }}
+              title="Click to close"
+              style={{
               display: "flex",
               maxWidth: "95vw",
               boxShadow: "0 16px 48px rgba(0,0,0,0.28), 0 4px 12px rgba(0,0,0,0.15)",
               borderRadius: 3,
+              cursor: "pointer",
               overflow: "hidden",
             }}>
 
@@ -477,20 +450,62 @@ export default function JewelCase({
                     style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 3, overflow: "visible" }}
                   >
                     <defs>
-                      {/* Top arcs */}
-                      <path id="cdArcTop1" d="M 21,50 A 29,29 0 0 1 79,50" />
-                      <path id="cdArcTop2" d="M 13,50 A 37,37 0 0 1 87,50" />
-                      {/* Bottom arcs — counter-clockwise so text reads left→right along bottom */}
+                      {/* Message arcs — 270° spans, inner + outer for 2-line support */}
+                      <path id="cdArcMsg1" d="M 32,68 A 26,26 0 1 1 68,68" />
+                      <path id="cdArcMsg2" d="M 27,74 A 33,33 0 1 1 73,74" />
+                      {/* Bottom arcs */}
                       <path id="cdArcBot1" d="M 21,50 A 29,29 0 0 0 79,50" />
                       <path id="cdArcBot2" d="M 13,50 A 37,37 0 0 0 87,50" />
                     </defs>
 
-                    {/* Message — top */}
-                    {message && (
-                      <text fontFamily="'OrdinaryLetter', cursive" fontSize="10" fill="rgba(15,20,50,0.72)" textAnchor="middle">
-                        <textPath href="#cdArcTop1" startOffset="50%">{message}</textPath>
-                      </text>
-                    )}
+                    {/* Message — 1 or 2 lines over the top */}
+                    {message && (() => {
+                      // Split at word boundary nearest the middle
+                      const words = message.split(" ");
+                      if (words.length <= 1 || message.length <= 14) {
+                        // Single line
+                        return (
+                          <text fontFamily="'OrdinaryLetter', cursive" fontSize="9" fill="rgba(15,20,50,0.72)" textAnchor="middle">
+                            <textPath href="#cdArcMsg1" startOffset="50%">{message}</textPath>
+                          </text>
+                        );
+                      }
+                      // Two lines — split at closest word to midpoint
+                      const mid = message.length / 2;
+                      let splitIdx = 0, best = Infinity;
+                      let pos = 0;
+                      words.forEach((w, i) => {
+                        pos += (i > 0 ? 1 : 0) + w.length;
+                        const dist = Math.abs(pos - mid);
+                        if (dist < best) { best = dist; splitIdx = i + 1; }
+                      });
+                      const line1 = words.slice(0, splitIdx).join(" ");
+                      const line2 = words.slice(splitIdx).join(" ");
+                      return (
+                        <>
+                          <text fontFamily="'OrdinaryLetter', cursive" fontSize="9" fill="rgba(15,20,50,0.72)" textAnchor="middle">
+                            <textPath href="#cdArcMsg1" startOffset="50%">{line1}</textPath>
+                          </text>
+                          <text fontFamily="'OrdinaryLetter', cursive" fontSize="9" fill="rgba(15,20,50,0.65)" textAnchor="middle">
+                            <textPath href="#cdArcMsg2" startOffset="50%">{line2}</textPath>
+                          </text>
+                        </>
+                      );
+                    })()}
+
+                    {/* ♥ left side */}
+                    <text
+                      fontFamily="'OrdinaryLetter', cursive"
+                      fontSize="9" fill="rgba(15,20,50,0.65)"
+                      textAnchor="middle" x="19" y="52"
+                    >&lt;3</text>
+
+                    {/* :) right side */}
+                    <text
+                      fontFamily="'OrdinaryLetter', cursive"
+                      fontSize="9" fill="rgba(15,20,50,0.65)"
+                      textAnchor="middle" x="81" y="52"
+                    >:)</text>
 
                     {/* To — bottom inner */}
                     <text fontFamily="'OrdinaryLetter', cursive" fontSize="10" fill="rgba(15,20,50,0.78)" textAnchor="middle">
@@ -522,7 +537,9 @@ export default function JewelCase({
           </div>
 
           {/* Player */}
-          <div style={{
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
             width: "100%", maxWidth: W,
             background: "white", borderRadius: 16,
             padding: "12px 16px",
