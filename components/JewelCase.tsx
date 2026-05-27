@@ -233,6 +233,7 @@ export default function JewelCase({
 
           {phase === "closed" && (
             <p
+              onClick={handleOpen}
               style={{
                 fontFamily: "'Lora', serif", fontStyle: "italic",
                 fontSize: 15, color: "#aaa", cursor: "pointer",
