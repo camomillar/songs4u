@@ -475,22 +475,22 @@ export default function JewelCase({
                       <path id="cdArcBot2" d="M 13,50 A 37,37 0 0 0 87,50" />
                     </defs>
 
-                    {/* Salutation — top inner */}
-                    <text fontFamily="'OrdinaryLetter', cursive" fontSize="10" fill="rgba(15,20,50,0.78)" textAnchor="middle">
-                      <textPath href="#cdArcTop1" startOffset="50%">{to}</textPath>
-                    </text>
-
-                    {/* Message — top outer */}
+                    {/* Message — top */}
                     {message && (
-                      <text fontFamily="'OrdinaryLetter', cursive" fontSize="9" fill="rgba(15,20,50,0.65)" textAnchor="middle">
-                        <textPath href="#cdArcTop2" startOffset="50%">{message}</textPath>
+                      <text fontFamily="'OrdinaryLetter', cursive" fontSize="10" fill="rgba(15,20,50,0.72)" textAnchor="middle">
+                        <textPath href="#cdArcTop1" startOffset="50%">{message}</textPath>
                       </text>
                     )}
 
-                    {/* Forever yours — bottom inner */}
+                    {/* To — bottom inner */}
+                    <text fontFamily="'OrdinaryLetter', cursive" fontSize="10" fill="rgba(15,20,50,0.78)" textAnchor="middle">
+                      <textPath href="#cdArcBot1" startOffset="50%">{to}</textPath>
+                    </text>
+
+                    {/* From — bottom outer */}
                     {from && (
-                      <text fontFamily="'OrdinaryLetter', cursive" fontSize="9.5" fill="rgba(15,20,50,0.72)" textAnchor="middle">
-                        <textPath href="#cdArcBot1" startOffset="50%">{from}</textPath>
+                      <text fontFamily="'OrdinaryLetter', cursive" fontSize="9.5" fill="rgba(15,20,50,0.65)" textAnchor="middle">
+                        <textPath href="#cdArcBot2" startOffset="50%">{from}</textPath>
                       </text>
                     )}
 
