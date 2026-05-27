@@ -7,7 +7,7 @@ import { decodePlaylist } from "@/lib/encode";
 import { getThumbnail } from "@/lib/youtube";
 
 /* ── Closed case ─────────────────────────────────────────────── */
-function ClosedCase({ onOpen }: { onOpen: () => void }) {
+function ClosedCase({ onOpen, coverImage }: { onOpen: () => void; coverImage?: string }) {
   const imgRef = useRef<HTMLDivElement>(null);
   const rot = useRef({ x: -8, y: 20 });
   const isDragging = useRef(false);
@@ -86,17 +86,38 @@ function ClosedCase({ onOpen }: { onOpen: () => void }) {
           cursor: "grab",
           willChange: "transform",
           userSelect: "none",
+          position: "relative",
+          display: "inline-block",
         }}
       >
         <Image
           src="/case-closed.png"
           alt="CD Case"
           width={340}
-          height={340}
+          height={309}
           style={{ objectFit: "contain", display: "block", pointerEvents: "none" }}
           priority
           draggable={false}
         />
+
+        {/* User's cover photo — overlaid on the front cover area */}
+        {coverImage && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={coverImage}
+            alt="Cover"
+            style={{
+              position: "absolute",
+              top: "4%",
+              left: "13%",
+              width: "79%",
+              height: "90%",
+              objectFit: "cover",
+              pointerEvents: "none",
+              display: "block",
+            }}
+          />
+        )}
       </div>
 
       {/* Open button — separate from the case */}
@@ -271,7 +292,7 @@ function ShareContent() {
     );
   }
 
-  if (!isOpen) return <ClosedCase onOpen={() => setIsOpen(true)} />;
+  if (!isOpen) return <ClosedCase onOpen={() => setIsOpen(true)} coverImage={playlist.coverImage} />;
 
   return (
     <OpenCase
