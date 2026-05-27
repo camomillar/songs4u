@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 interface Props {
@@ -28,6 +28,57 @@ export default function JewelCase({
   song, total, onBack,
 }: Props) {
   const [phase, setPhase] = useState<Phase>("closed");
+
+  // 3D drag for closed state
+  const caseRef = useRef<HTMLDivElement>(null);
+  const rot = useRef({ x: 4, y: -16 });
+  const isDragging = useRef(false);
+  const lastPos = useRef({ x: 0, y: 0 });
+  const idleAngle = useRef(0);
+  const rafRef = useRef<number>(0);
+
+  useEffect(() => {
+    if (phase !== "closed") return;
+
+    const tick = () => {
+      if (!isDragging.current) {
+        idleAngle.current += 0.3;
+        rot.current.y = -16 + Math.sin((idleAngle.current * Math.PI) / 180) * 10;
+      }
+      if (caseRef.current) {
+        caseRef.current.style.transform = `perspective(700px) rotateY(${rot.current.y}deg) rotateX(${rot.current.x}deg)`;
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+
+    const onMove = (e: MouseEvent) => {
+      if (!isDragging.current) return;
+      rot.current.y += (e.clientX - lastPos.current.x) * 0.8;
+      rot.current.x = Math.max(-40, Math.min(40, rot.current.x - (e.clientY - lastPos.current.y) * 0.8));
+      lastPos.current = { x: e.clientX, y: e.clientY };
+    };
+    const onUp = () => { isDragging.current = false; };
+    const onTouchMove = (e: TouchEvent) => {
+      if (!isDragging.current) return;
+      rot.current.y += (e.touches[0].clientX - lastPos.current.x) * 0.8;
+      rot.current.x = Math.max(-40, Math.min(40, rot.current.x - (e.touches[0].clientY - lastPos.current.y) * 0.8));
+      lastPos.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    };
+
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
+    window.addEventListener("touchend", onUp);
+
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onUp);
+    };
+  }, [phase]);
 
   const handleOpen = () => {
     if (phase !== "closed") return;
@@ -80,23 +131,26 @@ export default function JewelCase({
 
       {/* ── CLOSED: CSS mockup of a jewel case ── */}
       {(phase === "closed" || phase === "opening") && (
-        <div
-          onClick={handleOpen}
-          style={{
-            cursor: phase === "closed" ? "pointer" : "default",
-            animation: phase === "opening" ? "caseFoldOut 0.42s ease-in forwards" : undefined,
-            display: "flex", flexDirection: "column", alignItems: "center", gap: 20,
-          }}
-        >
-          {/* The case */}
-          <div style={{
-            width: 340, height: 340,
-            transform: "perspective(700px) rotateY(-16deg) rotateX(4deg)",
-            position: "relative",
-            boxShadow: "14px 18px 40px rgba(0,0,0,0.45), 4px 6px 12px rgba(0,0,0,0.3)",
-            borderRadius: 3,
-            flexShrink: 0,
-          }}>
+        <div style={{
+          animation: phase === "opening" ? "caseFoldOut 0.42s ease-in forwards" : undefined,
+          display: "flex", flexDirection: "column", alignItems: "center", gap: 20,
+        }}>
+          {/* The case — draggable in 3D */}
+          <div
+            ref={caseRef}
+            onMouseDown={(e) => { e.preventDefault(); isDragging.current = true; lastPos.current = { x: e.clientX, y: e.clientY }; }}
+            onTouchStart={(e) => { isDragging.current = true; lastPos.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }; }}
+            style={{
+              width: 340, height: 340,
+              position: "relative",
+              boxShadow: "14px 18px 40px rgba(0,0,0,0.45), 4px 6px 12px rgba(0,0,0,0.3)",
+              borderRadius: 3,
+              flexShrink: 0,
+              cursor: "grab",
+              userSelect: "none",
+              willChange: "transform",
+            }}
+          >
             {/* ── Spine (left edge) ── */}
             <div style={{
               position: "absolute", left: 0, top: 0, bottom: 0, width: 14,
