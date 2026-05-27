@@ -155,77 +155,76 @@ export default function JewelCase({
               position: "absolute", top: 0, left: 0, width: "100%", height: 16,
               transformOrigin: "top center",
               transform: "rotateX(90deg)",
-              background: "linear-gradient(to bottom, #2a2a2a, #1e1e1e)",
+              background: "linear-gradient(to bottom, #c8c8ca, #b8b8bc)",
             }} />
             {/* ── BOTTOM face (thickness) ── */}
             <div style={{
               position: "absolute", bottom: 0, left: 0, width: "100%", height: 16,
               transformOrigin: "bottom center",
               transform: "rotateX(-90deg)",
-              background: "linear-gradient(to top, #1e1e1e, #2a2a2a)",
+              background: "linear-gradient(to top, #c0c0c2, #c8c8ca)",
             }} />
             {/* ── RIGHT face (thickness) ── */}
             <div style={{
               position: "absolute", top: 0, right: 0, width: 16, height: "100%",
               transformOrigin: "right center",
               transform: "rotateY(90deg)",
-              background: "linear-gradient(to right, #1e1e1e, #2a2a2a)",
+              background: "linear-gradient(to right, #c8c8ca, #d0d0d2)",
             }} />
-            {/* ── Spine — ribbed like a real jewel case ── */}
+            {/* ── Spine — dark ribbed strip ── */}
             <div style={{
-              position: "absolute", left: 0, top: 0, bottom: 0, width: 16,
-              background: "#1a1a1a",
+              position: "absolute", left: 0, top: 0, bottom: 0, width: 18,
+              background: "#2c2c2c",
               borderRadius: "3px 0 0 3px",
               zIndex: 3,
               overflow: "hidden",
             }}>
-              {/* Ribs */}
-              {Array.from({ length: 18 }, (_, i) => (
+              {Array.from({ length: 22 }, (_, i) => (
                 <div key={i} style={{
                   position: "absolute",
-                  top: `${i * 5.6}%`, left: 2, right: 2, height: 2,
-                  background: "rgba(255,255,255,0.06)",
+                  top: `${i * 4.6}%`, left: 3, right: 3, height: 1.5,
+                  background: "rgba(255,255,255,0.07)",
                   borderRadius: 1,
                 }} />
               ))}
               <div style={{
                 position: "absolute", inset: 0,
-                background: "linear-gradient(to right, #111, #222 50%, #111)",
+                background: "linear-gradient(to right, #1a1a1a, #3a3a3a 50%, #1a1a1a)",
               }} />
             </div>
 
-            {/* ── Front face — album art fills the cover ── */}
+            {/* ── Front face — clear plastic look ── */}
             <div style={{
-              position: "absolute", left: 16, top: 0, right: 0, bottom: 0,
-              background: "#0a0a0a",
+              position: "absolute", left: 18, top: 0, right: 0, bottom: 0,
+              background: "#e2e2e4",
               borderRadius: "0 3px 3px 0",
               overflow: "hidden",
+              border: "1px solid rgba(0,0,0,0.08)",
+              borderLeft: "none",
             }}>
-              {/* Dark tray with disc silhouette */}
+              {/* Main plastic gradient — lighter top-right, slightly darker bottom-left */}
               <div style={{
                 position: "absolute", inset: 0,
-                background: "#111",
-                display: "flex", alignItems: "center", justifyContent: "center",
-              }}>
-                <div style={{
-                  width: 200, height: 200, borderRadius: "50%",
-                  background: "conic-gradient(from 0deg, rgba(130,130,170,0.07), rgba(170,150,200,0.05), rgba(130,130,170,0.07))",
-                  border: "1px solid rgba(255,255,255,0.03)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                }}>
-                  <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#090909" }} />
-                </div>
-              </div>
-
-              {/* Plastic overlay / sheen */}
-              <div style={{
-                position: "absolute", inset: 0, pointerEvents: "none",
-                background: "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 40%, rgba(0,0,0,0.2) 100%)",
+                background: "linear-gradient(135deg, rgba(255,255,255,0.85) 0%, rgba(240,240,242,0.4) 50%, rgba(210,210,215,0.6) 100%)",
               }} />
-              {/* Top edge glint */}
+              {/* Strong white glare patch (top-right) */}
               <div style={{
-                position: "absolute", top: 0, left: 0, right: 0, height: 1,
-                background: "rgba(255,255,255,0.12)", pointerEvents: "none",
+                position: "absolute", top: 0, right: 0,
+                width: "55%", height: "50%",
+                background: "radial-gradient(ellipse at top right, rgba(255,255,255,0.9) 0%, transparent 70%)",
+              }} />
+              {/* Subtle inner border */}
+              <div style={{
+                position: "absolute", inset: 5,
+                border: "1px solid rgba(0,0,0,0.05)",
+                borderRadius: 1,
+                pointerEvents: "none",
+              }} />
+              {/* Bottom-left slightly darker */}
+              <div style={{
+                position: "absolute", bottom: 0, left: 0,
+                width: "40%", height: "40%",
+                background: "radial-gradient(ellipse at bottom left, rgba(180,180,185,0.4) 0%, transparent 70%)",
               }} />
             </div>
 
