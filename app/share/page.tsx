@@ -195,36 +195,29 @@ function OpenCase({
           overflow: "hidden",
           fontFamily: "'Breathing', cursive",
         }}>
-          <p style={{
-            fontSize: "clamp(12px, 2vw, 16px)",
-            color: "#1d3d8e",
-            lineHeight: 1.9,
-            marginBottom: "4%",
-          }}>
+          {/* My dearest [name], */}
+          <p style={{ fontSize: "clamp(12px, 2vw, 16px)", color: "#1d3d8e", lineHeight: 1.4, marginBottom: "8%" }}>
             My dearest {to},
           </p>
+
+          {/* Message */}
           {message && (
-            <p style={{
-              fontSize: "clamp(9px, 1.3vw, 11px)",
-              color: "#1d3d8e",
-              lineHeight: 1.9,
-              marginBottom: "4%",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}>
+            <p style={{ fontSize: "clamp(11px, 1.7vw, 14px)", color: "#1d3d8e", lineHeight: 1.4, marginBottom: "8%" }}>
               {message}
             </p>
           )}
+
+          {/* Forever yours, */}
           {from && (
-            <p style={{
-              fontSize: "clamp(11px, 1.8vw, 15px)",
-              color: "#1d3d8e",
-              lineHeight: 1.9,
-            }}>
-              Forever yours,<br />
-              {from} <span style={{ color: "#e03050" }}>❤</span>
-            </p>
+            <>
+              <p style={{ fontSize: "clamp(11px, 1.7vw, 14px)", color: "#1d3d8e", lineHeight: 1.4, marginBottom: "6%" }}>
+                Forever yours,
+              </p>
+              {/* Name */}
+              <p style={{ fontSize: "clamp(12px, 2vw, 16px)", color: "#1d3d8e", lineHeight: 1.4 }}>
+                {from} <span style={{ color: "#e03050" }}>❤</span>
+              </p>
+            </>
           )}
         </div>
 
