@@ -57,6 +57,11 @@ export default function JewelCase({
           width: W, height: H,
           maxWidth: "95vw",
           boxShadow: "0 20px 60px rgba(0,0,0,0.3), 0 6px 20px rgba(0,0,0,0.2)",
+          // 3D tilt when closed, flat when open
+          transform: isOpen
+            ? "rotateY(0deg) rotateX(0deg)"
+            : "rotateY(-14deg) rotateX(3deg)",
+          transition: "transform 0.85s cubic-bezier(0.42, 0, 0.18, 1.2)",
         }}>
 
           {/* ── RIGHT PANEL: CD tray (always visible) ── */}
@@ -111,23 +116,41 @@ export default function JewelCase({
               zIndex: 2,
             }}
           >
-            {/* FRONT FACE — case exterior */}
+            {/* FRONT FACE — case exterior with artwork */}
             <div style={{
               position: "absolute", inset: 0,
-              background: "linear-gradient(150deg, #222 0%, #0d0d0d 100%)",
+              background: "#111",
               backfaceVisibility: "hidden",
-              display: "flex", flexDirection: "column",
-              alignItems: "center", justifyContent: "flex-end",
-              padding: 16,
-              borderRight: "2px solid #0a0a0a",
+              overflow: "hidden",
             }}>
-              <p style={{
-                fontFamily: "'Lora', serif", fontStyle: "italic",
-                fontSize: 11, color: "rgba(255,255,255,0.25)",
-                letterSpacing: 0.5,
+              {/* Artwork photo — takes up full face */}
+              <Image
+                src={song.albumArt || "/cd.png"}
+                alt="cover"
+                fill
+                unoptimized={!!song.albumArt}
+                style={{ objectFit: "cover" }}
+              />
+              {/* Plastic sheen overlay */}
+              <div style={{
+                position: "absolute", inset: 0,
+                background: "linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 50%, rgba(0,0,0,0.15) 100%)",
+                pointerEvents: "none",
+              }} />
+              {/* Bottom hint */}
+              <div style={{
+                position: "absolute", bottom: 0, left: 0, right: 0,
+                padding: "8px 10px",
+                background: "linear-gradient(to top, rgba(0,0,0,0.55), transparent)",
+                display: "flex", justifyContent: "flex-end",
               }}>
-                click to open ♥
-              </p>
+                <p style={{
+                  fontFamily: "'Lora', serif", fontStyle: "italic",
+                  fontSize: 10, color: "rgba(255,255,255,0.6)", letterSpacing: 0.5,
+                }}>
+                  click to open ♥
+                </p>
+              </div>
             </div>
 
             {/* BACK FACE — letter (liner notes) */}
