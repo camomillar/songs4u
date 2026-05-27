@@ -122,13 +122,38 @@ export default function JewelCase({
 
       {/* Back button (open state only) */}
       {phase === "open" && (
-        <button onClick={onBack} style={{
-          position: "fixed", top: 20, left: 20,
-          width: 40, height: 40, borderRadius: "50%",
-          border: "none", background: "rgba(0,0,0,0.08)",
-          cursor: "pointer", fontSize: 18, color: "#555",
-          display: "flex", alignItems: "center", justifyContent: "center", zIndex: 10,
-        }}>←</button>
+        <button
+          onClick={onBack}
+          style={{
+            position: "fixed", top: 24, left: 24,
+            display: "flex", alignItems: "center", gap: 6,
+            background: "rgba(255,255,255,0.85)",
+            backdropFilter: "blur(8px)",
+            border: "1px solid rgba(0,0,0,0.1)",
+            borderRadius: 20,
+            padding: "8px 16px",
+            cursor: "pointer",
+            fontFamily: "system-ui, sans-serif",
+            fontSize: 13, fontWeight: 500,
+            color: "#333",
+            boxShadow: "0 2px 12px rgba(0,0,0,0.1)",
+            zIndex: 10,
+            transition: "box-shadow 0.2s, background 0.2s",
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.98)";
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(0,0,0,0.15)";
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.85)";
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 2px 12px rgba(0,0,0,0.1)";
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 12L6 8L10 4" stroke="#333" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          back
+        </button>
       )}
 
       {/* ── CLOSED: CSS mockup of a jewel case ── */}
