@@ -133,6 +133,7 @@ export default function JewelCase({
 
       {/* ── CLOSED: CSS mockup of a jewel case ── */}
       {(phase === "closed" || phase === "opening") && (
+        <>
         <HeartParticles color={bgColor ? darkenHex(bgColor) : undefined} />
         <div style={{
           animation: phase === "opening" ? "caseFoldOut 0.42s ease-in forwards" : undefined,
@@ -252,6 +253,7 @@ export default function JewelCase({
             </p>
           )}
         </div>
+        </>
       )}
 
       {/* ── OPEN: two-panel layout ── */}
