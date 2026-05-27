@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import HeartParticles from "@/components/HeartParticles";
 import QRShare from "@/components/QRShare";
@@ -7,10 +7,18 @@ import { encodePlaylist, type Song } from "@/lib/encode";
 import { compressImage } from "@/lib/compress";
 
 export default function Home() {
+  const [authChecked, setAuthChecked] = useState(false);
+  const [isAuthed, setIsAuthed] = useState(false);
   const [to, setTo] = useState("");
   const [from, setFrom] = useState("");
   const [message, setMessage] = useState("");
   const [songs, setSongs] = useState<Song[]>([]);
+
+  useEffect(() => {
+    fetch("/api/spotify/me")
+      .then(r => { setIsAuthed(r.ok); setAuthChecked(true); })
+      .catch(() => setAuthChecked(true));
+  }, []);
 
   const [playlistUrl, setPlaylistUrl] = useState("");
   const [fetching, setFetching] = useState(false);
@@ -66,14 +74,54 @@ export default function Home() {
     setShareUrl(`${window.location.origin}/share?d=${encoded}`);
   };
 
+  // Loading
+  if (!authChecked) {
+    return (
+      <div className="app-wrapper">
+        <HeartParticles />
+        <div className="login-screen">
+          <p style={{ fontSize: 8, color: "var(--text2)" }}>Loading<span className="loading-dots" /></p>
+        </div>
+      </div>
+    );
+  }
+
+  // Not logged in — show Spotify login
+  if (!isAuthed) {
+    return (
+      <div className="app-wrapper">
+        <HeartParticles />
+        <div className="login-screen">
+          <div className="pixel-card login-card" style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 36, marginBottom: 12 }}>♥</div>
+            <h1 style={{ fontSize: 15, marginBottom: 8, textShadow: "2px 2px 0 var(--accent)" }}>Lovelist</h1>
+            <p style={{ fontSize: 8, color: "var(--text2)", marginBottom: 24, lineHeight: 2 }}>
+              make a playlist for someone special
+            </p>
+            <a href="/api/auth/login">
+              <button className="pixel-btn green large" style={{ width: "100%" }}>
+                Login with Spotify ♥
+              </button>
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="app-wrapper">
       <HeartParticles />
       <div className="page-content">
 
-        <div className="app-header">
-          <span className="app-title">♥ Lovelist ♥</span>
-          <span className="app-subtitle">make a playlist for someone special</span>
+        <div className="app-header" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div>
+            <span className="app-title">♥ Lovelist ♥</span>
+            <span className="app-subtitle" style={{ display: "block" }}>make a playlist for someone special</span>
+          </div>
+          <a href="/api/auth/logout">
+            <button className="pixel-btn" style={{ fontSize: 7, padding: "6px 10px" }}>Logout</button>
+          </a>
         </div>
 
         {/* Details */}
