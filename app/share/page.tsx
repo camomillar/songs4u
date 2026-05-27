@@ -196,26 +196,26 @@ function OpenCase({
           fontFamily: "'Breathing', cursive",
         }}>
           <p style={{
-            fontSize: "clamp(18px, 3.2vw, 26px)",
+            fontSize: "clamp(12px, 2vw, 16px)",
             color: "#222",
             lineHeight: 1.9,
-            marginBottom: "5%",
+            marginBottom: "4%",
           }}>
             My dearest {to},
           </p>
           {message && (
             <p style={{
-              fontSize: "clamp(17px, 3vw, 24px)",
+              fontSize: "clamp(11px, 1.8vw, 15px)",
               color: "#444",
               lineHeight: 1.9,
-              marginBottom: "5%",
+              marginBottom: "4%",
             }}>
               {message}
             </p>
           )}
           {from && (
             <p style={{
-              fontSize: "clamp(17px, 3vw, 24px)",
+              fontSize: "clamp(11px, 1.8vw, 15px)",
               color: "#333",
               lineHeight: 1.9,
             }}>
