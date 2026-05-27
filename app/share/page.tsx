@@ -6,13 +6,6 @@ import Image from "next/image";
 import HeartParticles, { darkenHex } from "@/components/HeartParticles";
 import { decodePlaylist } from "@/lib/encode";
 import { useSpotifyEmbed } from "@/hooks/useSpotifyEmbed";
-import dynamic from "next/dynamic";
-
-const CDModel = dynamic(() => import("@/components/CDModel"), { ssr: false, loading: () => (
-  <div style={{ width: "100%", height: 320, display: "flex", alignItems: "center", justifyContent: "center" }}>
-    <p style={{ fontFamily: "system-ui", fontSize: 13, color: "#bbb" }}>Loading 3D model...</p>
-  </div>
-) });
 
 /* ── Closed case ─────────────────────────────────────────────── */
 function ClosedCase({ onOpen, coverImage, bgColor }: { onOpen: () => void; coverImage?: string; bgColor?: string }) {
@@ -222,31 +215,61 @@ function OpenCase({
         }
       `}</style>
 
-      {/* Two-column: letter + 3D model */}
+      {/* Open jewel case — image with overlaid letter + CD */}
       <div style={{
+        position: "relative",
         width: "100%",
         maxWidth: 700,
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        gap: 20,
-        alignItems: "center",
       }}>
-        {/* Letter */}
-        <div className="letter-card">
-          <p className="letter-salutation">My dearest {to},</p>
-          {message && <p className="letter-body">{message}</p>}
+<Image
+          src="/case-opened.png"
+          alt="Open CD Case"
+          width={464}
+          height={222}
+          style={{ width: "100%", height: "auto", display: "block" }}
+          priority
+        />
+
+        {/* Letter overlay — positioned over the white left panel */}
+        <div style={{
+          position: "absolute",
+          left: "4%",
+          top: "7%",
+          width: "34%",
+          height: "84%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          padding: "4% 5%",
+          overflow: "hidden",
+          fontFamily: "'Breathing', cursive",
+        }}>
+          {/* My dearest [name], */}
+          <p style={{ fontSize: "clamp(11px, 1.7vw, 14px)", color: "#1d3d8e", lineHeight: 1.4, marginBottom: "8%" }}>
+            My dearest {to},
+          </p>
+
+          {/* Message */}
+          {message && (
+            <p style={{ fontSize: "clamp(11px, 1.7vw, 14px)", color: "#1d3d8e", lineHeight: 1.4, marginBottom: "8%" }}>
+              {message}
+            </p>
+          )}
+
+          {/* Forever yours, */}
           {from && (
             <>
-              <p className="letter-closing">Forever yours,<br />{from}</p>
-              <div className="letter-seal">♥</div>
+              <p style={{ fontSize: "clamp(11px, 1.7vw, 14px)", color: "#1d3d8e", lineHeight: 1.4, marginBottom: "6%" }}>
+                Forever yours,
+              </p>
+              {/* Name */}
+              <p style={{ fontSize: "clamp(11px, 1.7vw, 14px)", color: "#1d3d8e", lineHeight: 1.4 }}>
+                {from}
+              </p>
             </>
           )}
         </div>
 
-        {/* 3D Model */}
-        <div style={{ borderRadius: 12, overflow: "hidden" }}>
-          <CDModel isPlaying={isPlaying} />
-        </div>
       </div>
 
 
