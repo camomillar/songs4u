@@ -547,11 +547,10 @@ export default function JewelCase({
                 cursor: ready ? "pointer" : "not-allowed",
                 flexShrink: 0,
                 display: "flex", alignItems: "center", justifyContent: "center",
-                boxShadow: ready ? "0 4px 14px rgba(0,0,0,0.2)" : "none",
-                transition: "transform 0.15s, box-shadow 0.15s",
+                transition: "transform 0.15s",
               }}
-              onMouseEnter={(e) => { if (ready) { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1.08)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 18px rgba(0,0,0,0.28)"; }}}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = ready ? "0 4px 14px rgba(0,0,0,0.2)" : "none"; }}
+              onMouseEnter={(e) => { if (ready) (e.currentTarget as HTMLButtonElement).style.transform = "scale(1.08)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)"; }}
             >
               {isPlaying ? (
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="white"><rect x="3" y="2" width="4" height="12" rx="1.5"/><rect x="9" y="2" width="4" height="12" rx="1.5"/></svg>
@@ -571,11 +570,10 @@ export default function JewelCase({
                   border: "1px solid rgba(0,0,0,0.1)",
                   cursor: "pointer", flexShrink: 0,
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-                  transition: "transform 0.15s, box-shadow 0.15s",
+                  transition: "transform 0.15s",
                 }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1.08)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 12px rgba(0,0,0,0.14)"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 2px 8px rgba(0,0,0,0.08)"; }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1.08)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)"; }}
               >
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                   <path d="M4 3.5L10 8L4 12.5V3.5Z" fill="#333"/>
