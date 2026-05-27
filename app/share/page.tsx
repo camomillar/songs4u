@@ -146,7 +146,7 @@ function ClosedCase({ onOpen, coverImage }: { onOpen: () => void; coverImage?: s
 /* ── Open case ───────────────────────────────────────────────── */
 function OpenCase({
   to, from, message, songs, coverImage, bgColor, currentIndex, setCurrentIndex,
-  isPlaying, audioActive, setAudioActive, setIsPlaying, audioRef,
+  isPlaying, audioActive, setAudioActive, setIsPlaying, audioRef, onBack,
 }: {
   to: string; from: string; message: string;
   songs: { id: string; title: string; artist: string }[];
@@ -159,6 +159,7 @@ function OpenCase({
   audioActive: boolean;
   setAudioActive: (v: boolean) => void;
   setIsPlaying: (v: boolean) => void;
+  onBack: () => void;
 }) {
   const total = songs.length;
   const song = songs[currentIndex];
@@ -180,6 +181,34 @@ function OpenCase({
       animation: "fadeUp 0.5s ease",
       transition: "background 0.4s ease",
     }}>
+      {/* Back button */}
+      <button
+        onClick={onBack}
+        title="Close case"
+        style={{
+          position: "fixed",
+          top: 20,
+          left: 20,
+          width: 40,
+          height: 40,
+          borderRadius: "50%",
+          border: "none",
+          background: "rgba(0,0,0,0.08)",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: 18,
+          color: "#555",
+          transition: "background 0.2s",
+          zIndex: 10,
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(0,0,0,0.15)")}
+        onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(0,0,0,0.08)")}
+      >
+        ←
+      </button>
+
       <style>{`
         @keyframes fadeUp {
           from { opacity: 0; transform: translateY(16px); }
@@ -303,6 +332,7 @@ function ShareContent() {
       coverImage={playlist.coverImage}
       bgColor={playlist.bgColor}
       audioRef={audioRef}
+      onBack={() => { setIsOpen(false); setIsPlaying(false); setAudioActive(false); }}
       currentIndex={currentIndex}
       setCurrentIndex={setCurrentIndex}
       isPlaying={isPlaying}
