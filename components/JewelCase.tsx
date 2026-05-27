@@ -297,8 +297,8 @@ export default function JewelCase({
                 {/* Song list */}
                 <div style={{
                   position: "absolute", inset: 0,
-                  padding: "20px 18px",
-                  display: "flex", flexDirection: "column", justifyContent: "center",
+                  padding: "16px 18px",
+                  display: "flex", flexDirection: "column", justifyContent: "flex-start",
                   gap: 6,
                   overflow: "hidden",
                 }}>
