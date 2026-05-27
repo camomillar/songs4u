@@ -58,9 +58,14 @@ export default function Home() {
 
   const handleAddSong = () => {
     const match = spotifyUrl.match(/track\/([a-zA-Z0-9]+)/);
-    if (!match) { setUrlError("Couldn't find a Spotify track ID in that URL."); return; }
-    if (!songTitle.trim()) { setUrlError("Please enter a song title."); return; }
-    setSongs(prev => [...prev, { id: match[1], title: songTitle.trim(), artist: songArtist.trim() }]);
+    if (!match) { setUrlError("Paste a valid Spotify track link."); return; }
+    if (!songTitle.trim()) { setUrlError("Paste a Spotify link and wait for the song info to load."); return; }
+    setSongs(prev => [...prev, {
+      id: match[1],
+      title: songTitle.trim(),
+      artist: songArtist.trim(),
+      ...(previewThumb ? { albumArt: previewThumb } : {}),
+    }]);
     setSpotifyUrl(""); setSongTitle(""); setSongArtist(""); setPreviewThumb(null); setUrlError("");
   };
 
@@ -215,7 +220,7 @@ export default function Home() {
         </button>
         {(songs.length === 0 || !to.trim()) && (
           <p style={{ fontSize: 7, color: "var(--text2)", textAlign: "center" }}>
-            {!to.trim() ? "Add a name above to continue" : "Load a playlist to continue"}
+            {!to.trim() ? "Add a name above to continue" : "Add at least one song to continue"}
           </p>
         )}
       </div>
