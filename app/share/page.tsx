@@ -7,7 +7,7 @@ import { decodePlaylist } from "@/lib/encode";
 import { getThumbnail } from "@/lib/youtube";
 
 /* ── Closed case ─────────────────────────────────────────────── */
-function ClosedCase({ onOpen, coverImage }: { onOpen: () => void; coverImage?: string }) {
+function ClosedCase({ onOpen, coverImage, bgColor }: { onOpen: () => void; coverImage?: string; bgColor?: string }) {
   const imgRef = useRef<HTMLDivElement>(null);
   const rot = useRef({ x: -8, y: 20 });
   const isDragging = useRef(false);
@@ -70,7 +70,7 @@ function ClosedCase({ onOpen, coverImage }: { onOpen: () => void; coverImage?: s
   return (
     <div style={{
       minHeight: "100vh",
-      background: "#fff",
+      background: bgColor || "#fff",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
@@ -321,7 +321,7 @@ function ShareContent() {
     );
   }
 
-  if (!isOpen) return <ClosedCase onOpen={() => setIsOpen(true)} coverImage={playlist.coverImage} />;
+  if (!isOpen) return <ClosedCase onOpen={() => setIsOpen(true)} coverImage={playlist.coverImage} bgColor={playlist.bgColor} />;
 
   return (
     <OpenCase
