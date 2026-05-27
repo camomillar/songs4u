@@ -147,38 +147,10 @@ export default function JewelCase({
               cursor: "grab",
               userSelect: "none",
               willChange: "transform",
-              transformStyle: "preserve-3d",
+              // shadow gives the depth/volume illusion
+              filter: "drop-shadow(16px 20px 28px rgba(0,0,0,0.35)) drop-shadow(4px 6px 10px rgba(0,0,0,0.2))",
             }}
           >
-            {/* ── TOP face (thickness) ── */}
-            <div style={{
-              position: "absolute", top: 0, left: 0, width: "100%", height: 16,
-              transformOrigin: "top center",
-              transform: "rotateX(90deg)",
-              background: "linear-gradient(to bottom, #c8c8ca, #b8b8bc)",
-            }} />
-            {/* ── BOTTOM face (thickness) ── */}
-            <div style={{
-              position: "absolute", bottom: 0, left: 0, width: "100%", height: 16,
-              transformOrigin: "bottom center",
-              transform: "rotateX(-90deg)",
-              background: "linear-gradient(to top, #c0c0c2, #c8c8ca)",
-            }} />
-            {/* ── RIGHT face (thickness) ── */}
-            <div style={{
-              position: "absolute", top: 0, right: 0, width: 16, height: "100%",
-              transformOrigin: "right center",
-              transform: "rotateY(90deg)",
-              background: "linear-gradient(to right, #c8c8ca, #d0d0d2)",
-            }} />
-
-            {/* ── BACK FACE — solid black ── */}
-            <div style={{
-              position: "absolute", inset: 0,
-              background: "#0a0a0a",
-              transform: "rotateY(180deg)",
-              backfaceVisibility: "hidden",
-            }} />
 
             {/* ── Spine — dark ribbed strip ── */}
             <div style={{
@@ -210,7 +182,6 @@ export default function JewelCase({
               overflow: "hidden",
               border: "1px solid rgba(0,0,0,0.08)",
               borderLeft: "none",
-              backfaceVisibility: "hidden",
             }}>
               {/* Main plastic gradient — lighter top-right, slightly darker bottom-left */}
               <div style={{
