@@ -169,12 +169,20 @@ export default function Home() {
       <div style={{ maxWidth: 480, margin: "0 auto", padding: "24px 16px 80px" }}>
 
         {/* Intro */}
-        <div style={{ padding: "8px 4px 8px", marginBottom: 4 }}>
-          <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 28, color: "#111", margin: 0, lineHeight: 1.3 }}>
+        <div style={{
+          textAlign: "center",
+          padding: "28px 16px 20px",
+          marginBottom: 8,
+        }}>
+          <p style={{ fontSize: 28, margin: "0 0 6px", letterSpacing: 6, color: "#e03050" }}>♥ ♥ ♥</p>
+          <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 34, color: "#111", margin: 0, lineHeight: 1.25 }}>
             make a playlist
           </p>
-          <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 28, color: "#888", margin: 0, lineHeight: 1.3 }}>
+          <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 34, color: "#e03050", margin: "0 0 10px", lineHeight: 1.25 }}>
             for someone special
+          </p>
+          <p style={{ fontFamily: F, fontSize: 13, color: "#aaa", margin: 0, letterSpacing: 0.3 }}>
+            choose songs · write a message · share the love
           </p>
         </div>
 
