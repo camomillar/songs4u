@@ -391,32 +391,36 @@ export default function JewelCase({
                     }} />
                   </div>
 
-                  {/* Message written ON the disc */}
-                  <div style={{
-                    position: "absolute",
-                    top: "18%", left: "50%",
-                    transform: "translateX(-50%)",
-                    width: "62%",
-                    textAlign: "center",
-                    fontFamily: "'Breathing', cursive",
-                    pointerEvents: "none",
-                    zIndex: 3,
-                    display: "flex", flexDirection: "column", gap: 2,
-                  }}>
-                    <p style={{ fontSize: 11, color: "rgba(20,20,40,0.75)", lineHeight: 1.4, margin: 0 }}>
-                      My dearest {to},
-                    </p>
+                  {/* Message written ON the disc — SVG circular text */}
+                  <svg
+                    viewBox="0 0 100 100"
+                    style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 3, overflow: "visible" }}
+                  >
+                    <defs>
+                      {/* Inner arc — salutation */}
+                      <path id="cdArc1" d="M 21,50 A 29,29 0 0 1 79,50" />
+                      {/* Middle arc — message */}
+                      <path id="cdArc2" d="M 13,50 A 37,37 0 0 1 87,50" />
+                      {/* Outer arc — closing */}
+                      <path id="cdArc3" d="M 5,50 A 45,45 0 0 1 95,50" />
+                    </defs>
+
+                    <text fontFamily="'Breathing', cursive" fontSize="6.5" fill="rgba(15,20,50,0.78)" textAnchor="middle">
+                      <textPath href="#cdArc1" startOffset="50%">My dearest {to},</textPath>
+                    </text>
+
                     {message && (
-                      <p style={{ fontSize: 10, color: "rgba(20,20,40,0.65)", lineHeight: 1.4, margin: 0 }}>
-                        {message}
-                      </p>
+                      <text fontFamily="'Breathing', cursive" fontSize="5.8" fill="rgba(15,20,50,0.65)" textAnchor="middle">
+                        <textPath href="#cdArc2" startOffset="50%">{message}</textPath>
+                      </text>
                     )}
+
                     {from && (
-                      <p style={{ fontSize: 10, color: "rgba(20,20,40,0.65)", lineHeight: 1.4, margin: 0, marginTop: 2 }}>
-                        Forever yours, {from}
-                      </p>
+                      <text fontFamily="'Breathing', cursive" fontSize="5.8" fill="rgba(15,20,50,0.65)" textAnchor="middle">
+                        <textPath href="#cdArc3" startOffset="50%">Forever yours, {from}</textPath>
+                      </text>
                     )}
-                  </div>
+                  </svg>
 
                   {/* Groove rings */}
                   {[36, 50, 64, 78].map(r => (
