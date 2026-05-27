@@ -98,11 +98,13 @@ export default function Home() {
             <p style={{ fontSize: 8, color: "var(--text2)", marginBottom: 24, lineHeight: 2 }}>
               make a playlist for someone special
             </p>
-            <a href="/api/auth/login">
-              <button className="pixel-btn green large" style={{ width: "100%" }}>
-                Login with Spotify ♥
-              </button>
-            </a>
+            <button
+              className="pixel-btn green large"
+              style={{ width: "100%" }}
+              onClick={() => { window.location.href = "/api/auth/login"; }}
+            >
+              Login with Spotify ♥
+            </button>
           </div>
         </div>
       </div>
@@ -119,9 +121,8 @@ export default function Home() {
             <span className="app-title">♥ Lovelist ♥</span>
             <span className="app-subtitle" style={{ display: "block" }}>make a playlist for someone special</span>
           </div>
-          <a href="/api/auth/logout">
-            <button className="pixel-btn" style={{ fontSize: 7, padding: "6px 10px" }}>Logout</button>
-          </a>
+          <button className="pixel-btn" style={{ fontSize: 7, padding: "6px 10px" }}
+            onClick={() => { window.location.href = "/api/auth/logout"; }}>Logout</button>
         </div>
 
         {/* Details */}
