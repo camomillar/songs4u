@@ -5,7 +5,6 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import HeartParticles, { darkenHex } from "@/components/HeartParticles";
 import { decodePlaylist } from "@/lib/encode";
-import { getThumbnail } from "@/lib/youtube";
 
 /* ── Closed case ─────────────────────────────────────────────── */
 function ClosedCase({ onOpen, coverImage, bgColor }: { onOpen: () => void; coverImage?: string; bgColor?: string }) {
@@ -150,20 +149,53 @@ function OpenCase({
   to, from, message, songs, coverImage, bgColor, onBack,
 }: {
   to: string; from: string; message: string;
-  songs: { id: string; title: string; artist: string }[];
+  songs: { id: string; title: string; artist: string; albumArt?: string }[];
   coverImage?: string;
   bgColor?: string;
   onBack: () => void;
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [previewUrls, setPreviewUrls] = useState<Record<string, string | null>>({});
+  const [loadingPreviews, setLoadingPreviews] = useState(true);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const total = songs.length;
   const song = songs[currentIndex];
+  const previewUrl = previewUrls[song.id] ?? null;
 
-  const next = () => {
-    setCurrentIndex((i) => (i + 1) % total);
-    setIsPlaying(false); // new song starts paused
+  // Fetch fresh preview URLs on mount
+  useEffect(() => {
+    const ids = songs.map(s => s.id).join(",");
+    fetch(`/api/preview-urls?ids=${ids}`)
+      .then(r => r.json())
+      .then(data => setPreviewUrls(data))
+      .catch(() => {})
+      .finally(() => setLoadingPreviews(false));
+  }, []);
+
+  // When song changes, reset audio
+  useEffect(() => {
+    setIsPlaying(false);
+    setProgress(0);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+  }, [currentIndex]);
+
+  const togglePlay = () => {
+    if (!audioRef.current || !previewUrl) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
   };
+
+  const next = () => setCurrentIndex(i => (i + 1) % total);
 
   return (
     <div style={{
@@ -272,75 +304,68 @@ function OpenCase({
       </div>
 
 
-      {/* Player */}
+      {/* Custom audio player */}
       <div style={{ width: "100%", maxWidth: 700, marginTop: 16 }}>
+        {/* Hidden HTML5 audio element */}
+        {previewUrl && (
+          <audio
+            ref={audioRef}
+            src={previewUrl}
+            onTimeUpdate={() => setProgress(audioRef.current?.currentTime ?? 0)}
+            onEnded={() => { setIsPlaying(false); next(); }}
+          />
+        )}
 
-        {isPlaying ? (
-          /* YouTube iframe — visible so browser allows autoplay */
-          <div style={{ position: "relative" }}>
-            {/* Overflow crops to show only the bottom controls bar */}
-            <div style={{ overflow: "hidden", height: 44, borderRadius: 8, background: "#000" }}>
-              <iframe
-                key={song.id}
-                src={`https://www.youtube.com/embed/${song.id}?autoplay=1&playsinline=1&modestbranding=1&rel=0`}
-                width="100%"
-                height="200"
-                allow="autoplay; encrypted-media"
-                style={{ border: 0, marginTop: -158, display: "block" }}
-                title={song.title}
-              />
-            </div>
-
-            {/* Song info + next button above the player bar */}
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={getThumbnail(song.id)} alt="" width={40} height={40}
-                style={{ borderRadius: 6, objectFit: "cover", flexShrink: 0 }} />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontSize: 13, fontWeight: 600, color: "#111", fontFamily: "system-ui", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {song.title}
-                </p>
-                {song.artist && <p style={{ fontSize: 11, color: "#888", fontFamily: "system-ui", marginTop: 2 }}>{song.artist}</p>}
-              </div>
-              {total > 1 && (
-                <button onClick={next} style={{ width: 36, height: 36, borderRadius: "50%", border: "1.5px solid #ccc", background: "white", cursor: "pointer", fontSize: 13, color: "#333", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>⏭</button>
-              )}
-            </div>
-          </div>
-        ) : (
-          /* Thumbnail + play button when not playing */
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={getThumbnail(song.id)} alt="" width={48} height={48}
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          {/* Album art */}
+          {song.albumArt ? (
+            <Image src={song.albumArt} alt={song.title} width={52} height={52} unoptimized
               style={{ borderRadius: 8, objectFit: "cover", flexShrink: 0 }} />
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ fontSize: 13, fontWeight: 600, color: "#111", fontFamily: "system-ui", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {song.title}
-              </p>
-              {song.artist && <p style={{ fontSize: 11, color: "#888", fontFamily: "system-ui", marginTop: 2 }}>{song.artist}</p>}
-            </div>
-            <button
-              onClick={() => setIsPlaying(true)}
-              style={{ width: 36, height: 36, borderRadius: "50%", border: "1.5px solid #ccc", background: "white", cursor: "pointer", fontSize: 14, color: "#333", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}
-            >▶</button>
-            {total > 1 && (
-              <button onClick={next} style={{ width: 36, height: 36, borderRadius: "50%", border: "1.5px solid #ccc", background: "white", cursor: "pointer", fontSize: 13, color: "#333", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>⏭</button>
+          ) : (
+            <div style={{ width: 52, height: 52, borderRadius: 8, background: "#eee", flexShrink: 0 }} />
+          )}
+
+          {/* Title + artist + progress */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ fontSize: 13, fontWeight: 600, color: "#111", fontFamily: "system-ui", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {song.title}
+            </p>
+            {song.artist && (
+              <p style={{ fontSize: 11, color: "#888", fontFamily: "system-ui", marginTop: 2 }}>{song.artist}</p>
             )}
+            {/* Progress bar */}
+            <div style={{ marginTop: 6, height: 3, background: "#eee", borderRadius: 2, overflow: "hidden" }}>
+              <div style={{ height: "100%", width: `${(progress / 30) * 100}%`, background: "#333", borderRadius: 2, transition: "width 0.5s linear" }} />
+            </div>
           </div>
+
+          {/* Play/pause */}
+          <button
+            onClick={togglePlay}
+            disabled={loadingPreviews || !previewUrl}
+            title={!previewUrl ? "No preview available" : undefined}
+            style={{ width: 38, height: 38, borderRadius: "50%", border: "1.5px solid #ccc", background: "white", cursor: previewUrl ? "pointer" : "not-allowed", fontSize: 14, color: "#333", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}
+          >
+            {loadingPreviews ? "…" : isPlaying ? "⏸" : "▶"}
+          </button>
+
+          {/* Next */}
+          {total > 1 && (
+            <button onClick={next} style={{ width: 38, height: 38, borderRadius: "50%", border: "1.5px solid #ccc", background: "white", cursor: "pointer", fontSize: 13, color: "#333", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>⏭</button>
+          )}
+        </div>
+
+        {!previewUrl && !loadingPreviews && (
+          <p style={{ fontSize: 11, color: "#bbb", fontFamily: "system-ui", marginTop: 6, textAlign: "center" }}>
+            No preview available for this song
+          </p>
         )}
       </div>
 
       {/* Footer */}
-      <p style={{
-        fontFamily: "system-ui, sans-serif",
-        fontSize: 11,
-        color: "#bbb",
-        marginTop: 32,
-      }}>
+      <p style={{ fontFamily: "system-ui, sans-serif", fontSize: 11, color: "#bbb", marginTop: 32 }}>
         made with ♥ · <a href="/" style={{ color: "#bbb", textDecoration: "none" }}>make your own</a>
       </p>
-
-      {/* Hidden audio */}
     </div>
   );
 }

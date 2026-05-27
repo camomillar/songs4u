@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "img.youtube.com" },
       { protocol: "https", hostname: "api.qrserver.com" },
+      { protocol: "https", hostname: "i.scdn.co" },
     ],
   },
 };

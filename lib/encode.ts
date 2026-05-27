@@ -1,7 +1,8 @@
 export interface Song {
-  id: string;    // YouTube video ID
+  id: string;        // Spotify track ID
   title: string;
   artist: string;
+  albumArt?: string; // Spotify album art URL (stable CDN, safe to store)
 }
 
 export interface ValentinesPlaylist {
