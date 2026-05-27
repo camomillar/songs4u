@@ -484,13 +484,13 @@ export default function JewelCase({
 
                     {/* To — bottom inner */}
                     <text fontFamily="'OrdinaryLetter', cursive" fontSize="10" fill="rgba(15,20,50,0.78)" textAnchor="middle">
-                      <textPath href="#cdArcBot1" startOffset="50%">{to}</textPath>
+                      <textPath href="#cdArcBot1" startOffset="50%">to: {to}</textPath>
                     </text>
 
                     {/* From — bottom outer */}
                     {from && (
                       <text fontFamily="'OrdinaryLetter', cursive" fontSize="9.5" fill="rgba(15,20,50,0.65)" textAnchor="middle">
-                        <textPath href="#cdArcBot2" startOffset="50%">{from}</textPath>
+                        <textPath href="#cdArcBot2" startOffset="50%">from: {from}</textPath>
                       </text>
                     )}
 
