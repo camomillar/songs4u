@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import HeartParticles, { darkenHex } from "@/components/HeartParticles";
 
 interface Props {
   to: string;
@@ -255,6 +256,7 @@ export default function JewelCase({
       {/* ── OPEN: two-panel layout ── */}
       {phase === "open" && (
         <>
+          <HeartParticles color={bgColor ? darkenHex(bgColor) : undefined} />
           <div style={{
             perspective: "1200px",
             animation: "caseUnfold 0.45s ease-out forwards",
