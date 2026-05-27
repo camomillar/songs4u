@@ -173,60 +173,9 @@ function OpenCase({
         maxWidth: 700,
         boxShadow: "0 8px 40px rgba(0,0,0,0.13)",
         borderRadius: 4,
-        overflow: "visible",
+        overflow: "hidden",
       }}>
-        {/* Instagram Stories share button */}
-        <button
-          onClick={async () => {
-            if (typeof navigator !== "undefined" && navigator.share) {
-              try {
-                await navigator.share({
-                  title: `A playlist for ${to} ♥`,
-                  text: `${from} made you a playlist!`,
-                  url: window.location.href,
-                });
-              } catch { /* user cancelled */ }
-            } else {
-              await navigator.clipboard.writeText(window.location.href);
-              alert("Link copied! Open Instagram on your phone and paste it in a Story ♥");
-            }
-          }}
-          title="Share to Instagram Stories"
-          style={{
-            position: "absolute",
-            top: -16,
-            right: -16,
-            width: 44,
-            height: 44,
-            borderRadius: "50%",
-            border: "none",
-            background: "linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)",
-            boxShadow: "0 4px 14px rgba(188,24,136,0.45)",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 10,
-            transition: "transform 0.15s ease, box-shadow 0.15s ease",
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.transform = "scale(1.1)";
-            (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 18px rgba(188,24,136,0.6)";
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.transform = "";
-            (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 14px rgba(188,24,136,0.45)";
-          }}
-        >
-          {/* Instagram camera icon (SVG) */}
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="white" strokeWidth="2" fill="none"/>
-            <circle cx="12" cy="12" r="4.5" stroke="white" strokeWidth="2" fill="none"/>
-            <circle cx="17.5" cy="6.5" r="1.2" fill="white"/>
-          </svg>
-        </button>
-
-        <Image
+<Image
           src="/case-opened.png"
           alt="Open CD Case"
           width={464}
