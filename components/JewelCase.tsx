@@ -148,6 +148,7 @@ export default function JewelCase({
               userSelect: "none",
               willChange: "transform",
               transformStyle: "preserve-3d",
+              filter: "drop-shadow(12px 20px 24px rgba(0,0,0,0.4)) drop-shadow(4px 6px 8px rgba(0,0,0,0.25))",
             }}
           >
             {/* ── BACK FACE — black ── */}
