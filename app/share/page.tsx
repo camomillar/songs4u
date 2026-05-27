@@ -323,18 +323,6 @@ function OpenCase({
           ⏭
         </button>
 
-        {/* Dot indicators */}
-        {total > 1 && (
-          <div style={{ display: "flex", gap: 5, flexShrink: 0 }}>
-            {songs.map((_, i) => (
-              <span
-                key={i}
-                onClick={() => setCurrentIndex(i)}
-                style={{ width: 7, height: 7, borderRadius: "50%", background: i === currentIndex ? "#333" : "#ccc", display: "inline-block", cursor: "pointer" }}
-              />
-            ))}
-          </div>
-        )}
       </div>
 
       {/* Footer */}
