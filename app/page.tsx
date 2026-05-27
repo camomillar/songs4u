@@ -15,11 +15,9 @@ export default function Home() {
 
   const [authChecked, setAuthChecked] = useState(false);
   const [isAuthed, setIsAuthed] = useState(false);
-  const [myPlaylists, setMyPlaylists] = useState<{ id: string; name: string; image: string | null; total: number }[]>([]);
-  const [playlistsLoading, setPlaylistsLoading] = useState(false);
-  const [selectedPlaylistId, setSelectedPlaylistId] = useState<string | null>(null);
-  const [fetching, setFetching] = useState(false);
-  const [fetchError, setFetchError] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<{ id: string; title: string; artist: string; albumArt: string }[]>([]);
+  const [searching, setSearching] = useState(false);
 
   const [coverImage, setCoverImage] = useState<string | null>(null);
   const [bgColor, setBgColor] = useState("#FFE4E8");
@@ -48,32 +46,24 @@ export default function Home() {
       .catch(() => setAuthChecked(true));
   }, []);
 
-  // Load user's playlists once authenticated
-  useEffect(() => {
-    if (!isAuthed) return;
-    setPlaylistsLoading(true);
-    fetch("/api/spotify/user-playlists")
-      .then(r => r.json())
-      .then(d => setMyPlaylists(d.playlists ?? []))
-      .catch(() => {})
-      .finally(() => setPlaylistsLoading(false));
-  }, [isAuthed]);
 
-  const handleSelectPlaylist = async (id: string) => {
-    setSelectedPlaylistId(id);
-    setFetching(true);
-    setFetchError("");
-    setSongs([]);
+  const handleSearch = async (q: string) => {
+    setSearchQuery(q);
+    if (!q.trim()) { setSearchResults([]); return; }
+    setSearching(true);
     try {
-      const res = await fetch(`/api/playlist-tracks?id=${id}`);
+      const res = await fetch(`/api/spotify/search?q=${encodeURIComponent(q)}`);
       const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      setSongs(data.songs);
-    } catch (e) {
-      setFetchError(e instanceof Error ? e.message : "Could not fetch playlist");
-    } finally {
-      setFetching(false);
-    }
+      setSearchResults(data.tracks ?? []);
+    } catch { setSearchResults([]); }
+    finally { setSearching(false); }
+  };
+
+  const handleAddSearchResult = (track: { id: string; title: string; artist: string; albumArt: string }) => {
+    if (songs.find(s => s.id === track.id)) return; // no duplicates
+    setSongs(prev => [...prev, track]);
+    setSearchQuery("");
+    setSearchResults([]);
   };
 
   const handleRemoveSong = (i: number) => setSongs((prev) => prev.filter((_, idx) => idx !== i));
@@ -201,36 +191,33 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Spotify playlist picker */}
+        {/* Song search */}
         <div className="pixel-card" style={{ marginBottom: 16 }}>
-          <p style={{ fontSize: 9, marginBottom: 16, color: "var(--accent2)" }}>♪ Pick a Playlist</p>
-          {playlistsLoading ? (
-            <p style={{ fontSize: 7, color: "var(--text2)" }}>Loading your playlists<span className="loading-dots" /></p>
-          ) : (
-            <ul className="pixel-list" style={{ maxHeight: 280, overflowY: "auto", gap: 2 }}>
-              {myPlaylists.map(pl => (
-                <li
-                  key={pl.id}
-                  className={`pixel-list-item ${selectedPlaylistId === pl.id ? "active" : ""}`}
-                  onClick={() => handleSelectPlaylist(pl.id)}
-                  style={{ gap: 10 }}
-                >
-                  {pl.image ? (
-                    <Image src={pl.image} alt={pl.name} width={36} height={36} unoptimized
-                      style={{ objectFit: "cover", flexShrink: 0 }} />
-                  ) : (
-                    <div style={{ width: 36, height: 36, background: "var(--accent3)", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>♪</div>
-                  )}
+          <p style={{ fontSize: 9, marginBottom: 16, color: "var(--accent2)" }}>♪ Add Songs</p>
+          <label className="pixel-label">SEARCH SPOTIFY</label>
+          <input
+            className="pixel-input"
+            placeholder="Search for a song or artist..."
+            value={searchQuery}
+            onChange={e => handleSearch(e.target.value)}
+            style={{ marginBottom: searching ? 8 : searchResults.length ? 8 : 0 }}
+          />
+          {searching && <p style={{ fontSize: 7, color: "var(--text2)", marginBottom: 8 }}>Searching<span className="loading-dots" /></p>}
+          {searchResults.length > 0 && (
+            <ul className="pixel-list" style={{ gap: 2 }}>
+              {searchResults.map(track => (
+                <li key={track.id} className="pixel-list-item" onClick={() => handleAddSearchResult(track)} style={{ gap: 10 }}>
+                  <Image src={track.albumArt} alt={track.title} width={36} height={36} unoptimized
+                    style={{ objectFit: "cover", flexShrink: 0 }} />
                   <div style={{ minWidth: 0 }}>
-                    <p style={{ fontSize: 7, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{pl.name}</p>
-                    <p style={{ fontSize: 6, color: "var(--text2)", marginTop: 2 }}>{pl.total} songs</p>
+                    <p style={{ fontSize: 7, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{track.title}</p>
+                    <p style={{ fontSize: 6, color: "var(--text2)", marginTop: 2 }}>{track.artist}</p>
                   </div>
+                  <span style={{ fontSize: 14, color: "var(--accent3)", flexShrink: 0 }}>+</span>
                 </li>
               ))}
             </ul>
           )}
-          {fetching && <p style={{ fontSize: 7, color: "var(--text2)", marginTop: 10 }}>Loading songs<span className="loading-dots" /></p>}
-          {fetchError && <p style={{ fontSize: 7, color: "var(--accent2)", marginTop: 10 }}>⚠ {fetchError}</p>}
         </div>
 
         {/* Song list */}
@@ -264,7 +251,7 @@ export default function Home() {
         </button>
         {(songs.length === 0 || !to.trim()) && (
           <p style={{ fontSize: 7, color: "var(--text2)", textAlign: "center" }}>
-            {!to.trim() ? "Add a name above to continue" : "Load a playlist to continue"}
+            {!to.trim() ? "Add a name above to continue" : "Search and add at least one song to continue"}
           </p>
         )}
       </div>
