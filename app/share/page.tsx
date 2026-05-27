@@ -273,11 +273,10 @@ function OpenCase({
       </div>
 
 
-      {/* Spotify Embed API placeholder — replaced by Spotify with an iframe */}
-      <div
-        ref={containerRef}
-        style={{ position: "absolute", left: "-9999px", top: 0, width: 300, height: 80 }}
-      />
+      {/* Spotify Embed API placeholder — scaled to 0 so it's invisible but still renders audio */}
+      <div style={{ position: "fixed", bottom: 0, left: 0, width: 300, height: 80, transform: "scale(0)", transformOrigin: "bottom left", pointerEvents: "none" }}>
+        <div ref={containerRef} style={{ width: 300, height: 80 }} />
+      </div>
 
       {/* Custom player */}
       <div style={{
