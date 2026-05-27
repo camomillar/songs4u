@@ -1,6 +1,6 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import PixelAudioPlayer from "@/components/PixelAudioPlayer";
 import { decodePlaylist } from "@/lib/encode";
@@ -8,37 +8,115 @@ import { getThumbnail } from "@/lib/youtube";
 
 /* ── Closed case ─────────────────────────────────────────────── */
 function ClosedCase({ onOpen }: { onOpen: () => void }) {
+  const imgRef = useRef<HTMLDivElement>(null);
+  const rot = useRef({ x: -8, y: 20 });
+  const isDragging = useRef(false);
+  const lastPos = useRef({ x: 0, y: 0 });
+  const idleAngle = useRef(0);
+  const rafRef = useRef<number>(0);
+
+  useEffect(() => {
+    // Animate: idle sway when not dragging, live update when dragging
+    const tick = () => {
+      if (!isDragging.current) {
+        idleAngle.current += 0.4;
+        rot.current.y = Math.sin((idleAngle.current * Math.PI) / 180) * 22;
+      }
+      if (imgRef.current) {
+        imgRef.current.style.transform = `perspective(900px) rotateX(${rot.current.x}deg) rotateY(${rot.current.y}deg)`;
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+
+    // Global mouse/touch handlers so drag works outside the element
+    const onMove = (e: MouseEvent) => {
+      if (!isDragging.current) return;
+      const dx = e.clientX - lastPos.current.x;
+      const dy = e.clientY - lastPos.current.y;
+      lastPos.current = { x: e.clientX, y: e.clientY };
+      rot.current.y += dx * 0.9;
+      rot.current.x = Math.max(-50, Math.min(50, rot.current.x - dy * 0.9));
+    };
+    const onUp = () => { isDragging.current = false; };
+    const onTouchMove = (e: TouchEvent) => {
+      if (!isDragging.current) return;
+      const dx = e.touches[0].clientX - lastPos.current.x;
+      const dy = e.touches[0].clientY - lastPos.current.y;
+      lastPos.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      rot.current.y += dx * 0.9;
+      rot.current.x = Math.max(-50, Math.min(50, rot.current.x - dy * 0.9));
+    };
+
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
+    window.addEventListener("touchend", onUp);
+
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onUp);
+    };
+  }, []);
+
+  const startDrag = (clientX: number, clientY: number) => {
+    isDragging.current = true;
+    lastPos.current = { x: clientX, y: clientY };
+  };
+
   return (
-    <div
-      onClick={onOpen}
-      style={{
-        minHeight: "100vh",
-        background: "#fff",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 20,
-        cursor: "pointer",
-      }}
-    >
-      <Image
-        src="/case-closed.png"
-        alt="CD Case"
-        width={340}
-        height={340}
-        style={{ objectFit: "contain" }}
-        priority
-        onError={() => {}} // fallback handled below
-      />
-      <p style={{
-        fontFamily: "'Lora', serif",
-        fontStyle: "italic",
-        fontSize: 16,
-        color: "#999",
-        letterSpacing: 0.3,
-      }}>
-        click to open
+    <div style={{
+      minHeight: "100vh",
+      background: "#fff",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 24,
+    }}>
+      {/* 3D draggable case */}
+      <div
+        ref={imgRef}
+        onMouseDown={(e) => { e.preventDefault(); startDrag(e.clientX, e.clientY); }}
+        onTouchStart={(e) => startDrag(e.touches[0].clientX, e.touches[0].clientY)}
+        style={{
+          cursor: "grab",
+          willChange: "transform",
+          userSelect: "none",
+        }}
+      >
+        <Image
+          src="/case-closed.png"
+          alt="CD Case"
+          width={340}
+          height={340}
+          style={{ objectFit: "contain", display: "block", pointerEvents: "none" }}
+          priority
+          draggable={false}
+        />
+      </div>
+
+      {/* Open button — separate from the case */}
+      <p
+        onClick={onOpen}
+        style={{
+          fontFamily: "'Lora', serif",
+          fontStyle: "italic",
+          fontSize: 15,
+          color: "#aaa",
+          cursor: "pointer",
+          letterSpacing: 0.3,
+          borderBottom: "1px solid #ddd",
+          paddingBottom: 2,
+          transition: "color 0.2s",
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = "#e03050")}
+        onMouseLeave={(e) => (e.currentTarget.style.color = "#aaa")}
+      >
+        click here to open ♥
       </p>
     </div>
   );
