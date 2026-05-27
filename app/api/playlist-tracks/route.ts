@@ -1,23 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
-import { fetchPlaylistTracks } from "@/lib/spotify-api";
 import { getAccessToken } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
-  const url = new URL(req.url).searchParams.get("url");
-  const match = url?.match(/playlist\/([a-zA-Z0-9]+)/);
-  if (!match) return NextResponse.json({ error: "Invalid playlist URL" }, { status: 400 });
+  const playlistId = new URL(req.url).searchParams.get("id");
+  if (!playlistId) return NextResponse.json({ error: "Missing playlist id" }, { status: 400 });
 
-  const playlistId = match[1];
+  const token = await getAccessToken();
+  if (!token) return NextResponse.json({ error: "Please log in with Spotify first." }, { status: 401 });
 
   try {
-    const userToken = await getAccessToken();
+    const res = await fetch(
+      `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=50`,
+      { headers: { Authorization: `Bearer ${token}` }, cache: "no-store" }
+    );
 
-    // No user token = not logged in
-    if (!userToken) {
-      return NextResponse.json({ error: "Please log in with Spotify first." }, { status: 401 });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(`Spotify ${res.status}: ${JSON.stringify(body)}`);
     }
 
-    const data = await fetchPlaylistTracks(playlistId, userToken);
+    const data = await res.json();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const songs = data.items
@@ -33,9 +35,6 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ songs });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "Failed to fetch playlist";
-
-    // Give a helpful hint for 403
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return NextResponse.json({ error: e instanceof Error ? e.message : "Failed" }, { status: 500 });
   }
 }

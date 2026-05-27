@@ -15,7 +15,9 @@ export default function Home() {
 
   const [authChecked, setAuthChecked] = useState(false);
   const [isAuthed, setIsAuthed] = useState(false);
-  const [playlistUrl, setPlaylistUrl] = useState("");
+  const [myPlaylists, setMyPlaylists] = useState<{ id: string; name: string; image: string | null; total: number }[]>([]);
+  const [playlistsLoading, setPlaylistsLoading] = useState(false);
+  const [selectedPlaylistId, setSelectedPlaylistId] = useState<string | null>(null);
   const [fetching, setFetching] = useState(false);
   const [fetchError, setFetchError] = useState("");
 
@@ -46,12 +48,24 @@ export default function Home() {
       .catch(() => setAuthChecked(true));
   }, []);
 
-  const handleFetchPlaylist = async () => {
-    if (!playlistUrl.trim()) return;
+  // Load user's playlists once authenticated
+  useEffect(() => {
+    if (!isAuthed) return;
+    setPlaylistsLoading(true);
+    fetch("/api/spotify/user-playlists")
+      .then(r => r.json())
+      .then(d => setMyPlaylists(d.playlists ?? []))
+      .catch(() => {})
+      .finally(() => setPlaylistsLoading(false));
+  }, [isAuthed]);
+
+  const handleSelectPlaylist = async (id: string) => {
+    setSelectedPlaylistId(id);
     setFetching(true);
     setFetchError("");
+    setSongs([]);
     try {
-      const res = await fetch(`/api/playlist-tracks?url=${encodeURIComponent(playlistUrl)}`);
+      const res = await fetch(`/api/playlist-tracks?id=${id}`);
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       setSongs(data.songs);
@@ -187,29 +201,36 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Spotify playlist */}
+        {/* Spotify playlist picker */}
         <div className="pixel-card" style={{ marginBottom: 16 }}>
-          <p style={{ fontSize: 9, marginBottom: 16, color: "var(--accent2)" }}>♪ Spotify Playlist</p>
-          <p style={{ fontSize: 7, color: "var(--text2)", lineHeight: 2, marginBottom: 12 }}>
-            On Spotify: open playlist → Share → Copy link to playlist
-          </p>
-          <label className="pixel-label">PLAYLIST LINK</label>
-          <input
-            className="pixel-input"
-            placeholder="https://open.spotify.com/playlist/..."
-            value={playlistUrl}
-            onChange={(e) => setPlaylistUrl(e.target.value)}
-            style={{ marginBottom: 12 }}
-          />
-          {fetchError && <p style={{ fontSize: 7, color: "var(--accent2)", marginBottom: 10 }}>⚠ {fetchError}</p>}
-          <button
-            className="pixel-btn"
-            onClick={handleFetchPlaylist}
-            disabled={!playlistUrl.trim() || fetching}
-            style={{ width: "100%" }}
-          >
-            {fetching ? "Loading songs..." : "Load Songs from Spotify"}
-          </button>
+          <p style={{ fontSize: 9, marginBottom: 16, color: "var(--accent2)" }}>♪ Pick a Playlist</p>
+          {playlistsLoading ? (
+            <p style={{ fontSize: 7, color: "var(--text2)" }}>Loading your playlists<span className="loading-dots" /></p>
+          ) : (
+            <ul className="pixel-list" style={{ maxHeight: 280, overflowY: "auto", gap: 2 }}>
+              {myPlaylists.map(pl => (
+                <li
+                  key={pl.id}
+                  className={`pixel-list-item ${selectedPlaylistId === pl.id ? "active" : ""}`}
+                  onClick={() => handleSelectPlaylist(pl.id)}
+                  style={{ gap: 10 }}
+                >
+                  {pl.image ? (
+                    <Image src={pl.image} alt={pl.name} width={36} height={36} unoptimized
+                      style={{ objectFit: "cover", flexShrink: 0 }} />
+                  ) : (
+                    <div style={{ width: 36, height: 36, background: "var(--accent3)", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>♪</div>
+                  )}
+                  <div style={{ minWidth: 0 }}>
+                    <p style={{ fontSize: 7, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{pl.name}</p>
+                    <p style={{ fontSize: 6, color: "var(--text2)", marginTop: 2 }}>{pl.total} songs</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+          {fetching && <p style={{ fontSize: 7, color: "var(--text2)", marginTop: 10 }}>Loading songs<span className="loading-dots" /></p>}
+          {fetchError && <p style={{ fontSize: 7, color: "var(--accent2)", marginTop: 10 }}>⚠ {fetchError}</p>}
         </div>
 
         {/* Song list */}
