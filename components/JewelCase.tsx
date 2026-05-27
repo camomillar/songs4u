@@ -245,11 +245,12 @@ export default function JewelCase({
                 fontFamily: "'Lora', serif", fontStyle: "italic",
                 fontSize: 15, color: "#aaa", cursor: "pointer",
                 letterSpacing: 0.3, borderBottom: "1px solid #ddd", paddingBottom: 2,
+                marginTop: 40,
               }}
               onMouseEnter={(e) => (e.currentTarget.style.color = "#e03050")}
               onMouseLeave={(e) => (e.currentTarget.style.color = "#aaa")}
             >
-              click here to open ♥
+              click to open
             </p>
           )}
         </div>
