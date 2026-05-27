@@ -14,11 +14,11 @@ export async function GET(req: NextRequest) {
     nonce = decoded.nonce ?? "";
     returnTo = decoded.returnTo ?? "/";
   } catch {
-    return NextResponse.redirect(new URL("/?error=auth_failed", req.url));
+    return NextResponse.redirect(new URL("/?error=auth_failed", process.env.SPOTIFY_REDIRECT_URI!.replace("/api/auth/callback", "")));
   }
 
   if (!code || !storedNonce || nonce !== storedNonce) {
-    return NextResponse.redirect(new URL("/?error=auth_failed", req.url));
+    return NextResponse.redirect(new URL("/?error=auth_failed", process.env.SPOTIFY_REDIRECT_URI!.replace("/api/auth/callback", "")));
   }
 
   const clientId = process.env.SPOTIFY_CLIENT_ID!;
@@ -39,13 +39,15 @@ export async function GET(req: NextRequest) {
   });
 
   if (!tokenRes.ok) {
-    return NextResponse.redirect(new URL("/?error=token_failed", req.url));
+    return NextResponse.redirect(new URL("/?error=token_failed", process.env.SPOTIFY_REDIRECT_URI!.replace("/api/auth/callback", "")));
   }
 
   const tokens = await tokenRes.json();
   const expiresAt = Date.now() + tokens.expires_in * 1000;
 
-  const response = NextResponse.redirect(new URL(returnTo, req.url));
+  // Always use 127.0.0.1 as base (Next.js dev resolves req.url to localhost)
+  const base = process.env.SPOTIFY_REDIRECT_URI!.replace("/api/auth/callback", "");
+  const response = NextResponse.redirect(new URL(returnTo, base));
   const cookieOpts = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
