@@ -205,10 +205,13 @@ function OpenCase({
           </p>
           {message && (
             <p style={{
-              fontSize: "clamp(11px, 1.8vw, 15px)",
+              fontSize: "clamp(9px, 1.3vw, 11px)",
               color: "#1d3d8e",
               lineHeight: 1.9,
               marginBottom: "4%",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
             }}>
               {message}
             </p>
