@@ -405,18 +405,18 @@ export default function JewelCase({
                       <path id="cdArc3" d="M 5,50 A 45,45 0 0 1 95,50" />
                     </defs>
 
-                    <text fontFamily="'Breathing', cursive" fontSize="6.5" fill="rgba(15,20,50,0.78)" textAnchor="middle">
+                    <text fontFamily="'OrdinaryLetter', cursive" fontSize="6.5" fill="rgba(15,20,50,0.78)" textAnchor="middle">
                       <textPath href="#cdArc1" startOffset="50%">My dearest {to},</textPath>
                     </text>
 
                     {message && (
-                      <text fontFamily="'Breathing', cursive" fontSize="5.8" fill="rgba(15,20,50,0.65)" textAnchor="middle">
+                      <text fontFamily="'OrdinaryLetter', cursive" fontSize="5.8" fill="rgba(15,20,50,0.65)" textAnchor="middle">
                         <textPath href="#cdArc2" startOffset="50%">{message}</textPath>
                       </text>
                     )}
 
                     {from && (
-                      <text fontFamily="'Breathing', cursive" fontSize="5.8" fill="rgba(15,20,50,0.65)" textAnchor="middle">
+                      <text fontFamily="'OrdinaryLetter', cursive" fontSize="5.8" fill="rgba(15,20,50,0.65)" textAnchor="middle">
                         <textPath href="#cdArc3" startOffset="50%">Forever yours, {from}</textPath>
                       </text>
                     )}
