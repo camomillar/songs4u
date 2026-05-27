@@ -10,11 +10,14 @@ export async function GET(req: NextRequest) {
   const playlistId = match[1];
 
   try {
-    // Prefer user token (works for private playlists too)
     const userToken = await getAccessToken();
-    const token = userToken ?? null;
 
-    const data = await fetchPlaylistTracks(playlistId, token ?? undefined);
+    // No user token = not logged in
+    if (!userToken) {
+      return NextResponse.json({ error: "Please log in with Spotify first." }, { status: 401 });
+    }
+
+    const data = await fetchPlaylistTracks(playlistId, userToken);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const songs = data.items
