@@ -195,8 +195,7 @@ function OpenCase({
           overflow: "hidden",
         }}>
           <p style={{
-            fontFamily: "'Lora', serif",
-            fontStyle: "italic",
+            fontFamily: "'Breathing', cursive",
             fontSize: "clamp(9px, 1.8vw, 14px)",
             color: "#222",
             lineHeight: 1.85,

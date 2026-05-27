@@ -1,5 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Dancing+Script:wght@400;600;700&family=Lora:ital,wght@1,400;1,500&display=swap");
 
+@font-face {
+  font-family: "Breathing";
+  src: url("/fonts/Breathing Personal Use Only.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
