@@ -2,7 +2,7 @@
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import PixelAudioPlayer from "@/components/PixelAudioPlayer";
+import PixelAudioPlayer, { type PixelAudioPlayerHandle } from "@/components/PixelAudioPlayer";
 import { decodePlaylist } from "@/lib/encode";
 import { getThumbnail } from "@/lib/youtube";
 
@@ -125,12 +125,13 @@ function ClosedCase({ onOpen }: { onOpen: () => void }) {
 /* ── Open case ───────────────────────────────────────────────── */
 function OpenCase({
   to, from, message, songs, coverImage, bgColor, currentIndex, setCurrentIndex,
-  isPlaying, audioActive, setAudioActive, setIsPlaying,
+  isPlaying, audioActive, setAudioActive, setIsPlaying, audioRef,
 }: {
   to: string; from: string; message: string;
   songs: { id: string; title: string; artist: string }[];
   coverImage?: string;
   bgColor?: string;
+  audioRef: React.RefObject<PixelAudioPlayerHandle | null>;
   currentIndex: number;
   setCurrentIndex: (i: number) => void;
   isPlaying: boolean;
@@ -242,13 +243,11 @@ function OpenCase({
           aspectRatio: "1",
         }}>
           <Image
-            src={coverImage || "/cd.png"}
+            src="/cd.png"
             alt="CD"
             fill
-            unoptimized={!!coverImage}
             style={{
-              borderRadius: "50%",
-              objectFit: "cover",
+              objectFit: "contain",
               animation: "cd-spin 4s linear infinite",
               animationPlayState: isPlaying ? "running" : "paused",
             }}
@@ -307,7 +306,13 @@ function OpenCase({
 
           {/* Play/pause button */}
           <button
-            onClick={() => setAudioActive(true)}
+            onClick={() => {
+              if (!audioActive) {
+                setAudioActive(true);
+              } else {
+                audioRef.current?.toggle();
+              }
+            }}
             style={{
               width: 32, height: 32,
               borderRadius: "50%",
@@ -355,6 +360,7 @@ function OpenCase({
       {audioActive && (
         <div style={{ display: "none" }}>
           <PixelAudioPlayer
+            ref={audioRef}
             videoId={song.id}
             title={song.title}
             artist={song.artist}
@@ -377,7 +383,7 @@ function ShareContent() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioActive, setAudioActive] = useState(false);
-
+  const audioRef = useRef<PixelAudioPlayerHandle>(null);
 
   if (!playlist) {
     return (
@@ -397,6 +403,7 @@ function ShareContent() {
       songs={playlist.songs}
       coverImage={playlist.coverImage}
       bgColor={playlist.bgColor}
+      audioRef={audioRef}
       currentIndex={currentIndex}
       setCurrentIndex={setCurrentIndex}
       isPlaying={isPlaying}

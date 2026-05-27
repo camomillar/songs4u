@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 
 declare global {
   interface Window {
@@ -52,7 +52,14 @@ function ensureYTScript() {
   document.head.appendChild(s);
 }
 
-export default function PixelAudioPlayer({ videoId, title, artist, onClose, onPlayStateChange }: Props) {
+export interface PixelAudioPlayerHandle {
+  toggle: () => void;
+}
+
+const PixelAudioPlayer = forwardRef<PixelAudioPlayerHandle, Props>(function PixelAudioPlayer(
+  { videoId, title, artist, onClose, onPlayStateChange }: Props,
+  ref
+) {
   const playerRef = useRef<YTPlayer | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -62,6 +69,17 @@ export default function PixelAudioPlayer({ videoId, title, artist, onClose, onPl
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [loading, setLoading] = useState(true);
+
+  useImperativeHandle(ref, () => ({
+    toggle: () => {
+      if (!playerRef.current) return;
+      if (isPlaying) {
+        playerRef.current.pauseVideo();
+      } else {
+        playerRef.current.playVideo();
+      }
+    },
+  }));
 
   // Create the player ONCE on mount
   useEffect(() => {
@@ -203,4 +221,6 @@ export default function PixelAudioPlayer({ videoId, title, artist, onClose, onPl
       </div>
     </div>
   );
-}
+});
+
+export default PixelAudioPlayer;
