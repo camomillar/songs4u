@@ -168,6 +168,16 @@ export default function Home() {
       {/* Content */}
       <div style={{ maxWidth: 480, margin: "0 auto", padding: "24px 16px 80px" }}>
 
+        {/* Intro */}
+        <div style={{ padding: "8px 4px 8px", marginBottom: 4 }}>
+          <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 28, color: "#111", margin: 0, lineHeight: 1.3 }}>
+            make a playlist
+          </p>
+          <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 28, color: "#888", margin: 0, lineHeight: 1.3 }}>
+            for someone special
+          </p>
+        </div>
+
         {/* Details */}
         <div style={card}>
           <p style={sectionTitle}>The details</p>
