@@ -1,25 +1,8 @@
 "use client";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 
-declare global {
-  interface Window {
-    onYouTubeIframeAPIReady: () => void;
-    YT: {
-      Player: new (
-        element: HTMLElement,
-        options: {
-          videoId: string;
-          playerVars?: Record<string, number | string>;
-          events?: {
-            onReady?: (e: { target: YTPlayer }) => void;
-            onStateChange?: (e: { data: number }) => void;
-          };
-        }
-      ) => YTPlayer;
-      PlayerState: { PLAYING: number; PAUSED: number; ENDED: number };
-    };
-  }
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type W = any;
 
 interface YTPlayer {
   playVideo(): void;
@@ -93,17 +76,19 @@ const PixelAudioPlayer = forwardRef<PixelAudioPlayerHandle, Props>(function Pixe
     wrapperRef.current = wrapper;
 
     const createPlayer = () => {
-      playerRef.current = new window.YT.Player(playerDiv, {
+      playerRef.current = new (window as W).YT.Player(playerDiv, {
         videoId,
         playerVars: { autoplay: 0, playsinline: 1 },
         events: {
-          onReady: (e) => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          onReady: (e: any) => {
             readyRef.current = true;
             setDuration(e.target.getDuration());
             setLoading(false);
           },
-          onStateChange: (e) => {
-            const { PLAYING, PAUSED, ENDED } = window.YT.PlayerState;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          onStateChange: (e: any) => {
+            const { PLAYING, PAUSED, ENDED } = (window as W).YT.PlayerState;
             if (e.data === PLAYING) {
               isPlayingRef.current = true;
               setIsPlaying(true);
@@ -120,11 +105,11 @@ const PixelAudioPlayer = forwardRef<PixelAudioPlayerHandle, Props>(function Pixe
       });
     };
 
-    if (window.YT?.Player) {
+    if ((window as W).YT?.Player) {
       createPlayer();
     } else {
-      const prev = window.onYouTubeIframeAPIReady;
-      window.onYouTubeIframeAPIReady = () => {
+      const prev = (window as W).onYouTubeIframeAPIReady;
+      (window as W).onYouTubeIframeAPIReady = () => {
         if (prev) prev();
         createPlayer();
       };

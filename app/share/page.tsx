@@ -2,10 +2,10 @@
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import PixelAudioPlayer, { type PixelAudioPlayerHandle } from "@/components/PixelAudioPlayer";
 import HeartParticles, { darkenHex } from "@/components/HeartParticles";
 import { decodePlaylist } from "@/lib/encode";
 import { getThumbnail } from "@/lib/youtube";
+import { useYouTube } from "@/hooks/useYouTube";
 
 /* ── Closed case ─────────────────────────────────────────────── */
 function ClosedCase({ onOpen, coverImage, bgColor }: { onOpen: () => void; coverImage?: string; bgColor?: string }) {
@@ -147,27 +147,20 @@ function ClosedCase({ onOpen, coverImage, bgColor }: { onOpen: () => void; cover
 
 /* ── Open case ───────────────────────────────────────────────── */
 function OpenCase({
-  to, from, message, songs, coverImage, bgColor, currentIndex, setCurrentIndex,
-  isPlaying, setIsPlaying, audioRef, onBack,
+  to, from, message, songs, coverImage, bgColor, onBack,
 }: {
   to: string; from: string; message: string;
   songs: { id: string; title: string; artist: string }[];
   coverImage?: string;
   bgColor?: string;
-  audioRef: React.RefObject<PixelAudioPlayerHandle | null>;
-  currentIndex: number;
-  setCurrentIndex: (i: number) => void;
-  isPlaying: boolean;
-  setIsPlaying: (v: boolean) => void;
   onBack: () => void;
 }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
   const total = songs.length;
   const song = songs[currentIndex];
+  const { isPlaying, toggle } = useYouTube(song.id);
 
-  const next = () => {
-    const ni = (currentIndex + 1) % total;
-    setCurrentIndex(ni);
-  };
+  const next = () => setCurrentIndex((i) => (i + 1) % total);
 
   return (
     <div style={{
@@ -307,7 +300,7 @@ function OpenCase({
 
         {/* Play/pause */}
         <button
-          onClick={() => audioRef.current?.toggle()}
+          onClick={toggle}
           style={{ width: 36, height: 36, borderRadius: "50%", border: "1.5px solid #ccc", background: "white", cursor: "pointer", fontSize: 13, color: "#333", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}
         >
           {isPlaying ? "⏸" : "▶"}
@@ -334,17 +327,6 @@ function OpenCase({
       </p>
 
       {/* Hidden audio */}
-      {/* Always mounted so the player is ready when user clicks play */}
-      <div style={{ display: "none" }}>
-        <PixelAudioPlayer
-          ref={audioRef}
-          videoId={song.id}
-          title={song.title}
-          artist={song.artist}
-          onClose={() => {}}
-          onPlayStateChange={setIsPlaying}
-        />
-      </div>
     </div>
   );
 }
@@ -354,11 +336,7 @@ function ShareContent() {
   const params = useSearchParams();
   const encoded = params.get("d");
   const playlist = encoded ? decodePlaylist(encoded) : null;
-
   const [isOpen, setIsOpen] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const audioRef = useRef<PixelAudioPlayerHandle>(null);
 
   if (!playlist) {
     return (
@@ -378,12 +356,7 @@ function ShareContent() {
       songs={playlist.songs}
       coverImage={playlist.coverImage}
       bgColor={playlist.bgColor}
-      audioRef={audioRef}
-      onBack={() => { setIsOpen(false); setIsPlaying(false); }}
-      currentIndex={currentIndex}
-      setCurrentIndex={setCurrentIndex}
-      isPlaying={isPlaying}
-      setIsPlaying={setIsPlaying}
+      onBack={() => setIsOpen(false)}
     />
   );
 }
