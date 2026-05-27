@@ -147,7 +147,7 @@ export default function Home() {
         <div className="pixel-card" style={{ marginBottom: 16 }}>
           <p style={{ fontSize: 9, marginBottom: 16, color: "var(--accent2)" }}>♪ Spotify Playlist</p>
           <p style={{ fontSize: 7, color: "var(--text2)", lineHeight: 2, marginBottom: 12 }}>
-            On Spotify: open your playlist → Share → Copy link
+            On Spotify: open your playlist → Share → Copy link to playlist
           </p>
           <label className="pixel-label">PLAYLIST LINK</label>
           <input
@@ -157,7 +157,18 @@ export default function Home() {
             onChange={(e) => setPlaylistUrl(e.target.value)}
             style={{ marginBottom: 12 }}
           />
-          {fetchError && <p style={{ fontSize: 7, color: "var(--accent2)", marginBottom: 10 }}>⚠ {fetchError}</p>}
+          {fetchError && (
+            <div style={{ marginBottom: 12 }}>
+              <p style={{ fontSize: 7, color: "var(--accent2)", marginBottom: 8 }}>⚠ {fetchError}</p>
+              {fetchError.includes("private") && (
+                <a href={`/api/auth/login?redirect=${encodeURIComponent(typeof window !== "undefined" ? window.location.href : "/")}`}>
+                  <button className="pixel-btn green" style={{ width: "100%", fontSize: 8 }}>
+                    Login with Spotify to load private playlists
+                  </button>
+                </a>
+              )}
+            </div>
+          )}
           <button
             className="pixel-btn"
             onClick={handleFetchPlaylist}

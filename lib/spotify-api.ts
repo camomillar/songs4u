@@ -16,11 +16,12 @@ async function getClientToken(): Promise<string> {
   return data.access_token as string;
 }
 
-export async function fetchPlaylistTracks(playlistId: string) {
-  const token = await getClientToken();
+export async function fetchPlaylistTracks(playlistId: string, userToken?: string) {
+  // Use provided user token (works for private playlists), else Client Credentials
+  const token = userToken ?? await getClientToken();
 
   const res = await fetch(
-    `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=50&fields=items(track(id,name,artists(name),album(images),preview_url))`,
+    `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=50`,
     { headers: { Authorization: `Bearer ${token}` }, cache: "no-store" }
   );
 
