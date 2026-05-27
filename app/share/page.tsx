@@ -215,7 +215,7 @@ function OpenCase({
               </p>
               {/* Name */}
               <p style={{ fontSize: "clamp(12px, 2vw, 16px)", color: "#1d3d8e", lineHeight: 1.4 }}>
-                {from} <span style={{ color: "#e03050" }}>❤</span>
+                {from}
               </p>
             </>
           )}
