@@ -5,6 +5,7 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import HeartParticles, { darkenHex } from "@/components/HeartParticles";
 import { decodePlaylist } from "@/lib/encode";
+import { useSpotifyEmbed } from "@/hooks/useSpotifyEmbed";
 
 /* ── Closed case ─────────────────────────────────────────────── */
 function ClosedCase({ onOpen, coverImage, bgColor }: { onOpen: () => void; coverImage?: string; bgColor?: string }) {
@@ -157,7 +158,13 @@ function OpenCase({
   const [currentIndex, setCurrentIndex] = useState(0);
   const total = songs.length;
   const song = songs[currentIndex];
-  const next = () => setCurrentIndex(i => (i + 1) % total);
+  const { iframeRef, isPlaying, progress, duration, ready, loadTrack, togglePlay } = useSpotifyEmbed(songs[0].id);
+
+  const next = () => {
+    const ni = (currentIndex + 1) % total;
+    setCurrentIndex(ni);
+    loadTrack(songs[ni].id);
+  };
 
   return (
     <div style={{
@@ -266,31 +273,72 @@ function OpenCase({
       </div>
 
 
-      {/* Player — Spotify embed (works without API or Premium) */}
-      <div style={{ width: "100%", maxWidth: 700, marginTop: 16 }}>
-        {/* Song title + next button */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-          <div style={{ minWidth: 0 }}>
-            <p style={{ fontSize: 13, fontWeight: 600, color: "#111", fontFamily: "system-ui", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {song.title}
-            </p>
-            {song.artist && <p style={{ fontSize: 11, color: "#888", fontFamily: "system-ui", marginTop: 2 }}>{song.artist}</p>}
-          </div>
-          {total > 1 && (
-            <button onClick={next} style={{ width: 36, height: 36, borderRadius: "50%", border: "1.5px solid #ccc", background: "white", cursor: "pointer", fontSize: 13, color: "#333", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", marginLeft: 12 }}>⏭</button>
-          )}
-        </div>
-
-        {/* Spotify embed — plays 30s preview for everyone, full song if logged in */}
+      {/* Hidden Spotify iframe — controlled via Embed API */}
+      <div style={{ position: "absolute", left: "-9999px", top: 0, width: 300, height: 80, pointerEvents: "none" }}>
         <iframe
-          key={song.id}
-          src={`https://open.spotify.com/embed/track/${song.id}?utm_source=generator&theme=0`}
-          width="100%"
+          ref={iframeRef}
+          width="300"
           height="80"
           allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-          style={{ border: "none", borderRadius: 12 }}
-          loading="lazy"
+          style={{ border: "none" }}
         />
+      </div>
+
+      {/* Custom player */}
+      <div style={{
+        width: "100%", maxWidth: 700, marginTop: 16,
+        background: "white", borderRadius: 16,
+        padding: "12px 16px",
+        display: "flex", alignItems: "center", gap: 12,
+        boxShadow: "0 2px 16px rgba(0,0,0,0.08)",
+      }}>
+        {/* Album art */}
+        {song.albumArt ? (
+          <Image src={song.albumArt} alt={song.title} width={52} height={52} unoptimized
+            style={{ borderRadius: 10, objectFit: "cover", flexShrink: 0 }} />
+        ) : (
+          <div style={{ width: 52, height: 52, borderRadius: 10, background: "#eee", flexShrink: 0 }} />
+        )}
+
+        {/* Title + artist */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{ fontSize: 14, fontWeight: 700, color: "#111", fontFamily: "system-ui", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {song.title}
+          </p>
+          <p style={{ fontSize: 12, color: "#888", fontFamily: "system-ui", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {song.artist}
+          </p>
+        </div>
+
+        {/* Play/pause */}
+        <button
+          onClick={togglePlay}
+          disabled={!ready}
+          style={{
+            width: 40, height: 40, borderRadius: "50%",
+            background: ready ? "#111" : "#ccc",
+            border: "none", cursor: ready ? "pointer" : "not-allowed",
+            color: "white", fontSize: 14, flexShrink: 0,
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}
+        >
+          {isPlaying ? "⏸" : "▶"}
+        </button>
+
+        {/* Next */}
+        {total > 1 && (
+          <button
+            onClick={next}
+            style={{
+              width: 40, height: 40, borderRadius: "50%",
+              background: "transparent", border: "1.5px solid #ddd",
+              cursor: "pointer", fontSize: 14, color: "#333", flexShrink: 0,
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}
+          >
+            ⏭
+          </button>
+        )}
       </div>
 
       {/* Footer */}
