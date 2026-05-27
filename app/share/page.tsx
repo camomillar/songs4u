@@ -165,35 +165,44 @@ function OpenCase({
         }
       `}</style>
 
-      {/* Open jewel case */}
+      {/* Open jewel case — image with overlaid letter + CD */}
       <div style={{
-        display: "flex",
+        position: "relative",
         width: "100%",
-        maxWidth: 560,
-        height: 280,
-        boxShadow: "0 8px 40px rgba(0,0,0,0.13), 0 2px 8px rgba(0,0,0,0.07)",
-        borderRadius: 3,
+        maxWidth: 700,
+        boxShadow: "0 8px 40px rgba(0,0,0,0.13)",
+        borderRadius: 4,
         overflow: "hidden",
       }}>
+        <Image
+          src="/case-opened.png"
+          alt="Open CD Case"
+          width={464}
+          height={222}
+          style={{ width: "100%", height: "auto", display: "block" }}
+          priority
+        />
 
-        {/* LEFT — liner notes / letter */}
+        {/* Letter overlay — positioned over the white left panel */}
         <div style={{
-          width: 220,
-          flexShrink: 0,
-          background: "#fafafa",
-          borderRight: "1px solid rgba(0,0,0,0.07)",
-          padding: "24px 20px",
+          position: "absolute",
+          left: "4%",
+          top: "7%",
+          width: "34%",
+          height: "84%",
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
+          padding: "4% 5%",
+          overflow: "hidden",
         }}>
           <p style={{
             fontFamily: "'Lora', serif",
             fontStyle: "italic",
-            fontSize: 14,
+            fontSize: "clamp(9px, 1.8vw, 14px)",
             color: "#222",
-            lineHeight: 1.9,
-            marginBottom: 6,
+            lineHeight: 1.85,
+            marginBottom: "4%",
           }}>
             My dearest {to},
           </p>
@@ -201,10 +210,10 @@ function OpenCase({
             <p style={{
               fontFamily: "'Lora', serif",
               fontStyle: "italic",
-              fontSize: 13,
+              fontSize: "clamp(8px, 1.6vw, 13px)",
               color: "#444",
-              lineHeight: 1.9,
-              marginBottom: 6,
+              lineHeight: 1.85,
+              marginBottom: "4%",
             }}>
               {message}
             </p>
@@ -213,9 +222,9 @@ function OpenCase({
             <p style={{
               fontFamily: "'Lora', serif",
               fontStyle: "italic",
-              fontSize: 13,
+              fontSize: "clamp(8px, 1.6vw, 13px)",
               color: "#333",
-              lineHeight: 1.9,
+              lineHeight: 1.85,
             }}>
               Forever yours,<br />
               {from} <span style={{ color: "#e03050" }}>❤</span>
@@ -223,36 +232,23 @@ function OpenCase({
           )}
         </div>
 
-        {/* RIGHT — disc tray */}
+        {/* CD overlay — centred over the disc tray */}
         <div style={{
-          flex: 1,
-          background: "linear-gradient(160deg, #1e1e1e 0%, #111 100%)",
-          borderLeft: "10px solid #0a0a0a",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          position: "relative",
+          position: "absolute",
+          left: "73%",
+          top: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "32%",
+          aspectRatio: "1",
         }}>
-          {/* Tray groove ring */}
-          <div style={{
-            position: "absolute",
-            width: 220, height: 220,
-            borderRadius: "50%",
-            background: "radial-gradient(circle, #2a2a2a 0%, #161616 100%)",
-            boxShadow: "inset 0 0 30px rgba(0,0,0,0.6)",
-          }} />
-          {/* CD */}
           <Image
             src={coverImage || "/cd.png"}
             alt="CD"
-            width={190}
-            height={190}
+            fill
             unoptimized={!!coverImage}
             style={{
               borderRadius: "50%",
               objectFit: "cover",
-              position: "relative",
-              zIndex: 1,
               animation: "cd-spin 4s linear infinite",
               animationPlayState: isPlaying ? "running" : "paused",
             }}
