@@ -288,23 +288,7 @@ export default function JewelCase({
                   }} />
                 ))}
 
-                {/* Letter content */}
-                <div style={{
-                  position: "absolute", inset: 0,
-                  fontFamily: "'Breathing', cursive",
-                  padding: "24px 22px",
-                  display: "flex", flexDirection: "column", justifyContent: "center",
-                  backgroundImage: "repeating-linear-gradient(transparent 0px, transparent 28px, rgba(200,130,130,0.1) 28px, rgba(200,130,130,0.1) 29px)",
-                }}>
-                  <p style={{ fontSize: 15, color: "#1d3d8e", lineHeight: 1.5, marginBottom: 10 }}>My dearest {to},</p>
-                  {message && <p style={{ fontSize: 12, color: "#1d3d8e", lineHeight: 1.65, marginBottom: 10 }}>{message}</p>}
-                  {from && (
-                    <>
-                      <p style={{ fontSize: 12, color: "#1d3d8e", lineHeight: 1.65 }}>Forever yours,</p>
-                      <p style={{ fontSize: 12, color: "#1d3d8e", marginTop: 2 }}>{from}</p>
-                    </>
-                  )}
-                </div>
+                {/* Plain white — message is on the CD */}
               </div>
 
               {/* ── CENTER HINGE ── */}
@@ -405,6 +389,33 @@ export default function JewelCase({
                       background: "radial-gradient(circle, #f5f5f6 0%, #e8e8ea 100%)",
                       boxShadow: "inset 0 1px 3px rgba(0,0,0,0.2), 0 0 0 1px rgba(150,155,170,0.5)",
                     }} />
+                  </div>
+
+                  {/* Message written ON the disc */}
+                  <div style={{
+                    position: "absolute",
+                    top: "18%", left: "50%",
+                    transform: "translateX(-50%)",
+                    width: "62%",
+                    textAlign: "center",
+                    fontFamily: "'Breathing', cursive",
+                    pointerEvents: "none",
+                    zIndex: 3,
+                    display: "flex", flexDirection: "column", gap: 2,
+                  }}>
+                    <p style={{ fontSize: 11, color: "rgba(20,20,40,0.75)", lineHeight: 1.4, margin: 0 }}>
+                      My dearest {to},
+                    </p>
+                    {message && (
+                      <p style={{ fontSize: 10, color: "rgba(20,20,40,0.65)", lineHeight: 1.4, margin: 0 }}>
+                        {message}
+                      </p>
+                    )}
+                    {from && (
+                      <p style={{ fontSize: 10, color: "rgba(20,20,40,0.65)", lineHeight: 1.4, margin: 0, marginTop: 2 }}>
+                        Forever yours, {from}
+                      </p>
+                    )}
                   </div>
 
                   {/* Groove rings */}
