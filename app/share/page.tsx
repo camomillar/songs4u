@@ -36,44 +36,24 @@ function ShareContent() {
         alignItems: "start",
       }}>
 
-        {/* LEFT — message */}
-        <div className="pixel-card" style={{ position: "sticky", top: 24 }}>
-          <p style={{ fontSize: 20, marginBottom: 20, letterSpacing: 4, textAlign: "center" }}>♥ ♥ ♥</p>
-
-          <p style={{ fontSize: 11, color: "var(--accent2)", textShadow: "2px 2px 0 var(--text)", marginBottom: 16 }}>
-            For {playlist.to}
+        {/* LEFT — letter */}
+        <div className="letter-card" style={{ position: "sticky", top: 24 }}>
+          <p className="letter-salutation">
+            My dearest {playlist.to},
           </p>
 
           {playlist.message && (
-            <p style={{
-              fontSize: 8,
-              color: "var(--text2)",
-              lineHeight: 2.4,
-              fontStyle: "italic",
-              marginBottom: 16,
-              padding: "12px",
-              background: "var(--card2)",
-              border: "2px solid var(--accent3)",
-            }}>
-              "{playlist.message}"
-            </p>
+            <p className="letter-body">{playlist.message}</p>
           )}
 
           {playlist.from && (
-            <p style={{ fontSize: 8, color: "var(--text2)", textAlign: "right" }}>
-              — with love, {playlist.from} ♥
+            <p className="letter-closing">
+              Forever yours,<br />
+              {playlist.from} ♥
             </p>
           )}
 
-          <hr className="pixel-divider" style={{ margin: "20px 0" }} />
-
-          <p style={{ fontSize: 7, color: "var(--accent3)", textAlign: "center", lineHeight: 2.4 }}>
-            made with ♥ on Lovelist
-            <br />
-            <a href="/" style={{ color: "var(--accent2)", textDecoration: "none" }}>
-              make your own →
-            </a>
-          </p>
+          <div className="letter-seal">♥</div>
         </div>
 
         {/* RIGHT — playlist */}
