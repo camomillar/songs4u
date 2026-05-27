@@ -406,27 +406,27 @@ export default function JewelCase({
                     </defs>
 
                     {/* Salutation — top inner */}
-                    <text fontFamily="'OrdinaryLetter', cursive" fontSize="8" fill="rgba(15,20,50,0.78)" textAnchor="middle">
+                    <text fontFamily="'OrdinaryLetter', cursive" fontSize="10" fill="rgba(15,20,50,0.78)" textAnchor="middle">
                       <textPath href="#cdArcTop1" startOffset="50%">My dearest {to},</textPath>
                     </text>
 
                     {/* Message — top outer */}
                     {message && (
-                      <text fontFamily="'OrdinaryLetter', cursive" fontSize="7" fill="rgba(15,20,50,0.65)" textAnchor="middle">
+                      <text fontFamily="'OrdinaryLetter', cursive" fontSize="9" fill="rgba(15,20,50,0.65)" textAnchor="middle">
                         <textPath href="#cdArcTop2" startOffset="50%">{message}</textPath>
                       </text>
                     )}
 
                     {/* Forever yours — bottom inner */}
                     {from && (
-                      <text fontFamily="'OrdinaryLetter', cursive" fontSize="7.5" fill="rgba(15,20,50,0.72)" textAnchor="middle">
+                      <text fontFamily="'OrdinaryLetter', cursive" fontSize="9.5" fill="rgba(15,20,50,0.72)" textAnchor="middle">
                         <textPath href="#cdArcBot1" startOffset="50%">Forever yours,</textPath>
                       </text>
                     )}
 
                     {/* Name — bottom outer */}
                     {from && (
-                      <text fontFamily="'OrdinaryLetter', cursive" fontSize="8" fill="rgba(15,20,50,0.78)" textAnchor="middle">
+                      <text fontFamily="'OrdinaryLetter', cursive" fontSize="10" fill="rgba(15,20,50,0.78)" textAnchor="middle">
                         <textPath href="#cdArcBot2" startOffset="50%">{from}</textPath>
                       </text>
                     )}
