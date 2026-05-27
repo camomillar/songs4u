@@ -1,6 +1,7 @@
 /**
- * Compress an image File to a small base64 JPEG.
- * Target: 200×200 max, quality 0.65 — roughly 10–20KB base64.
+ * Compress an image to a tiny base64 JPEG for embedding in share URLs.
+ * Target: 60×60px, quality 0.3 — roughly 1–3KB base64 (~1-4KB in URL).
+ * The image only needs to be recognisable on the CD cover, not hi-res.
  */
 export function compressImage(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -10,16 +11,17 @@ export function compressImage(file: File): Promise<string> {
       const img = new window.Image();
       img.onerror = reject;
       img.onload = () => {
-        const MAX = 200;
-        const scale = Math.min(MAX / img.width, MAX / img.height, 1);
-        const w = Math.round(img.width * scale);
-        const h = Math.round(img.height * scale);
+        // Crop to a square first (center crop), then resize to 60x60
+        const size = Math.min(img.width, img.height);
+        const sx = (img.width - size) / 2;
+        const sy = (img.height - size) / 2;
+
         const canvas = document.createElement("canvas");
-        canvas.width = w;
-        canvas.height = h;
+        canvas.width = 60;
+        canvas.height = 60;
         const ctx = canvas.getContext("2d")!;
-        ctx.drawImage(img, 0, 0, w, h);
-        resolve(canvas.toDataURL("image/jpeg", 0.65));
+        ctx.drawImage(img, sx, sy, size, size, 0, 0, 60, 60);
+        resolve(canvas.toDataURL("image/jpeg", 0.3));
       };
       img.src = e.target?.result as string;
     };
