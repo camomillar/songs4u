@@ -3,7 +3,7 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import HeartParticles from "@/components/HeartParticles";
 import QRShare from "@/components/QRShare";
-import { extractVideoId, getThumbnail } from "@/lib/youtube";
+import { extractSpotifyId } from "@/lib/spotify-url";
 import { encodePlaylist, type Song } from "@/lib/encode";
 import { compressImage } from "@/lib/compress";
 
@@ -13,12 +13,12 @@ export default function Home() {
   const [message, setMessage] = useState("");
   const [songs, setSongs] = useState<Song[]>([]);
 
-  // Add song form
-  const [ytUrl, setYtUrl] = useState("");
+  const [spotifyUrl, setSpotifyUrl] = useState("");
   const [songTitle, setSongTitle] = useState("");
   const [songArtist, setSongArtist] = useState("");
-  const [previewId, setPreviewId] = useState<string | null>(null);
+  const [previewThumb, setPreviewThumb] = useState<string | null>(null);
   const [urlError, setUrlError] = useState("");
+  const [fetching, setFetching] = useState(false);
 
   const [coverImage, setCoverImage] = useState<string | null>(null);
   const [bgColor, setBgColor] = useState("#FFE4E8");
@@ -32,6 +32,7 @@ export default function Home() {
     { hex: "#FFE8D6", name: "Peach" },
     { hex: "#FFD6F0", name: "Pink" },
   ];
+
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const urlInputRef = useRef<HTMLInputElement>(null);
 
@@ -42,19 +43,35 @@ export default function Home() {
     setCoverImage(compressed);
   };
 
-  const handleUrlChange = (val: string) => {
-    setYtUrl(val);
+  const handleUrlChange = async (val: string) => {
+    setSpotifyUrl(val);
     setUrlError("");
-    const id = extractVideoId(val);
-    setPreviewId(id);
+    setPreviewThumb(null);
+
+    const id = extractSpotifyId(val);
+    if (!id) return;
+
+    // Auto-fetch song info from Spotify oEmbed
+    setFetching(true);
+    try {
+      const res = await fetch(`/api/track-info?url=${encodeURIComponent(val)}`);
+      const data = await res.json();
+      if (data.title) setSongTitle(data.title);
+      if (data.artist) setSongArtist(data.artist);
+      if (data.thumbnail) setPreviewThumb(data.thumbnail);
+    } catch {
+      // silently fail, user can type manually
+    } finally {
+      setFetching(false);
+    }
   };
 
   const handleAddSong = () => {
-    const id = extractVideoId(ytUrl);
-    if (!id) { setUrlError("Couldn't find a YouTube video ID in that URL."); return; }
+    const id = extractSpotifyId(spotifyUrl);
+    if (!id) { setUrlError("Couldn't find a Spotify track ID in that URL."); return; }
     if (!songTitle.trim()) { setUrlError("Please enter a song title."); return; }
     setSongs((prev) => [...prev, { id, title: songTitle.trim(), artist: songArtist.trim() }]);
-    setYtUrl(""); setSongTitle(""); setSongArtist(""); setPreviewId(null); setUrlError("");
+    setSpotifyUrl(""); setSongTitle(""); setSongArtist(""); setPreviewThumb(null); setUrlError("");
     urlInputRef.current?.focus();
   };
 
@@ -65,7 +82,11 @@ export default function Home() {
   const handleGenerate = () => {
     if (!to.trim()) { alert("Please enter who this is for!"); return; }
     if (songs.length === 0) { alert("Add at least one song!"); return; }
-    const encoded = encodePlaylist({ to: to.trim(), from: from.trim(), message: message.trim(), songs, ...(coverImage ? { coverImage } : {}), bgColor });
+    const encoded = encodePlaylist({
+      to: to.trim(), from: from.trim(), message: message.trim(), songs,
+      ...(coverImage ? { coverImage } : {}),
+      bgColor,
+    });
     const url = `${window.location.origin}/share?d=${encoded}`;
     setShareUrl(url);
   };
@@ -73,37 +94,24 @@ export default function Home() {
   return (
     <div className="app-wrapper">
       <HeartParticles />
-
       <div className="page-content">
-        {/* Header */}
+
         <div className="app-header">
           <span className="app-title">♥ Lovelist ♥</span>
           <span className="app-subtitle">make a playlist for someone special</span>
         </div>
 
-        {/* Who is it for */}
+        {/* Details */}
         <div className="pixel-card" style={{ marginBottom: 16 }}>
-          <p style={{ fontSize: 9, marginBottom: 16, color: "var(--accent2)" }}>
-            ♥ The Details
-          </p>
+          <p style={{ fontSize: 9, marginBottom: 16, color: "var(--accent2)" }}>♥ The Details</p>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
             <div>
               <label className="pixel-label">FOR</label>
-              <input
-                className="pixel-input"
-                placeholder="their name..."
-                value={to}
-                onChange={(e) => setTo(e.target.value)}
-              />
+              <input className="pixel-input" placeholder="their name..." value={to} onChange={(e) => setTo(e.target.value)} />
             </div>
             <div>
               <label className="pixel-label">FROM</label>
-              <input
-                className="pixel-input"
-                placeholder="your name..."
-                value={from}
-                onChange={(e) => setFrom(e.target.value)}
-              />
+              <input className="pixel-input" placeholder="your name..." value={from} onChange={(e) => setFrom(e.target.value)} />
             </div>
           </div>
           <label className="pixel-label">YOUR MESSAGE</label>
@@ -123,73 +131,39 @@ export default function Home() {
 
         {/* Cover photo */}
         <div className="pixel-card" style={{ marginBottom: 16 }}>
-          <p style={{ fontSize: 9, marginBottom: 16, color: "var(--accent2)" }}>
-            📷 Cover Photo
-          </p>
-          <p style={{ fontSize: 7, color: "var(--text2)", marginBottom: 12, lineHeight: 2 }}>
-            This will appear on the CD disc
-          </p>
+          <p style={{ fontSize: 9, marginBottom: 16, color: "var(--accent2)" }}>📷 Cover Photo</p>
+          <p style={{ fontSize: 7, color: "var(--text2)", marginBottom: 12, lineHeight: 2 }}>This will appear on the CD cover</p>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             {coverImage && (
-              <Image
-                src={coverImage}
-                alt="Cover"
-                width={72}
-                height={72}
-                style={{ borderRadius: "50%", border: "3px solid var(--text)", objectFit: "cover", flexShrink: 0 }}
-              />
+              <Image src={coverImage} alt="Cover" width={72} height={72}
+                style={{ borderRadius: "50%", border: "3px solid var(--text)", objectFit: "cover", flexShrink: 0 }} />
             )}
             <label style={{ flex: 1 }}>
               <div className="pixel-btn" style={{ width: "100%", cursor: "pointer" }}>
                 {coverImage ? "Change photo" : "+ Upload photo"}
               </div>
-              <input
-                type="file"
-                accept="image/*"
-                style={{ display: "none" }}
-                onChange={handleCoverUpload}
-              />
+              <input type="file" accept="image/*" style={{ display: "none" }} onChange={handleCoverUpload} />
             </label>
             {coverImage && (
-              <button
-                className="pixel-btn ghost"
-                style={{ fontSize: 10, padding: "6px 8px" }}
-                onClick={() => setCoverImage(null)}
-              >
-                ✕
-              </button>
+              <button className="pixel-btn ghost" style={{ fontSize: 10, padding: "6px 8px" }} onClick={() => setCoverImage(null)}>✕</button>
             )}
           </div>
         </div>
 
         {/* Background colour */}
         <div className="pixel-card" style={{ marginBottom: 16 }}>
-          <p style={{ fontSize: 9, marginBottom: 16, color: "var(--accent2)" }}>
-            🎨 Background Colour
-          </p>
+          <p style={{ fontSize: 9, marginBottom: 16, color: "var(--accent2)" }}>🎨 Background Colour</p>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             {PASTEL_COLOURS.map((c) => (
-              <button
-                key={c.hex}
-                title={c.name}
-                onClick={() => setBgColor(c.hex)}
+              <button key={c.hex} title={c.name} onClick={() => setBgColor(c.hex)}
                 style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: "50%",
-                  background: c.hex,
+                  width: 40, height: 40, borderRadius: "50%", background: c.hex,
                   border: bgColor === c.hex ? "3px solid var(--text)" : "3px solid transparent",
                   boxShadow: bgColor === c.hex ? "2px 2px 0 var(--shadow)" : "none",
-                  cursor: "pointer",
-                  outline: "none",
-                  transition: "none",
-                  position: "relative",
-                }}
-              >
+                  cursor: "pointer", outline: "none", position: "relative",
+                }}>
                 {bgColor === c.hex && (
-                  <span style={{ fontSize: 14, position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    ✓
-                  </span>
+                  <span style={{ fontSize: 14, position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>✓</span>
                 )}
               </button>
             ))}
@@ -201,31 +175,29 @@ export default function Home() {
 
         {/* Add song */}
         <div className="pixel-card" style={{ marginBottom: 16 }}>
-          <p style={{ fontSize: 9, marginBottom: 16, color: "var(--accent2)" }}>
-            ♪ Add a Song
-          </p>
+          <p style={{ fontSize: 9, marginBottom: 16, color: "var(--accent2)" }}>♪ Add a Song</p>
 
-          <label className="pixel-label">YOUTUBE LINK</label>
+          <label className="pixel-label">SPOTIFY TRACK LINK</label>
           <input
             ref={urlInputRef}
             className="pixel-input"
-            placeholder="https://youtube.com/watch?v=..."
-            value={ytUrl}
+            placeholder="https://open.spotify.com/track/..."
+            value={spotifyUrl}
             onChange={(e) => handleUrlChange(e.target.value)}
             style={{ marginBottom: 12 }}
           />
 
-          {previewId && (
+          {fetching && (
+            <p style={{ fontSize: 7, color: "var(--text2)", marginBottom: 10 }}>
+              Fetching song info<span className="loading-dots" />
+            </p>
+          )}
+
+          {previewThumb && (
             <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 12, padding: "8px", background: "var(--bg2)", border: "2px solid var(--accent3)" }}>
-              <Image
-                src={getThumbnail(previewId)}
-                alt="thumbnail"
-                width={80}
-                height={45}
-                unoptimized
-                style={{ border: "2px solid var(--text)", flexShrink: 0 }}
-              />
-              <p style={{ fontSize: 7, color: "var(--text2)" }}>✓ Video found!</p>
+              <Image src={previewThumb} alt="thumbnail" width={48} height={48} unoptimized
+                style={{ border: "2px solid var(--text)", flexShrink: 0, objectFit: "cover" }} />
+              <p style={{ fontSize: 7, color: "var(--text2)" }}>✓ Song found!</p>
             </div>
           )}
 
@@ -240,16 +212,9 @@ export default function Home() {
             </div>
           </div>
 
-          {urlError && (
-            <p style={{ fontSize: 7, color: "var(--accent2)", marginBottom: 10 }}>⚠ {urlError}</p>
-          )}
+          {urlError && <p style={{ fontSize: 7, color: "var(--accent2)", marginBottom: 10 }}>⚠ {urlError}</p>}
 
-          <button
-            className="pixel-btn"
-            onClick={handleAddSong}
-            disabled={!ytUrl || !songTitle}
-            style={{ width: "100%" }}
-          >
+          <button className="pixel-btn" onClick={handleAddSong} disabled={!spotifyUrl || !songTitle} style={{ width: "100%" }}>
             + Add Song
           </button>
         </div>
@@ -257,49 +222,25 @@ export default function Home() {
         {/* Song list */}
         {songs.length > 0 && (
           <div className="pixel-card" style={{ marginBottom: 16 }}>
-            <p style={{ fontSize: 9, marginBottom: 14, color: "var(--accent2)" }}>
-              ♪ Your Songs ({songs.length})
-            </p>
+            <p style={{ fontSize: 9, marginBottom: 14, color: "var(--accent2)" }}>♪ Your Songs ({songs.length})</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
               {songs.map((song, i) => (
                 <div key={i} className="song-row">
-                  <Image
-                    src={getThumbnail(song.id)}
-                    alt={song.title}
-                    width={60}
-                    height={34}
-                    unoptimized
-                    style={{ border: "2px solid var(--text)", flexShrink: 0 }}
-                  />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: 8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {song.title}
-                    </p>
-                    {song.artist && (
-                      <p style={{ fontSize: 7, color: "var(--text2)", marginTop: 2 }}>{song.artist}</p>
-                    )}
+                    <p style={{ fontSize: 8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{song.title}</p>
+                    {song.artist && <p style={{ fontSize: 7, color: "var(--text2)", marginTop: 2 }}>{song.artist}</p>}
                   </div>
-                  <button
-                    className="pixel-btn ghost"
-                    onClick={() => handleRemoveSong(i)}
-                    style={{ fontSize: 12, padding: "4px 8px", flexShrink: 0 }}
-                    title="Remove"
-                  >
-                    ✕
-                  </button>
+                  <button className="pixel-btn ghost" onClick={() => handleRemoveSong(i)}
+                    style={{ fontSize: 12, padding: "4px 8px", flexShrink: 0 }}>✕</button>
                 </div>
               ))}
             </div>
           </div>
         )}
 
-        {/* Generate button */}
-        <button
-          className="pixel-btn"
-          onClick={handleGenerate}
-          disabled={songs.length === 0 || !to.trim()}
-          style={{ width: "100%", fontSize: 11, padding: "16px", marginBottom: 8 }}
-        >
+        {/* Generate */}
+        <button className="pixel-btn" onClick={handleGenerate} disabled={songs.length === 0 || !to.trim()}
+          style={{ width: "100%", fontSize: 11, padding: "16px", marginBottom: 8 }}>
           ♥ Generate Link &amp; QR Code
         </button>
         {(songs.length === 0 || !to.trim()) && (
@@ -309,7 +250,6 @@ export default function Home() {
         )}
       </div>
 
-      {/* QR Modal */}
       {shareUrl && <QRShare url={shareUrl} onClose={() => setShareUrl(null)} />}
     </div>
   );

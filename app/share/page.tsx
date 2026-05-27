@@ -1,11 +1,11 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
+// useEffect and useRef used in ClosedCase
 import Image from "next/image";
 import HeartParticles, { darkenHex } from "@/components/HeartParticles";
 import { decodePlaylist } from "@/lib/encode";
-import { getThumbnail } from "@/lib/youtube";
-import { useYouTube } from "@/hooks/useYouTube";
+import { getSpotifyEmbed } from "@/lib/spotify-url";
 
 /* ── Closed case ─────────────────────────────────────────────── */
 function ClosedCase({ onOpen, coverImage, bgColor }: { onOpen: () => void; coverImage?: string; bgColor?: string }) {
@@ -156,22 +156,13 @@ function OpenCase({
   onBack: () => void;
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
   const total = songs.length;
   const song = songs[currentIndex];
-  const { isPlaying, play, pause } = useYouTube();
-
-  const handlePlayPause = () => {
-    if (isPlaying) {
-      pause();
-    } else {
-      play(song.id);
-    }
-  };
 
   const next = () => {
-    const ni = (currentIndex + 1) % total;
-    setCurrentIndex(ni);
-    play(songs[ni].id); // called directly in click — no React effect delay
+    setCurrentIndex((i) => (i + 1) % total);
+    setIsPlaying(false); // new song starts paused
   };
 
   return (
@@ -281,51 +272,38 @@ function OpenCase({
       </div>
 
 
-      {/* Player */}
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 14,
-        marginTop: 20,
-        width: "100%",
-        maxWidth: 700,
-      }}>
-        {/* Thumbnail */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={getThumbnail(song.id)}
-          alt={song.title}
-          width={48}
-          height={48}
-          style={{ borderRadius: 8, objectFit: "cover", flexShrink: 0 }}
-        />
+      {/* Player — Spotify embed + next button */}
+      <div style={{ width: "100%", maxWidth: 700, marginTop: 16 }}>
 
-        {/* Title + artist */}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ fontSize: 13, fontWeight: 600, color: "#111", fontFamily: "system-ui, sans-serif", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-            {song.title}
-          </p>
-          <p style={{ fontSize: 11, color: "#888", fontFamily: "system-ui, sans-serif", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-            {song.artist}
-          </p>
+        {/* Song title + next button */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+          <div style={{ minWidth: 0 }}>
+            <p style={{ fontSize: 13, fontWeight: 600, color: "#111", fontFamily: "system-ui, sans-serif", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {song.title}
+            </p>
+            {song.artist && (
+              <p style={{ fontSize: 11, color: "#888", fontFamily: "system-ui, sans-serif", marginTop: 2 }}>
+                {song.artist}
+              </p>
+            )}
+          </div>
+          {total > 1 && (
+            <button onClick={next} style={{ width: 36, height: 36, borderRadius: "50%", border: "1.5px solid #ccc", background: "white", cursor: "pointer", fontSize: 13, color: "#333", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", marginLeft: 12 }}>
+              ⏭
+            </button>
+          )}
         </div>
 
-        {/* Play/pause */}
-        <button
-          onClick={handlePlayPause}
-          style={{ width: 36, height: 36, borderRadius: "50%", border: "1.5px solid #ccc", background: "white", cursor: "pointer", fontSize: 13, color: "#333", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}
-        >
-          {isPlaying ? "⏸" : "▶"}
-        </button>
-
-        {/* Next */}
-        <button
-          onClick={next}
-          style={{ width: 36, height: 36, borderRadius: "50%", border: "1.5px solid #ccc", background: "white", cursor: "pointer", fontSize: 13, color: "#333", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}
-        >
-          ⏭
-        </button>
-
+        {/* Spotify embed — has its own play/pause controls */}
+        <iframe
+          key={song.id}
+          src={getSpotifyEmbed(song.id)}
+          width="100%"
+          height="80"
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          style={{ border: "none", borderRadius: 12 }}
+          loading="lazy"
+        />
       </div>
 
       {/* Footer */}
