@@ -12,19 +12,13 @@ function loadScript() {
   document.head.appendChild(s);
 }
 
-/**
- * useYouTube(initialVideoId)
- *
- * Creates ONE YouTube player for the lifetime of the component.
- * The player is created with `initialVideoId` so onReady always fires.
- * Call play(id) / pause() directly from click handlers.
- */
 export function useYouTube(initialVideoId: string) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const playerRef = useRef<any>(null);
   const readyRef = useRef(false);
-  const loadedIdRef = useRef<string | null>(null);
+  const currentIdRef = useRef<string | null>(null);
   const isPlayingRef = useRef(false);
+  const wasPausedRef = useRef(false);
   const pendingRef = useRef<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -32,8 +26,9 @@ export function useYouTube(initialVideoId: string) {
     let destroyed = false;
 
     const div = document.createElement("div");
+    // Must have real size — some browsers won't init a 1px iframe
     div.style.cssText =
-      "position:fixed;bottom:-300px;left:0;width:200px;height:200px;overflow:hidden;pointer-events:none;opacity:0;";
+      "position:fixed;bottom:-9999px;left:0;width:320px;height:180px;pointer-events:none;";
     document.body.appendChild(div);
 
     const init = () => {
@@ -42,23 +37,18 @@ export function useYouTube(initialVideoId: string) {
       if (!YT?.Player) return;
 
       playerRef.current = new YT.Player(div, {
-        videoId: initialVideoId, // REQUIRED — without this onReady never fires
+        videoId: initialVideoId,
         playerVars: { autoplay: 0, playsinline: 1, controls: 0 },
         events: {
           onReady: () => {
             if (destroyed) return;
             readyRef.current = true;
-            loadedIdRef.current = initialVideoId;
-            // Fire any queued play request
+            currentIdRef.current = initialVideoId;
             if (pendingRef.current) {
               const id = pendingRef.current;
               pendingRef.current = null;
-              if (id === initialVideoId) {
-                playerRef.current.playVideo();
-              } else {
-                playerRef.current.loadVideoById(id);
-                loadedIdRef.current = id;
-              }
+              playerRef.current.loadVideoById(id);
+              currentIdRef.current = id;
             }
           },
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -67,9 +57,15 @@ export function useYouTube(initialVideoId: string) {
             const state = (window as W).YT?.PlayerState;
             if (e.data === state?.PLAYING) {
               isPlayingRef.current = true;
+              wasPausedRef.current = false;
               setIsPlaying(true);
-            } else if (e.data === state?.PAUSED || e.data === state?.ENDED) {
+            } else if (e.data === state?.PAUSED) {
               isPlayingRef.current = false;
+              wasPausedRef.current = true;
+              setIsPlaying(false);
+            } else if (e.data === state?.ENDED) {
+              isPlayingRef.current = false;
+              wasPausedRef.current = false;
               setIsPlaying(false);
             }
           },
@@ -81,10 +77,7 @@ export function useYouTube(initialVideoId: string) {
       init();
     } else {
       const prev = (window as W).onYouTubeIframeAPIReady;
-      (window as W).onYouTubeIframeAPIReady = () => {
-        prev?.();
-        init();
-      };
+      (window as W).onYouTubeIframeAPIReady = () => { prev?.(); init(); };
       loadScript();
     }
 
@@ -96,26 +89,29 @@ export function useYouTube(initialVideoId: string) {
       if (div.parentNode) div.parentNode.removeChild(div);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // mount once — initialVideoId is captured in closure
+  }, []);
 
-  /** Play a specific video. Queues if the player isn't ready yet. */
   const play = (videoId: string) => {
     if (!readyRef.current || !playerRef.current) {
+      // Not ready yet — queue it
       pendingRef.current = videoId;
       return;
     }
-    if (loadedIdRef.current === videoId) {
+
+    if (currentIdRef.current === videoId && wasPausedRef.current) {
+      // Same song, was paused — just resume
       playerRef.current.playVideo();
     } else {
+      // New song OR first play — always use loadVideoById (reliable)
       playerRef.current.loadVideoById(videoId);
-      loadedIdRef.current = videoId;
+      currentIdRef.current = videoId;
+      wasPausedRef.current = false;
     }
   };
 
   const pause = () => {
-    playerRef.current?.pauseVideo();
-    isPlayingRef.current = false;
-    setIsPlaying(false);
+    if (!playerRef.current) return;
+    playerRef.current.pauseVideo();
   };
 
   return { isPlaying, play, pause };
