@@ -37,7 +37,7 @@ export default function QRShare({ url, onClose }: Props) {
           background: "white",
           borderRadius: 20,
           padding: 28,
-          maxWidth: 360, width: "100%",
+          maxWidth: 480, width: "100%",
           boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
         }}
       >
