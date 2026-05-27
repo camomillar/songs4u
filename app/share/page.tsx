@@ -278,6 +278,65 @@ function OpenCase({
       </div>
 
 
+      {/* Player */}
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 14,
+        marginTop: 20,
+        width: "100%",
+        maxWidth: 700,
+      }}>
+        {/* Thumbnail */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={getThumbnail(song.id)}
+          alt={song.title}
+          width={48}
+          height={48}
+          style={{ borderRadius: 8, objectFit: "cover", flexShrink: 0 }}
+        />
+
+        {/* Title + artist */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{ fontSize: 13, fontWeight: 600, color: "#111", fontFamily: "system-ui, sans-serif", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {song.title}
+          </p>
+          <p style={{ fontSize: 11, color: "#888", fontFamily: "system-ui, sans-serif", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {song.artist}
+          </p>
+        </div>
+
+        {/* Play/pause */}
+        <button
+          onClick={() => { if (!audioActive) { setAudioActive(true); } else { audioRef.current?.toggle(); } }}
+          style={{ width: 36, height: 36, borderRadius: "50%", border: "1.5px solid #ccc", background: "white", cursor: "pointer", fontSize: 13, color: "#333", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}
+        >
+          {isPlaying ? "⏸" : "▶"}
+        </button>
+
+        {/* Next */}
+        <button
+          onClick={next}
+          style={{ width: 36, height: 36, borderRadius: "50%", border: "1.5px solid #ccc", background: "white", cursor: "pointer", fontSize: 13, color: "#333", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}
+        >
+          ⏭
+        </button>
+
+        {/* Dot indicators */}
+        {total > 1 && (
+          <div style={{ display: "flex", gap: 5, flexShrink: 0 }}>
+            {songs.map((_, i) => (
+              <span
+                key={i}
+                onClick={() => setCurrentIndex(i)}
+                style={{ width: 7, height: 7, borderRadius: "50%", background: i === currentIndex ? "#333" : "#ccc", display: "inline-block", cursor: "pointer" }}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Footer */}
       <p style={{
         fontFamily: "system-ui, sans-serif",
