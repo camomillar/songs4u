@@ -123,7 +123,7 @@ export default function JewelCase({
       {/* Back button (open state only) */}
       {phase === "open" && (
         <button
-          onClick={onBack}
+          onClick={() => setPhase("closed")}
           style={{
             position: "fixed", top: 24, left: 24,
             display: "flex", alignItems: "center", gap: 6,
