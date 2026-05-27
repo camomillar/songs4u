@@ -55,14 +55,19 @@ export default function QRShare({ url, onClose }: Props) {
           {url}
         </div>
 
-        <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
           <button className="pixel-btn" style={{ flex: 1 }} onClick={handleCopy}>
             {copied ? "✓ Copied!" : "Copy Link"}
           </button>
-          <button className="pixel-btn ghost" style={{ flex: 1 }} onClick={onClose}>
-            Close
-          </button>
+          <a href={url} target="_blank" rel="noopener noreferrer" style={{ flex: 1 }}>
+            <button className="pixel-btn green" style={{ width: "100%" }}>
+              Open ↗
+            </button>
+          </a>
         </div>
+        <button className="pixel-btn ghost" style={{ width: "100%" }} onClick={onClose}>
+          Close
+        </button>
       </div>
     </div>
   );
