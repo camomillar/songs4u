@@ -397,27 +397,37 @@ export default function JewelCase({
                     style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 3, overflow: "visible" }}
                   >
                     <defs>
-                      {/* Inner arc — salutation */}
-                      <path id="cdArc1" d="M 21,50 A 29,29 0 0 1 79,50" />
-                      {/* Middle arc — message */}
-                      <path id="cdArc2" d="M 13,50 A 37,37 0 0 1 87,50" />
-                      {/* Outer arc — closing */}
-                      <path id="cdArc3" d="M 5,50 A 45,45 0 0 1 95,50" />
+                      {/* Top arcs */}
+                      <path id="cdArcTop1" d="M 21,50 A 29,29 0 0 1 79,50" />
+                      <path id="cdArcTop2" d="M 13,50 A 37,37 0 0 1 87,50" />
+                      {/* Bottom arcs — counter-clockwise so text reads left→right along bottom */}
+                      <path id="cdArcBot1" d="M 21,50 A 29,29 0 0 0 79,50" />
+                      <path id="cdArcBot2" d="M 13,50 A 37,37 0 0 0 87,50" />
                     </defs>
 
-                    <text fontFamily="'OrdinaryLetter', cursive" fontSize="6.5" fill="rgba(15,20,50,0.78)" textAnchor="middle">
-                      <textPath href="#cdArc1" startOffset="50%">My dearest {to},</textPath>
+                    {/* Salutation — top inner */}
+                    <text fontFamily="'OrdinaryLetter', cursive" fontSize="8" fill="rgba(15,20,50,0.78)" textAnchor="middle">
+                      <textPath href="#cdArcTop1" startOffset="50%">My dearest {to},</textPath>
                     </text>
 
+                    {/* Message — top outer */}
                     {message && (
-                      <text fontFamily="'OrdinaryLetter', cursive" fontSize="5.8" fill="rgba(15,20,50,0.65)" textAnchor="middle">
-                        <textPath href="#cdArc2" startOffset="50%">{message}</textPath>
+                      <text fontFamily="'OrdinaryLetter', cursive" fontSize="7" fill="rgba(15,20,50,0.65)" textAnchor="middle">
+                        <textPath href="#cdArcTop2" startOffset="50%">{message}</textPath>
                       </text>
                     )}
 
+                    {/* Forever yours — bottom inner */}
                     {from && (
-                      <text fontFamily="'OrdinaryLetter', cursive" fontSize="5.8" fill="rgba(15,20,50,0.65)" textAnchor="middle">
-                        <textPath href="#cdArc3" startOffset="50%">Forever yours, {from}</textPath>
+                      <text fontFamily="'OrdinaryLetter', cursive" fontSize="7.5" fill="rgba(15,20,50,0.72)" textAnchor="middle">
+                        <textPath href="#cdArcBot1" startOffset="50%">Forever yours,</textPath>
+                      </text>
+                    )}
+
+                    {/* Name — bottom outer */}
+                    {from && (
+                      <text fontFamily="'OrdinaryLetter', cursive" fontSize="8" fill="rgba(15,20,50,0.78)" textAnchor="middle">
+                        <textPath href="#cdArcBot2" startOffset="50%">{from}</textPath>
                       </text>
                     )}
                   </svg>
