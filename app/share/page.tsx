@@ -5,7 +5,7 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import HeartParticles, { darkenHex } from "@/components/HeartParticles";
 import { decodePlaylist } from "@/lib/encode";
-import { getSpotifyEmbed } from "@/lib/spotify-url";
+import { getThumbnail } from "@/lib/youtube";
 
 /* ── Closed case ─────────────────────────────────────────────── */
 function ClosedCase({ onOpen, coverImage, bgColor }: { onOpen: () => void; coverImage?: string; bgColor?: string }) {
@@ -272,38 +272,62 @@ function OpenCase({
       </div>
 
 
-      {/* Player — Spotify embed + next button */}
+      {/* Player */}
       <div style={{ width: "100%", maxWidth: 700, marginTop: 16 }}>
 
-        {/* Song title + next button */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-          <div style={{ minWidth: 0 }}>
-            <p style={{ fontSize: 13, fontWeight: 600, color: "#111", fontFamily: "system-ui, sans-serif", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {song.title}
-            </p>
-            {song.artist && (
-              <p style={{ fontSize: 11, color: "#888", fontFamily: "system-ui, sans-serif", marginTop: 2 }}>
-                {song.artist}
+        {isPlaying ? (
+          /* YouTube iframe — visible so browser allows autoplay */
+          <div style={{ position: "relative" }}>
+            {/* Overflow crops to show only the bottom controls bar */}
+            <div style={{ overflow: "hidden", height: 44, borderRadius: 8, background: "#000" }}>
+              <iframe
+                key={song.id}
+                src={`https://www.youtube.com/embed/${song.id}?autoplay=1&playsinline=1&modestbranding=1&rel=0`}
+                width="100%"
+                height="200"
+                allow="autoplay; encrypted-media"
+                style={{ border: 0, marginTop: -158, display: "block" }}
+                title={song.title}
+              />
+            </div>
+
+            {/* Song info + next button above the player bar */}
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={getThumbnail(song.id)} alt="" width={40} height={40}
+                style={{ borderRadius: 6, objectFit: "cover", flexShrink: 0 }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontSize: 13, fontWeight: 600, color: "#111", fontFamily: "system-ui", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {song.title}
+                </p>
+                {song.artist && <p style={{ fontSize: 11, color: "#888", fontFamily: "system-ui", marginTop: 2 }}>{song.artist}</p>}
+              </div>
+              {total > 1 && (
+                <button onClick={next} style={{ width: 36, height: 36, borderRadius: "50%", border: "1.5px solid #ccc", background: "white", cursor: "pointer", fontSize: 13, color: "#333", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>⏭</button>
+              )}
+            </div>
+          </div>
+        ) : (
+          /* Thumbnail + play button when not playing */
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={getThumbnail(song.id)} alt="" width={48} height={48}
+              style={{ borderRadius: 8, objectFit: "cover", flexShrink: 0 }} />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: "#111", fontFamily: "system-ui", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {song.title}
               </p>
+              {song.artist && <p style={{ fontSize: 11, color: "#888", fontFamily: "system-ui", marginTop: 2 }}>{song.artist}</p>}
+            </div>
+            <button
+              onClick={() => setIsPlaying(true)}
+              style={{ width: 36, height: 36, borderRadius: "50%", border: "1.5px solid #ccc", background: "white", cursor: "pointer", fontSize: 14, color: "#333", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}
+            >▶</button>
+            {total > 1 && (
+              <button onClick={next} style={{ width: 36, height: 36, borderRadius: "50%", border: "1.5px solid #ccc", background: "white", cursor: "pointer", fontSize: 13, color: "#333", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>⏭</button>
             )}
           </div>
-          {total > 1 && (
-            <button onClick={next} style={{ width: 36, height: 36, borderRadius: "50%", border: "1.5px solid #ccc", background: "white", cursor: "pointer", fontSize: 13, color: "#333", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", marginLeft: 12 }}>
-              ⏭
-            </button>
-          )}
-        </div>
-
-        {/* Spotify embed — has its own play/pause controls */}
-        <iframe
-          key={song.id}
-          src={getSpotifyEmbed(song.id)}
-          width="100%"
-          height="80"
-          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-          style={{ border: "none", borderRadius: 12 }}
-          loading="lazy"
-        />
+        )}
       </div>
 
       {/* Footer */}

@@ -3,7 +3,7 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import HeartParticles from "@/components/HeartParticles";
 import QRShare from "@/components/QRShare";
-import { extractSpotifyId } from "@/lib/spotify-url";
+import { extractVideoId, getThumbnail } from "@/lib/youtube";
 import { encodePlaylist, type Song } from "@/lib/encode";
 import { compressImage } from "@/lib/compress";
 
@@ -13,7 +13,7 @@ export default function Home() {
   const [message, setMessage] = useState("");
   const [songs, setSongs] = useState<Song[]>([]);
 
-  const [spotifyUrl, setSpotifyUrl] = useState("");
+  const [ytUrl, setYtUrl] = useState("");
   const [songTitle, setSongTitle] = useState("");
   const [songArtist, setSongArtist] = useState("");
   const [previewThumb, setPreviewThumb] = useState<string | null>(null);
@@ -44,34 +44,36 @@ export default function Home() {
   };
 
   const handleUrlChange = async (val: string) => {
-    setSpotifyUrl(val);
+    setYtUrl(val);
     setUrlError("");
     setPreviewThumb(null);
 
-    const id = extractSpotifyId(val);
+    const id = extractVideoId(val);
     if (!id) return;
 
-    // Auto-fetch song info from Spotify oEmbed
+    // Show thumbnail immediately
+    setPreviewThumb(getThumbnail(id));
+
+    // Auto-fetch title/artist from YouTube oEmbed
     setFetching(true);
     try {
       const res = await fetch(`/api/track-info?url=${encodeURIComponent(val)}`);
       const data = await res.json();
       if (data.title) setSongTitle(data.title);
       if (data.artist) setSongArtist(data.artist);
-      if (data.thumbnail) setPreviewThumb(data.thumbnail);
     } catch {
-      // silently fail, user can type manually
+      // silently fail — user can type manually
     } finally {
       setFetching(false);
     }
   };
 
   const handleAddSong = () => {
-    const id = extractSpotifyId(spotifyUrl);
-    if (!id) { setUrlError("Couldn't find a Spotify track ID in that URL."); return; }
+    const id = extractVideoId(ytUrl);
+    if (!id) { setUrlError("Couldn't find a YouTube video ID in that URL."); return; }
     if (!songTitle.trim()) { setUrlError("Please enter a song title."); return; }
     setSongs((prev) => [...prev, { id, title: songTitle.trim(), artist: songArtist.trim() }]);
-    setSpotifyUrl(""); setSongTitle(""); setSongArtist(""); setPreviewThumb(null); setUrlError("");
+    setYtUrl(""); setSongTitle(""); setSongArtist(""); setPreviewThumb(null); setUrlError("");
     urlInputRef.current?.focus();
   };
 
@@ -177,12 +179,12 @@ export default function Home() {
         <div className="pixel-card" style={{ marginBottom: 16 }}>
           <p style={{ fontSize: 9, marginBottom: 16, color: "var(--accent2)" }}>♪ Add a Song</p>
 
-          <label className="pixel-label">SPOTIFY TRACK LINK</label>
+          <label className="pixel-label">YOUTUBE LINK</label>
           <input
             ref={urlInputRef}
             className="pixel-input"
-            placeholder="https://open.spotify.com/track/..."
-            value={spotifyUrl}
+            placeholder="https://youtube.com/watch?v=..."
+            value={ytUrl}
             onChange={(e) => handleUrlChange(e.target.value)}
             style={{ marginBottom: 12 }}
           />
@@ -214,7 +216,7 @@ export default function Home() {
 
           {urlError && <p style={{ fontSize: 7, color: "var(--accent2)", marginBottom: 10 }}>⚠ {urlError}</p>}
 
-          <button className="pixel-btn" onClick={handleAddSong} disabled={!spotifyUrl || !songTitle} style={{ width: "100%" }}>
+          <button className="pixel-btn" onClick={handleAddSong} disabled={!ytUrl || !songTitle} style={{ width: "100%" }}>
             + Add Song
           </button>
         </div>
