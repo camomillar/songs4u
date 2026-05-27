@@ -12,6 +12,7 @@ interface Props {
   onTogglePlay: () => void;
   onNext: () => void;
   song: { title: string; artist: string; albumArt?: string };
+  coverArt?: string; // first song's album art for the case cover
   total: number;
   onBack: () => void;
 }
@@ -25,7 +26,7 @@ type Phase = "closed" | "opening" | "open";
 export default function JewelCase({
   to, from, message, bgColor,
   isPlaying, ready, onTogglePlay, onNext,
-  song, total, onBack,
+  song, coverArt, total, onBack,
 }: Props) {
   const [phase, setPhase] = useState<Phase>("closed");
 
@@ -171,64 +172,72 @@ export default function JewelCase({
               transform: "rotateY(90deg)",
               background: "linear-gradient(to right, #1e1e1e, #2a2a2a)",
             }} />
-            {/* ── Spine (left edge) ── */}
+            {/* ── Spine — ribbed like a real jewel case ── */}
             <div style={{
-              position: "absolute", left: 0, top: 0, bottom: 0, width: 14,
-              background: "linear-gradient(to right, #050505 0%, #161616 100%)",
+              position: "absolute", left: 0, top: 0, bottom: 0, width: 16,
+              background: "#1a1a1a",
               borderRadius: "3px 0 0 3px",
               zIndex: 3,
-            }} />
+              overflow: "hidden",
+            }}>
+              {/* Ribs */}
+              {Array.from({ length: 18 }, (_, i) => (
+                <div key={i} style={{
+                  position: "absolute",
+                  top: `${i * 5.6}%`, left: 2, right: 2, height: 2,
+                  background: "rgba(255,255,255,0.06)",
+                  borderRadius: 1,
+                }} />
+              ))}
+              <div style={{
+                position: "absolute", inset: 0,
+                background: "linear-gradient(to right, #111, #222 50%, #111)",
+              }} />
+            </div>
 
-            {/* ── Front face ── */}
+            {/* ── Front face — album art fills the cover ── */}
             <div style={{
-              position: "absolute", left: 14, top: 0, right: 0, bottom: 0,
-              background: "#141414",
+              position: "absolute", left: 16, top: 0, right: 0, bottom: 0,
+              background: "#0a0a0a",
               borderRadius: "0 3px 3px 0",
               overflow: "hidden",
             }}>
-              {/* Inner tray inset */}
-              <div style={{
-                position: "absolute", top: 7, bottom: 7, left: 7, right: 7,
-                background: "#0e0e0e",
-                display: "flex", alignItems: "center", justifyContent: "center",
-              }}>
-                {/* CD disc silhouette (faintly visible through clear plastic) */}
+              {/* Album artwork */}
+              {coverArt ? (
+                <Image
+                  src={coverArt}
+                  alt="cover"
+                  fill
+                  unoptimized
+                  style={{ objectFit: "cover" }}
+                />
+              ) : (
+                // Fallback: dark tray with disc silhouette
                 <div style={{
-                  width: 210, height: 210, borderRadius: "50%",
-                  background: "conic-gradient(from 0deg, rgba(130,130,170,0.08), rgba(170,150,200,0.06), rgba(130,160,180,0.09), rgba(150,130,170,0.07), rgba(130,130,170,0.08))",
-                  border: "1px solid rgba(255,255,255,0.04)",
-                  position: "relative",
+                  position: "absolute", inset: 0,
+                  background: "#111",
                   display: "flex", alignItems: "center", justifyContent: "center",
                 }}>
-                  {/* Hub */}
                   <div style={{
-                    width: 22, height: 22, borderRadius: "50%",
-                    background: "#090909",
-                    border: "1px solid rgba(255,255,255,0.05)",
-                    boxShadow: "0 0 0 8px rgba(255,255,255,0.015)",
-                  }} />
-                  {/* Ring grooves */}
-                  {[80, 120, 160].map(r => (
-                    <div key={r} style={{
-                      position: "absolute",
-                      width: r, height: r,
-                      borderRadius: "50%",
-                      border: "1px solid rgba(255,255,255,0.025)",
-                    }} />
-                  ))}
+                    width: 200, height: 200, borderRadius: "50%",
+                    background: "conic-gradient(from 0deg, rgba(130,130,170,0.07), rgba(170,150,200,0.05), rgba(130,130,170,0.07))",
+                    border: "1px solid rgba(255,255,255,0.03)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}>
+                    <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#090909" }} />
+                  </div>
                 </div>
-              </div>
+              )}
 
-              {/* Plastic sheen reflection */}
+              {/* Plastic overlay / sheen */}
               <div style={{
                 position: "absolute", inset: 0, pointerEvents: "none",
-                background: "linear-gradient(135deg, rgba(255,255,255,0.07) 0%, transparent 45%, rgba(0,0,0,0.12) 100%)",
+                background: "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 40%, rgba(0,0,0,0.2) 100%)",
               }} />
-
-              {/* Top highlight */}
+              {/* Top edge glint */}
               <div style={{
                 position: "absolute", top: 0, left: 0, right: 0, height: 1,
-                background: "rgba(255,255,255,0.08)",
+                background: "rgba(255,255,255,0.12)", pointerEvents: "none",
               }} />
             </div>
 
