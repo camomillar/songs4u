@@ -6,6 +6,7 @@ import Image from "next/image";
 import HeartParticles, { darkenHex } from "@/components/HeartParticles";
 import { decodePlaylist } from "@/lib/encode";
 import { useSpotifyEmbed } from "@/hooks/useSpotifyEmbed";
+import JewelCase from "@/components/JewelCase";
 
 /* ── Closed case ─────────────────────────────────────────────── */
 function ClosedCase({ onOpen, coverImage, bgColor }: { onOpen: () => void; coverImage?: string; bgColor?: string }) {
@@ -343,12 +344,47 @@ function OpenCase({
   );
 }
 
+/* ── JewelCaseWrapper: wires Spotify embed to JewelCase ── */
+function JewelCaseWrapper({ playlist }: { playlist: ReturnType<typeof decodePlaylist> & object }) {
+  const songs = (playlist as { songs: { id: string; title: string; artist: string; albumArt?: string }[] }).songs;
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const { containerRef, isPlaying, ready, loadTrack, togglePlay } = useSpotifyEmbed(songs[0].id);
+  const song = songs[currentIndex];
+
+  const next = () => {
+    const ni = (currentIndex + 1) % songs.length;
+    setCurrentIndex(ni);
+    loadTrack(songs[ni].id);
+  };
+
+  return (
+    <>
+      {/* Hidden Spotify embed container */}
+      <div style={{ position: "fixed", bottom: 0, left: 0, width: 300, height: 80, transform: "scale(0)", transformOrigin: "bottom left", pointerEvents: "none" }}>
+        <div ref={containerRef} style={{ width: 300, height: 80 }} />
+      </div>
+      <JewelCase
+        to={(playlist as { to: string }).to}
+        from={(playlist as { from: string }).from}
+        message={(playlist as { message: string }).message}
+        bgColor={(playlist as { bgColor?: string }).bgColor}
+        isPlaying={isPlaying}
+        ready={ready}
+        onTogglePlay={togglePlay}
+        onNext={next}
+        song={song}
+        total={songs.length}
+        onBack={() => window.history.back()}
+      />
+    </>
+  );
+}
+
 /* ── Page ────────────────────────────────────────────────────── */
 function ShareContent() {
   const params = useSearchParams();
   const encoded = params.get("d");
   const playlist = encoded ? decodePlaylist(encoded) : null;
-  const [isOpen, setIsOpen] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
   const [isAuthed, setIsAuthed] = useState(false);
 
@@ -422,19 +458,7 @@ function ShareContent() {
     );
   }
 
-  if (!isOpen) return <ClosedCase onOpen={() => setIsOpen(true)} coverImage={playlist.coverImage} bgColor={playlist.bgColor} />;
-
-  return (
-    <OpenCase
-      to={playlist.to}
-      from={playlist.from}
-      message={playlist.message}
-      songs={playlist.songs}
-      coverImage={playlist.coverImage}
-      bgColor={playlist.bgColor}
-      onBack={() => setIsOpen(false)}
-    />
-  );
+  return <JewelCaseWrapper playlist={playlist} />;
 }
 
 export default function SharePage() {
