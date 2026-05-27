@@ -1,8 +1,9 @@
 export interface Song {
-  id: string;        // Spotify track ID
+  id: string;         // Spotify track ID
   title: string;
   artist: string;
-  albumArt?: string; // Spotify album art URL (stable CDN, safe to store)
+  albumArt?: string;  // Spotify album art URL
+  previewUrl?: string; // 30s preview MP3 URL (fetched at build time)
 }
 
 export interface ValentinesPlaylist {

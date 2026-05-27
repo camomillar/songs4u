@@ -4,7 +4,6 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import HeartParticles, { darkenHex } from "@/components/HeartParticles";
 import { decodePlaylist } from "@/lib/encode";
-import { useSpotifyPlayer } from "@/hooks/useSpotifyPlayer";
 
 /* ── Closed case ─────────────────────────────────────────────── */
 function ClosedCase({ onOpen, coverImage, bgColor }: { onOpen: () => void; coverImage?: string; bgColor?: string }) {
@@ -149,34 +148,21 @@ function OpenCase({
   to, from, message, songs, coverImage, bgColor, onBack,
 }: {
   to: string; from: string; message: string;
-  songs: { id: string; title: string; artist: string; albumArt?: string }[];
+  songs: { id: string; title: string; artist: string; albumArt?: string; previewUrl?: string }[];
   coverImage?: string;
   bgColor?: string;
   onBack: () => void;
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
-  const [previewUrls, setPreviewUrls] = useState<Record<string, string | null>>({});
-  const [loadingPreviews, setLoadingPreviews] = useState(true);
   const [previewPlaying, setPreviewPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const total = songs.length;
   const song = songs[currentIndex];
 
-  const trackUris = songs.map(s => `spotify:track:${s.id}`);
-  const { isPremium, ready: sdkReady, isPlaying: sdkPlaying, currentTrack, play: sdkPlay, togglePlay: sdkToggle, next: sdkNext } = useSpotifyPlayer(trackUris);
-
-  const isPlaying = isPremium ? sdkPlaying : previewPlaying;
-
-  // Fetch preview URLs (fallback for non-premium)
-  useEffect(() => {
-    const ids = songs.map(s => s.id).join(",");
-    fetch(`/api/preview-urls?ids=${ids}`)
-      .then(r => r.json())
-      .then(data => setPreviewUrls(data))
-      .catch(() => {})
-      .finally(() => setLoadingPreviews(false));
-  }, []);
+  // Use preview URLs stored in the song data (fetched at build time)
+  const previewUrl = song.previewUrl ?? null;
+  const isPlaying = previewPlaying;
 
   // Reset audio on song change (preview fallback)
   useEffect(() => {
@@ -186,29 +172,17 @@ function OpenCase({
   }, [currentIndex]);
 
   const togglePlay = () => {
-    if (isPremium && sdkReady) {
-      if (!sdkPlaying) sdkPlay(currentIndex);
-      else sdkToggle();
-    } else {
-      const audio = audioRef.current;
-      const url = previewUrls[song.id];
-      if (!audio || !url) return;
-      if (previewPlaying) { audio.pause(); setPreviewPlaying(false); }
-      else { audio.play(); setPreviewPlaying(true); }
-    }
+    const audio = audioRef.current;
+    if (!audio || !previewUrl) return;
+    if (previewPlaying) { audio.pause(); setPreviewPlaying(false); }
+    else { audio.play().catch(() => {}); setPreviewPlaying(true); }
   };
 
   const next = () => {
-    const ni = (currentIndex + 1) % total;
-    setCurrentIndex(ni);
-    if (isPremium && sdkReady && sdkPlaying) sdkNext();
+    setCurrentIndex(i => (i + 1) % total);
   };
 
-  const displayTrack = isPremium && currentTrack
-    ? { title: currentTrack.name, artist: currentTrack.artists.map((a: {name: string}) => a.name).join(", "), albumArt: currentTrack.album.images[0]?.url }
-    : { title: song.title, artist: song.artist, albumArt: song.albumArt };
-
-  const previewUrl = previewUrls[song.id] ?? null;
+  const displayTrack = { title: song.title, artist: song.artist, albumArt: song.albumArt };
 
   return (
     <div style={{
@@ -344,19 +318,18 @@ function OpenCase({
             {displayTrack.artist && (
               <p style={{ fontSize: 11, color: "#888", fontFamily: "system-ui", marginTop: 2 }}>{displayTrack.artist}</p>
             )}
-            {/* Progress bar (preview only) */}
-            {!isPremium && (
-              <div style={{ marginTop: 6, height: 3, background: "#eee", borderRadius: 2, overflow: "hidden" }}>
-                <div style={{ height: "100%", width: `${Math.min(100, (progress / 30) * 100)}%`, background: "#333", borderRadius: 2, transition: "width 0.5s linear" }} />
-              </div>
-            )}
+            {/* Progress bar */}
+            <div style={{ marginTop: 6, height: 3, background: "#eee", borderRadius: 2, overflow: "hidden" }}>
+              <div style={{ height: "100%", width: `${Math.min(100, (progress / 30) * 100)}%`, background: "#333", borderRadius: 2, transition: "width 0.5s linear" }} />
+            </div>
           </div>
 
           {/* Play/pause */}
           <button onClick={togglePlay}
-            disabled={isPremium ? !sdkReady : (loadingPreviews || !previewUrl)}
-            style={{ width: 38, height: 38, borderRadius: "50%", border: "1.5px solid #ccc", background: "white", cursor: "pointer", fontSize: 14, color: "#333", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            {loadingPreviews && !isPremium ? "…" : isPlaying ? "⏸" : "▶"}
+            disabled={!previewUrl}
+            title={!previewUrl ? "No preview available for this song" : undefined}
+            style={{ width: 38, height: 38, borderRadius: "50%", border: "1.5px solid #ccc", background: "white", cursor: previewUrl ? "pointer" : "not-allowed", fontSize: 14, color: "#333", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            {isPlaying ? "⏸" : "▶"}
           </button>
 
           {/* Next */}
@@ -365,10 +338,11 @@ function OpenCase({
           )}
         </div>
 
-        {/* Status label */}
-        <p style={{ fontSize: 10, color: "#bbb", fontFamily: "system-ui", marginTop: 8, textAlign: "right" }}>
-          {isPremium === true ? "🎵 Full songs via Spotify" : isPremium === false ? "🎵 30s preview" : ""}
-        </p>
+        {!previewUrl && (
+          <p style={{ fontSize: 11, color: "#bbb", fontFamily: "system-ui", marginTop: 6, textAlign: "center" }}>
+            No preview available for this song
+          </p>
+        )}
       </div>
 
       {/* Footer */}

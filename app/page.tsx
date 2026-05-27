@@ -17,6 +17,7 @@ export default function Home() {
   const [songTitle, setSongTitle] = useState("");
   const [songArtist, setSongArtist] = useState("");
   const [previewThumb, setPreviewThumb] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [fetching, setFetching] = useState(false);
   const [urlError, setUrlError] = useState("");
 
@@ -53,6 +54,7 @@ export default function Home() {
       if (data.title) setSongTitle(data.title);
       if (data.artist) setSongArtist(data.artist);
       if (data.thumbnail) setPreviewThumb(data.thumbnail);
+      if (data.previewUrl) setPreviewUrl(data.previewUrl);
     } catch { /* silent */ } finally { setFetching(false); }
   };
 
@@ -65,8 +67,9 @@ export default function Home() {
       title: songTitle.trim(),
       artist: songArtist.trim(),
       ...(previewThumb ? { albumArt: previewThumb } : {}),
+      ...(previewUrl ? { previewUrl } : {}),
     }]);
-    setSpotifyUrl(""); setSongTitle(""); setSongArtist(""); setPreviewThumb(null); setUrlError("");
+    setSpotifyUrl(""); setSongTitle(""); setSongArtist(""); setPreviewThumb(null); setPreviewUrl(null); setUrlError("");
   };
 
   const handleRemoveSong = (i: number) => setSongs((prev) => prev.filter((_, idx) => idx !== i));
