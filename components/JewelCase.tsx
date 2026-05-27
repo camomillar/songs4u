@@ -143,14 +143,34 @@ export default function JewelCase({
             style={{
               width: 340, height: 340,
               position: "relative",
-              boxShadow: "14px 18px 40px rgba(0,0,0,0.45), 4px 6px 12px rgba(0,0,0,0.3)",
-              borderRadius: 3,
               flexShrink: 0,
               cursor: "grab",
               userSelect: "none",
               willChange: "transform",
+              transformStyle: "preserve-3d",
             }}
           >
+            {/* ── TOP face (thickness) ── */}
+            <div style={{
+              position: "absolute", top: 0, left: 0, width: "100%", height: 16,
+              transformOrigin: "top center",
+              transform: "rotateX(90deg)",
+              background: "linear-gradient(to bottom, #2a2a2a, #1e1e1e)",
+            }} />
+            {/* ── BOTTOM face (thickness) ── */}
+            <div style={{
+              position: "absolute", bottom: 0, left: 0, width: "100%", height: 16,
+              transformOrigin: "bottom center",
+              transform: "rotateX(-90deg)",
+              background: "linear-gradient(to top, #1e1e1e, #2a2a2a)",
+            }} />
+            {/* ── RIGHT face (thickness) ── */}
+            <div style={{
+              position: "absolute", top: 0, right: 0, width: 16, height: "100%",
+              transformOrigin: "right center",
+              transform: "rotateY(90deg)",
+              background: "linear-gradient(to right, #1e1e1e, #2a2a2a)",
+            }} />
             {/* ── Spine (left edge) ── */}
             <div style={{
               position: "absolute", left: 0, top: 0, bottom: 0, width: 14,
@@ -212,23 +232,6 @@ export default function JewelCase({
               }} />
             </div>
 
-            {/* ── Top thin edge (visible from above) ── */}
-            <div style={{
-              position: "absolute",
-              top: -4, left: 10, right: 0, height: 4,
-              background: "linear-gradient(to bottom, #2a2a2a, #1a1a1a)",
-              transformOrigin: "bottom center",
-              transform: "rotateX(90deg)",
-            }} />
-
-            {/* ── Right thin edge ── */}
-            <div style={{
-              position: "absolute",
-              top: 0, right: -3, bottom: 0, width: 3,
-              background: "linear-gradient(to right, #1a1a1a, #2a2a2a)",
-              transformOrigin: "left center",
-              transform: "rotateY(90deg)",
-            }} />
           </div>
 
           {phase === "closed" && (
