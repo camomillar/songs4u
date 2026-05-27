@@ -46,7 +46,12 @@ export function useSpotifyEmbed(initialTrackId: string) {
   }, []);
 
   const loadTrack = (trackId: string) => {
-    controllerRef.current?.loadUri(`spotify:track:${trackId}`);
+    if (!controllerRef.current) return;
+    controllerRef.current.loadUri(`spotify:track:${trackId}`);
+    // Give the embed a moment to load the track, then start playing
+    setTimeout(() => {
+      controllerRef.current?.resume();
+    }, 300);
     setIsPlaying(true);
   };
 
