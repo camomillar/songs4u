@@ -174,7 +174,6 @@ export default function Home() {
           padding: "28px 16px 20px",
           marginBottom: 8,
         }}>
-          <p style={{ fontSize: 28, margin: "0 0 6px", letterSpacing: 6, color: "#e03050" }}>♥ ♥ ♥</p>
           <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 34, color: "#111", margin: 0, lineHeight: 1.25 }}>
             make a playlist
           </p>
@@ -311,6 +310,19 @@ export default function Home() {
       </div>
 
       {shareUrl && <QRShare url={shareUrl} onClose={() => setShareUrl(null)} />}
+
+      {/* Footer */}
+      <p style={{
+        fontFamily: F, fontSize: 11, color: "#555",
+        position: "fixed", bottom: 20, left: "50%", transform: "translateX(-50%)",
+        whiteSpace: "nowrap", zIndex: 10,
+      }}>
+        made with ♥ by{" "}
+        <a href="https://www.instagram.com/caahmills/" target="_blank" rel="noopener noreferrer"
+          style={{ color: "#444", textDecoration: "none", borderBottom: "1px solid #aaa" }}>
+          caahmills
+        </a>
+      </p>
     </div>
   );
 }
