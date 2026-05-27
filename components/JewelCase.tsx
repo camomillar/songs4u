@@ -536,20 +536,52 @@ export default function JewelCase({
               <p style={{ fontSize: 14, fontWeight: 700, color: "#111", fontFamily: "system-ui", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{song.title}</p>
               <p style={{ fontSize: 12, color: "#888", fontFamily: "system-ui", marginTop: 2 }}>{song.artist}</p>
             </div>
-            <button onClick={onTogglePlay} disabled={!ready} style={{
-              width: 40, height: 40, borderRadius: "50%",
-              background: ready ? "#111" : "#ccc", border: "none",
-              cursor: ready ? "pointer" : "not-allowed",
-              color: "white", fontSize: 14, flexShrink: 0,
-              display: "flex", alignItems: "center", justifyContent: "center",
-            }}>{isPlaying ? "⏸" : "▶"}</button>
-            {total > 1 && (
-              <button onClick={onNext} style={{
-                width: 40, height: 40, borderRadius: "50%",
-                background: "transparent", border: "1.5px solid #ddd",
-                cursor: "pointer", fontSize: 14, color: "#333", flexShrink: 0,
+            {/* Play / Pause */}
+            <button
+              onClick={onTogglePlay}
+              disabled={!ready}
+              style={{
+                width: 44, height: 44, borderRadius: "50%",
+                background: ready ? "#111" : "#ddd",
+                border: "none",
+                cursor: ready ? "pointer" : "not-allowed",
+                flexShrink: 0,
                 display: "flex", alignItems: "center", justifyContent: "center",
-              }}>⏭</button>
+                boxShadow: ready ? "0 4px 14px rgba(0,0,0,0.2)" : "none",
+                transition: "transform 0.15s, box-shadow 0.15s",
+              }}
+              onMouseEnter={(e) => { if (ready) { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1.08)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 18px rgba(0,0,0,0.28)"; }}}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = ready ? "0 4px 14px rgba(0,0,0,0.2)" : "none"; }}
+            >
+              {isPlaying ? (
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="white"><rect x="3" y="2" width="4" height="12" rx="1.5"/><rect x="9" y="2" width="4" height="12" rx="1.5"/></svg>
+              ) : (
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="white"><path d="M5 3.5L13 8L5 12.5V3.5Z"/></svg>
+              )}
+            </button>
+
+            {/* Next */}
+            {total > 1 && (
+              <button
+                onClick={onNext}
+                style={{
+                  width: 40, height: 40, borderRadius: "50%",
+                  background: "rgba(255,255,255,0.85)",
+                  backdropFilter: "blur(6px)",
+                  border: "1px solid rgba(0,0,0,0.1)",
+                  cursor: "pointer", flexShrink: 0,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                  transition: "transform 0.15s, box-shadow 0.15s",
+                }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1.08)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 12px rgba(0,0,0,0.14)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 2px 8px rgba(0,0,0,0.08)"; }}
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M4 3.5L10 8L4 12.5V3.5Z" fill="#333"/>
+                  <rect x="11" y="3.5" width="2" height="9" rx="1" fill="#333"/>
+                </svg>
+              </button>
             )}
           </div>
 
