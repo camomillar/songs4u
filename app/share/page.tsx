@@ -158,7 +158,7 @@ function OpenCase({
   const [currentIndex, setCurrentIndex] = useState(0);
   const total = songs.length;
   const song = songs[currentIndex];
-  const { iframeRef, isPlaying, progress, duration, ready, loadTrack, togglePlay } = useSpotifyEmbed(songs[0].id);
+  const { containerRef, isPlaying, ready, loadTrack, togglePlay } = useSpotifyEmbed(songs[0].id);
 
   const next = () => {
     const ni = (currentIndex + 1) % total;
@@ -273,16 +273,11 @@ function OpenCase({
       </div>
 
 
-      {/* Hidden Spotify iframe — controlled via Embed API */}
-      <div style={{ position: "absolute", left: "-9999px", top: 0, width: 300, height: 80, pointerEvents: "none" }}>
-        <iframe
-          ref={iframeRef}
-          width="300"
-          height="80"
-          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-          style={{ border: "none" }}
-        />
-      </div>
+      {/* Spotify Embed API placeholder — replaced by Spotify with an iframe */}
+      <div
+        ref={containerRef}
+        style={{ position: "absolute", left: "-9999px", top: 0, width: 300, height: 80 }}
+      />
 
       {/* Custom player */}
       <div style={{

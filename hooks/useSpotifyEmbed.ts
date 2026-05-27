@@ -5,27 +5,23 @@ import { useEffect, useRef, useState } from "react";
 type W = any;
 
 export function useSpotifyEmbed(initialTrackId: string) {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null); // div placeholder — Spotify replaces it with an iframe
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const controllerRef = useRef<any>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [duration, setDuration] = useState(0);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const initApi = (IFrameAPI: W) => {
-      if (!iframeRef.current) return;
+      if (!containerRef.current) return;
       IFrameAPI.createController(
-        iframeRef.current,
+        containerRef.current,
         { uri: `spotify:track:${initialTrackId}` },
         (controller: W) => {
           controllerRef.current = controller;
           setReady(true);
           controller.addListener("playback_update", (e: W) => {
             setIsPlaying(!e.data.isPaused);
-            setProgress(e.data.position ?? 0);
-            setDuration(e.data.duration ?? 0);
           });
         }
       );
@@ -50,9 +46,7 @@ export function useSpotifyEmbed(initialTrackId: string) {
   }, []);
 
   const loadTrack = (trackId: string) => {
-    if (!controllerRef.current) return;
-    controllerRef.current.loadUri(`spotify:track:${trackId}`);
-    setProgress(0);
+    controllerRef.current?.loadUri(`spotify:track:${trackId}`);
     setIsPlaying(true);
   };
 
@@ -60,5 +54,5 @@ export function useSpotifyEmbed(initialTrackId: string) {
     controllerRef.current?.togglePlay();
   };
 
-  return { iframeRef, isPlaying, progress, duration, ready, loadTrack, togglePlay };
+  return { containerRef, isPlaying, ready, loadTrack, togglePlay };
 }
