@@ -90,7 +90,7 @@ export default function JewelCase({
         >
           {/* The case */}
           <div style={{
-            width: 260, height: 260,
+            width: 340, height: 340,
             transform: "perspective(700px) rotateY(-16deg) rotateX(4deg)",
             position: "relative",
             boxShadow: "14px 18px 40px rgba(0,0,0,0.45), 4px 6px 12px rgba(0,0,0,0.3)",
@@ -120,7 +120,7 @@ export default function JewelCase({
               }}>
                 {/* CD disc silhouette (faintly visible through clear plastic) */}
                 <div style={{
-                  width: 158, height: 158, borderRadius: "50%",
+                  width: 210, height: 210, borderRadius: "50%",
                   background: "conic-gradient(from 0deg, rgba(130,130,170,0.08), rgba(170,150,200,0.06), rgba(130,160,180,0.09), rgba(150,130,170,0.07), rgba(130,130,170,0.08))",
                   border: "1px solid rgba(255,255,255,0.04)",
                   position: "relative",
@@ -134,7 +134,7 @@ export default function JewelCase({
                     boxShadow: "0 0 0 8px rgba(255,255,255,0.015)",
                   }} />
                   {/* Ring grooves */}
-                  {[60, 90, 120].map(r => (
+                  {[80, 120, 160].map(r => (
                     <div key={r} style={{
                       position: "absolute",
                       width: r, height: r,
