@@ -1,6 +1,10 @@
 async function getClientToken(): Promise<string> {
-  const clientId = process.env.SPOTIFY_CLIENT_ID!;
-  const clientSecret = process.env.SPOTIFY_CLIENT_SECRET!;
+  const clientId = process.env.SPOTIFY_CLIENT_ID;
+  const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+
+  if (!clientId || !clientSecret) {
+    throw new Error("Missing SPOTIFY_CLIENT_ID or SPOTIFY_CLIENT_SECRET in .env.local");
+  }
 
   const res = await fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
@@ -13,11 +17,15 @@ async function getClientToken(): Promise<string> {
   });
 
   const data = await res.json();
+
+  if (!res.ok || !data.access_token) {
+    throw new Error(`Token error: ${JSON.stringify(data)}`);
+  }
+
   return data.access_token as string;
 }
 
 export async function fetchPlaylistTracks(playlistId: string, userToken?: string) {
-  // Use provided user token (works for private playlists), else Client Credentials
   const token = userToken ?? await getClientToken();
 
   const res = await fetch(
@@ -25,7 +33,10 @@ export async function fetchPlaylistTracks(playlistId: string, userToken?: string
     { headers: { Authorization: `Bearer ${token}` }, cache: "no-store" }
   );
 
-  if (!res.ok) throw new Error(`Spotify API error: ${res.status}`);
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(`Spotify ${res.status}: ${JSON.stringify(body)}`);
+  }
   return res.json();
 }
 

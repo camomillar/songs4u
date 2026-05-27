@@ -33,12 +33,6 @@ export async function GET(req: NextRequest) {
     const msg = e instanceof Error ? e.message : "Failed to fetch playlist";
 
     // Give a helpful hint for 403
-    if (msg.includes("403")) {
-      return NextResponse.json({
-        error: "Playlist is private. Make it public on Spotify, or log in to Spotify first.",
-      }, { status: 403 });
-    }
-
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
