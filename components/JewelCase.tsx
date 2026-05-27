@@ -538,7 +538,7 @@ export default function JewelCase({
               caahmills
             </a>
             {" "}·{" "}
-            <a href="/" style={{ color: "#bbb", textDecoration: "none" }}>make your own</a>
+            <a href="/" style={{ color: "#bbb", textDecoration: "none" }}>make your own playlist for someone special</a>
           </p>
         </>
       )}
