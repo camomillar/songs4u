@@ -3,22 +3,14 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const code = url.searchParams.get("code");
-  const stateParam = url.searchParams.get("state") ?? "";
-  const storedNonce = req.cookies.get("spotify_auth_state")?.value;
+  const state = url.searchParams.get("state");
+  const storedState = req.cookies.get("spotify_auth_state")?.value;
+  const returnTo = req.cookies.get("spotify_return_to")?.value ?? "/";
 
-  // Decode base64url state
-  let nonce = "";
-  let returnTo = "/";
-  try {
-    const decoded = JSON.parse(Buffer.from(stateParam, "base64url").toString());
-    nonce = decoded.nonce ?? "";
-    returnTo = decoded.returnTo ?? "/";
-  } catch {
-    return NextResponse.redirect(new URL("/?error=auth_failed", process.env.SPOTIFY_REDIRECT_URI!.replace("/api/auth/callback", "")));
-  }
+  const base = process.env.SPOTIFY_REDIRECT_URI!.replace("/api/auth/callback", "");
 
-  if (!code || !storedNonce || nonce !== storedNonce) {
-    return NextResponse.redirect(new URL("/?error=auth_failed", process.env.SPOTIFY_REDIRECT_URI!.replace("/api/auth/callback", "")));
+  if (!code || state !== storedState) {
+    return NextResponse.redirect(`${base}/?error=auth_failed`);
   }
 
   const clientId = process.env.SPOTIFY_CLIENT_ID!;
@@ -39,15 +31,13 @@ export async function GET(req: NextRequest) {
   });
 
   if (!tokenRes.ok) {
-    return NextResponse.redirect(new URL("/?error=token_failed", process.env.SPOTIFY_REDIRECT_URI!.replace("/api/auth/callback", "")));
+    return NextResponse.redirect(`${base}/?error=token_failed`);
   }
 
   const tokens = await tokenRes.json();
   const expiresAt = Date.now() + tokens.expires_in * 1000;
 
-  // Always use 127.0.0.1 as base (Next.js dev resolves req.url to localhost)
-  const base = process.env.SPOTIFY_REDIRECT_URI!.replace("/api/auth/callback", "");
-  const response = NextResponse.redirect(new URL(returnTo, base));
+  const response = NextResponse.redirect(`${base}${returnTo}`);
   const cookieOpts = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -58,6 +48,7 @@ export async function GET(req: NextRequest) {
   response.cookies.set("spotify_refresh_token", tokens.refresh_token, { ...cookieOpts, maxAge: 60 * 60 * 24 * 30 });
   response.cookies.set("spotify_expires_at", String(expiresAt), { ...cookieOpts, maxAge: tokens.expires_in });
   response.cookies.delete("spotify_auth_state");
+  response.cookies.delete("spotify_return_to");
 
   return response;
 }

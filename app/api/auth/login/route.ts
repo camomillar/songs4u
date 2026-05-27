@@ -17,14 +17,10 @@ export function GET(req: NextRequest) {
   const url = new URL(req.url);
   const clientId = process.env.SPOTIFY_CLIENT_ID!;
   const redirectUri = process.env.SPOTIFY_REDIRECT_URI!;
-  const nonce = Math.random().toString(36).substring(2, 15);
-
+  const state = Math.random().toString(36).substring(2, 15);
   const returnTo = url.searchParams.get("redirect") ?? "/";
   const context = url.searchParams.get("context") ?? "builder";
   const scopes = context === "player" ? PLAYER_SCOPES : BUILDER_SCOPES;
-
-  // Base64-encode state to avoid issues with special chars in redirect URLs
-  const state = Buffer.from(JSON.stringify({ nonce, returnTo })).toString("base64url");
 
   const params = new URLSearchParams({
     response_type: "code",
@@ -37,11 +33,11 @@ export function GET(req: NextRequest) {
   const response = NextResponse.redirect(
     `https://accounts.spotify.com/authorize?${params}`
   );
-  response.cookies.set("spotify_auth_state", nonce, {
-    httpOnly: true,
-    maxAge: 600,
-    path: "/",
-  });
+
+  // Store state nonce + return destination in cookies
+  const cookieOpts = { httpOnly: true, maxAge: 600, path: "/" };
+  response.cookies.set("spotify_auth_state", state, cookieOpts);
+  response.cookies.set("spotify_return_to", returnTo, cookieOpts);
 
   return response;
 }
