@@ -197,7 +197,7 @@ function OpenCase({
         }}>
           <p style={{
             fontSize: "clamp(12px, 2vw, 16px)",
-            color: "#222",
+            color: "#1d3d8e",
             lineHeight: 1.9,
             marginBottom: "4%",
           }}>
@@ -206,7 +206,7 @@ function OpenCase({
           {message && (
             <p style={{
               fontSize: "clamp(11px, 1.8vw, 15px)",
-              color: "#444",
+              color: "#1d3d8e",
               lineHeight: 1.9,
               marginBottom: "4%",
             }}>
@@ -216,7 +216,7 @@ function OpenCase({
           {from && (
             <p style={{
               fontSize: "clamp(11px, 1.8vw, 15px)",
-              color: "#333",
+              color: "#1d3d8e",
               lineHeight: 1.9,
             }}>
               Forever yours,<br />
