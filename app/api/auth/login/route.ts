@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Minimal scopes for the builder — just read playlists
 const BUILDER_SCOPES = [
   "playlist-read-private",
   "playlist-read-collaborative",
 ].join(" ");
 
-// Full scopes for the share page — playback via Web Playback SDK
 const PLAYER_SCOPES = [
   "user-read-private",
   "streaming",
@@ -25,7 +23,8 @@ export function GET(req: NextRequest) {
   const context = url.searchParams.get("context") ?? "builder";
   const scopes = context === "player" ? PLAYER_SCOPES : BUILDER_SCOPES;
 
-  const state = `${nonce}|${encodeURIComponent(returnTo)}`;
+  // Base64-encode state to avoid issues with special chars in redirect URLs
+  const state = Buffer.from(JSON.stringify({ nonce, returnTo })).toString("base64url");
 
   const params = new URLSearchParams({
     response_type: "code",

@@ -3,14 +3,21 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const code = url.searchParams.get("code");
-  const state = url.searchParams.get("state") ?? "";
+  const stateParam = url.searchParams.get("state") ?? "";
   const storedNonce = req.cookies.get("spotify_auth_state")?.value;
 
-  // State format: "nonce|encodedRedirectUrl"
-  const [nonce, encodedRedirect] = state.split("|");
-  const returnTo = encodedRedirect ? decodeURIComponent(encodedRedirect) : "/";
+  // Decode base64url state
+  let nonce = "";
+  let returnTo = "/";
+  try {
+    const decoded = JSON.parse(Buffer.from(stateParam, "base64url").toString());
+    nonce = decoded.nonce ?? "";
+    returnTo = decoded.returnTo ?? "/";
+  } catch {
+    return NextResponse.redirect(new URL("/?error=auth_failed", req.url));
+  }
 
-  if (!code || nonce !== storedNonce) {
+  if (!code || !storedNonce || nonce !== storedNonce) {
     return NextResponse.redirect(new URL("/?error=auth_failed", req.url));
   }
 
@@ -38,7 +45,6 @@ export async function GET(req: NextRequest) {
   const tokens = await tokenRes.json();
   const expiresAt = Date.now() + tokens.expires_in * 1000;
 
-  // Redirect back to where the user came from (e.g. the share page)
   const response = NextResponse.redirect(new URL(returnTo, req.url));
   const cookieOpts = {
     httpOnly: true,
