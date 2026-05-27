@@ -171,6 +171,15 @@ export default function JewelCase({
               transform: "rotateY(90deg)",
               background: "linear-gradient(to right, #c8c8ca, #d0d0d2)",
             }} />
+
+            {/* ── BACK FACE — solid black ── */}
+            <div style={{
+              position: "absolute", inset: 0,
+              background: "#0a0a0a",
+              transform: "rotateY(180deg)",
+              backfaceVisibility: "hidden",
+            }} />
+
             {/* ── Spine — dark ribbed strip ── */}
             <div style={{
               position: "absolute", left: 0, top: 0, bottom: 0, width: 18,
@@ -201,6 +210,7 @@ export default function JewelCase({
               overflow: "hidden",
               border: "1px solid rgba(0,0,0,0.08)",
               borderLeft: "none",
+              backfaceVisibility: "hidden",
             }}>
               {/* Main plastic gradient — lighter top-right, slightly darker bottom-left */}
               <div style={{
