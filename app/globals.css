@@ -1,0 +1,320 @@
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #f0e6ff;
+  --bg2: #e8d5ff;
+  --card: #fff5fd;
+  --card2: #ffeaf8;
+  --accent: #c9a7ff;
+  --accent2: #ffb3de;
+  --accent3: #a8e6cf;
+  --accent4: #ffe0a8;
+  --text: #4a3560;
+  --text2: #7a5fa0;
+  --border: #c9a7ff;
+  --shadow: #b08fd4;
+  --green: #5ecba1;
+  --pink: #ff7ab8;
+  --pixel: 4px;
+}
+
+html, body {
+  height: 100%;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: "Press Start 2P", monospace;
+  font-size: 10px;
+  line-height: 1.8;
+  -webkit-font-smoothing: none;
+  image-rendering: pixelated;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border: 2px solid var(--bg2);
+}
+
+/* ── Pixel card ─────────────────────────────── */
+.pixel-card {
+  background: var(--card);
+  border: var(--pixel) solid var(--text);
+  box-shadow: var(--pixel) var(--pixel) 0 0 var(--shadow);
+  padding: 16px;
+  position: relative;
+}
+
+.pixel-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 2px solid var(--card2);
+  pointer-events: none;
+}
+
+/* ── Pixel button ────────────────────────────── */
+.pixel-btn {
+  font-family: "Press Start 2P", monospace;
+  font-size: 10px;
+  color: var(--text);
+  background: var(--accent);
+  border: var(--pixel) solid var(--text);
+  box-shadow: var(--pixel) var(--pixel) 0 0 var(--shadow);
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: none;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  line-height: 1;
+}
+
+.pixel-btn:hover {
+  background: var(--accent2);
+  transform: translate(1px, 1px);
+  box-shadow: calc(var(--pixel) - 1px) calc(var(--pixel) - 1px) 0 0 var(--shadow);
+}
+
+.pixel-btn:active {
+  transform: translate(var(--pixel), var(--pixel));
+  box-shadow: none;
+}
+
+.pixel-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: var(--pixel) var(--pixel) 0 0 var(--shadow);
+}
+
+.pixel-btn.green {
+  background: var(--accent3);
+}
+.pixel-btn.pink {
+  background: var(--accent2);
+}
+.pixel-btn.icon {
+  padding: 10px;
+  font-size: 16px;
+  min-width: 44px;
+  min-height: 44px;
+}
+.pixel-btn.large {
+  padding: 14px 24px;
+  font-size: 12px;
+}
+
+/* ── Progress bar ────────────────────────────── */
+.pixel-progress {
+  width: 100%;
+  height: 12px;
+  background: var(--bg2);
+  border: var(--pixel) solid var(--text);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.pixel-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.3s linear;
+  position: relative;
+}
+
+.pixel-progress-fill::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 8px;
+  height: 100%;
+  background: var(--text);
+}
+
+/* ── Album art ───────────────────────────────── */
+.album-art {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  border: var(--pixel) solid var(--text);
+  box-shadow: var(--pixel) var(--pixel) 0 0 var(--shadow);
+  display: block;
+}
+
+/* ── Scrollable list ─────────────────────────── */
+.pixel-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pixel-list-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: var(--card2);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: none;
+}
+
+.pixel-list-item:hover {
+  border-color: var(--accent);
+  background: var(--bg2);
+}
+
+.pixel-list-item.active {
+  border-color: var(--text);
+  background: var(--accent);
+  box-shadow: 2px 2px 0 0 var(--shadow);
+}
+
+/* ── Pixel stars / decorations ───────────────── */
+.stars {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.star {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--accent);
+  animation: twinkle 2s infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+/* ── Marquee for long song names ─────────────── */
+.marquee-container {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.marquee-text {
+  display: inline-block;
+  animation: marquee 12s linear infinite;
+}
+
+.marquee-text.short {
+  animation: none;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  30% { transform: translateX(0); }
+  80% { transform: translateX(-50%); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ── Layout ──────────────────────────────────── */
+.app-layout {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  position: relative;
+  z-index: 1;
+}
+
+.main-content {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 16px;
+  padding: 16px;
+  max-width: 960px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .main-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Header ──────────────────────────────────── */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--card);
+  border-bottom: var(--pixel) solid var(--text);
+  box-shadow: 0 var(--pixel) 0 0 var(--shadow);
+}
+
+.app-title {
+  font-size: 14px;
+  color: var(--text);
+  text-shadow: 2px 2px 0 var(--accent);
+}
+
+/* ── Bottom player ───────────────────────────── */
+.player-bar {
+  background: var(--card);
+  border-top: var(--pixel) solid var(--text);
+  box-shadow: 0 calc(-1 * var(--pixel)) 0 0 var(--shadow);
+  padding: 12px 16px;
+}
+
+/* ── Login screen ────────────────────────────── */
+.login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+}
+
+.login-card {
+  text-align: center;
+  max-width: 360px;
+  width: 100%;
+}
+
+/* ── Loading dots ────────────────────────────── */
+.loading-dots::after {
+  content: "";
+  animation: dots 1.5s steps(4, end) infinite;
+}
+@keyframes dots {
+  0%   { content: ""; }
+  25%  { content: "."; }
+  50%  { content: ".."; }
+  75%  { content: "..."; }
+  100% { content: ""; }
+}
+
+/* ── Now playing vinyl animation ─────────────── */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.spinning {
+  animation: spin 4s linear infinite;
+}
+
+.paused {
+  animation-play-state: paused;
+}
