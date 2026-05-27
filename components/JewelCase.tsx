@@ -477,7 +477,7 @@ export default function JewelCase({
 
                     {/* Salutation — top inner */}
                     <text fontFamily="'OrdinaryLetter', cursive" fontSize="10" fill="rgba(15,20,50,0.78)" textAnchor="middle">
-                      <textPath href="#cdArcTop1" startOffset="50%">My dearest {to},</textPath>
+                      <textPath href="#cdArcTop1" startOffset="50%">{to}</textPath>
                     </text>
 
                     {/* Message — top outer */}
@@ -490,16 +490,10 @@ export default function JewelCase({
                     {/* Forever yours — bottom inner */}
                     {from && (
                       <text fontFamily="'OrdinaryLetter', cursive" fontSize="9.5" fill="rgba(15,20,50,0.72)" textAnchor="middle">
-                        <textPath href="#cdArcBot1" startOffset="50%">Forever yours,</textPath>
+                        <textPath href="#cdArcBot1" startOffset="50%">{from}</textPath>
                       </text>
                     )}
 
-                    {/* Name — bottom outer */}
-                    {from && (
-                      <text fontFamily="'OrdinaryLetter', cursive" fontSize="10" fill="rgba(15,20,50,0.78)" textAnchor="middle">
-                        <textPath href="#cdArcBot2" startOffset="50%">{from}</textPath>
-                      </text>
-                    )}
                   </svg>
 
                   {/* Groove rings */}
