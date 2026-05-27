@@ -4,7 +4,6 @@ import Image from "next/image";
 import HeartParticles from "@/components/HeartParticles";
 import QRShare from "@/components/QRShare";
 import { encodePlaylist, type Song } from "@/lib/encode";
-import { compressImage } from "@/lib/compress";
 
 export default function Home() {
   const [to, setTo] = useState("");
@@ -19,7 +18,6 @@ export default function Home() {
   const [searchResults, setSearchResults] = useState<{ id: string; title: string; artist: string; albumArt: string }[]>([]);
   const [searching, setSearching] = useState(false);
 
-  const [coverImage, setCoverImage] = useState<string | null>(null);
   const [bgColor, setBgColor] = useState("#FFE4E8");
 
   const PASTEL_COLOURS = [
@@ -34,11 +32,6 @@ export default function Home() {
 
   const [shareUrl, setShareUrl] = useState<string | null>(null);
 
-  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setCoverImage(await compressImage(file));
-  };
 
   useEffect(() => {
     fetch("/api/spotify/me")
@@ -73,7 +66,6 @@ export default function Home() {
     if (songs.length === 0) { alert("Add at least one song!"); return; }
     const encoded = encodePlaylist({
       to: to.trim(), from: from.trim(), message: message.trim(), songs,
-      ...(coverImage ? { coverImage } : {}),
       bgColor,
     });
     setShareUrl(`${window.location.origin}/share?d=${encoded}`);
@@ -148,26 +140,6 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Cover photo */}
-        <div className="pixel-card" style={{ marginBottom: 16 }}>
-          <p style={{ fontSize: 9, marginBottom: 16, color: "var(--accent2)" }}>📷 Cover Photo</p>
-          <p style={{ fontSize: 7, color: "var(--text2)", marginBottom: 12, lineHeight: 2 }}>Appears on the CD cover</p>
-          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            {coverImage && (
-              <Image src={coverImage} alt="Cover" width={72} height={72}
-                style={{ borderRadius: "50%", border: "3px solid var(--text)", objectFit: "cover", flexShrink: 0 }} />
-            )}
-            <label style={{ flex: 1 }}>
-              <div className="pixel-btn" style={{ width: "100%", cursor: "pointer" }}>
-                {coverImage ? "Change photo" : "+ Upload photo"}
-              </div>
-              <input type="file" accept="image/*" style={{ display: "none" }} onChange={handleCoverUpload} />
-            </label>
-            {coverImage && (
-              <button className="pixel-btn ghost" style={{ fontSize: 10, padding: "6px 8px" }} onClick={() => setCoverImage(null)}>✕</button>
-            )}
-          </div>
-        </div>
 
         {/* Background colour */}
         <div className="pixel-card" style={{ marginBottom: 16 }}>
