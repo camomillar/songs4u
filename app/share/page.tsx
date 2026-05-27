@@ -124,12 +124,13 @@ function ClosedCase({ onOpen }: { onOpen: () => void }) {
 
 /* ── Open case ───────────────────────────────────────────────── */
 function OpenCase({
-  to, from, message, songs, coverImage, currentIndex, setCurrentIndex,
+  to, from, message, songs, coverImage, bgColor, currentIndex, setCurrentIndex,
   isPlaying, audioActive, setAudioActive, setIsPlaying,
 }: {
   to: string; from: string; message: string;
   songs: { id: string; title: string; artist: string }[];
   coverImage?: string;
+  bgColor?: string;
   currentIndex: number;
   setCurrentIndex: (i: number) => void;
   isPlaying: boolean;
@@ -148,13 +149,14 @@ function OpenCase({
   return (
     <div style={{
       minHeight: "100vh",
-      background: "#fff",
+      background: bgColor || "#fff",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
       padding: "40px 24px",
       animation: "fadeUp 0.5s ease",
+      transition: "background 0.4s ease",
     }}>
       <style>{`
         @keyframes fadeUp {
@@ -398,6 +400,7 @@ function ShareContent() {
       message={playlist.message}
       songs={playlist.songs}
       coverImage={playlist.coverImage}
+      bgColor={playlist.bgColor}
       currentIndex={currentIndex}
       setCurrentIndex={setCurrentIndex}
       isPlaying={isPlaying}

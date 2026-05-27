@@ -10,6 +10,7 @@ export interface ValentinesPlaylist {
   message: string;
   songs: Song[];
   coverImage?: string; // base64 compressed photo
+  bgColor?: string;    // pastel background colour
 }
 
 export function encodePlaylist(playlist: ValentinesPlaylist): string {

@@ -21,6 +21,17 @@ export default function Home() {
   const [urlError, setUrlError] = useState("");
 
   const [coverImage, setCoverImage] = useState<string | null>(null);
+  const [bgColor, setBgColor] = useState("#FFE4E8");
+
+  const PASTEL_COLOURS = [
+    { hex: "#FFE4E8", name: "Rose" },
+    { hex: "#F3E4FF", name: "Lavender" },
+    { hex: "#E4F0FF", name: "Sky" },
+    { hex: "#E4FFF4", name: "Mint" },
+    { hex: "#FFFBE4", name: "Butter" },
+    { hex: "#FFE8D6", name: "Peach" },
+    { hex: "#FFD6F0", name: "Pink" },
+  ];
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const urlInputRef = useRef<HTMLInputElement>(null);
 
@@ -54,7 +65,7 @@ export default function Home() {
   const handleGenerate = () => {
     if (!to.trim()) { alert("Please enter who this is for!"); return; }
     if (songs.length === 0) { alert("Add at least one song!"); return; }
-    const encoded = encodePlaylist({ to: to.trim(), from: from.trim(), message: message.trim(), songs, ...(coverImage ? { coverImage } : {}) });
+    const encoded = encodePlaylist({ to: to.trim(), from: from.trim(), message: message.trim(), songs, ...(coverImage ? { coverImage } : {}), bgColor });
     const url = `${window.location.origin}/share?d=${encoded}`;
     setShareUrl(url);
   };
@@ -145,6 +156,43 @@ export default function Home() {
               </button>
             )}
           </div>
+        </div>
+
+        {/* Background colour */}
+        <div className="pixel-card" style={{ marginBottom: 16 }}>
+          <p style={{ fontSize: 9, marginBottom: 16, color: "var(--accent2)" }}>
+            🎨 Background Colour
+          </p>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            {PASTEL_COLOURS.map((c) => (
+              <button
+                key={c.hex}
+                title={c.name}
+                onClick={() => setBgColor(c.hex)}
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: "50%",
+                  background: c.hex,
+                  border: bgColor === c.hex ? "3px solid var(--text)" : "3px solid transparent",
+                  boxShadow: bgColor === c.hex ? "2px 2px 0 var(--shadow)" : "none",
+                  cursor: "pointer",
+                  outline: "none",
+                  transition: "none",
+                  position: "relative",
+                }}
+              >
+                {bgColor === c.hex && (
+                  <span style={{ fontSize: 14, position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    ✓
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+          <p style={{ fontSize: 7, color: "var(--text2)", marginTop: 10 }}>
+            Selected: {PASTEL_COLOURS.find(c => c.hex === bgColor)?.name}
+          </p>
         </div>
 
         {/* Add song */}
