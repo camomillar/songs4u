@@ -120,7 +120,7 @@ export default function Home() {
       <div style={{ minHeight: "100vh", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <HeartParticles />
         <div style={{ textAlign: "center", maxWidth: 320, padding: 24 }}>
-          <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 36, marginBottom: 8, color: "#111" }}>Lovelist</p>
+          <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 36, marginBottom: 8, color: "#111" }}>songs4u</p>
           <p style={{ fontFamily: F, fontSize: 14, color: "#888", marginBottom: 32, lineHeight: 1.6 }}>
             make a playlist for someone special
           </p>
@@ -155,7 +155,7 @@ export default function Home() {
         position: "sticky", top: 0, zIndex: 20,
         backdropFilter: "blur(8px)",
       }}>
-        <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 24, color: "#111", margin: 0 }}>Lovelist</p>
+        <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 24, color: "#111", margin: 0 }}>songs4u</p>
         <form action="/api/auth/logout" method="GET">
           <button type="submit" style={{
             fontFamily: F, fontSize: 13, color: "#555",
@@ -187,21 +187,21 @@ export default function Home() {
 
         {/* Details */}
         <div style={card}>
-          <p style={sectionTitle}>The details</p>
+          <p style={sectionTitle}>Details</p>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
             <div>
-              <span style={label}>For</span>
-              <input style={input} placeholder="their name..." value={to} onChange={e => setTo(e.target.value)} />
+              <span style={label}>To</span>
+              <input style={input} placeholder="their name" value={to} onChange={e => setTo(e.target.value)} />
             </div>
             <div>
               <span style={label}>From</span>
-              <input style={input} placeholder="your name..." value={from} onChange={e => setFrom(e.target.value)} />
+              <input style={input} placeholder="your name" value={from} onChange={e => setFrom(e.target.value)} />
             </div>
           </div>
           <span style={label}>Message</span>
           <textarea
             style={{ ...input, resize: "none" as const, lineHeight: 1.6 }}
-            placeholder="write something sweet..."
+            placeholder="write your message..."
             value={message}
             onChange={e => setMessage(e.target.value)}
             rows={3}
