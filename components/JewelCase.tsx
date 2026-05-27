@@ -12,7 +12,6 @@ interface Props {
   onTogglePlay: () => void;
   onNext: () => void;
   song: { title: string; artist: string; albumArt?: string };
-  coverArt?: string; // first song's album art for the case cover
   total: number;
   onBack: () => void;
 }
@@ -26,7 +25,7 @@ type Phase = "closed" | "opening" | "open";
 export default function JewelCase({
   to, from, message, bgColor,
   isPlaying, ready, onTogglePlay, onNext,
-  song, coverArt, total, onBack,
+  song, total, onBack,
 }: Props) {
   const [phase, setPhase] = useState<Phase>("closed");
 
@@ -202,32 +201,21 @@ export default function JewelCase({
               borderRadius: "0 3px 3px 0",
               overflow: "hidden",
             }}>
-              {/* Album artwork */}
-              {coverArt ? (
-                <Image
-                  src={coverArt}
-                  alt="cover"
-                  fill
-                  unoptimized
-                  style={{ objectFit: "cover" }}
-                />
-              ) : (
-                // Fallback: dark tray with disc silhouette
+              {/* Dark tray with disc silhouette */}
+              <div style={{
+                position: "absolute", inset: 0,
+                background: "#111",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
                 <div style={{
-                  position: "absolute", inset: 0,
-                  background: "#111",
+                  width: 200, height: 200, borderRadius: "50%",
+                  background: "conic-gradient(from 0deg, rgba(130,130,170,0.07), rgba(170,150,200,0.05), rgba(130,130,170,0.07))",
+                  border: "1px solid rgba(255,255,255,0.03)",
                   display: "flex", alignItems: "center", justifyContent: "center",
                 }}>
-                  <div style={{
-                    width: 200, height: 200, borderRadius: "50%",
-                    background: "conic-gradient(from 0deg, rgba(130,130,170,0.07), rgba(170,150,200,0.05), rgba(130,130,170,0.07))",
-                    border: "1px solid rgba(255,255,255,0.03)",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                  }}>
-                    <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#090909" }} />
-                  </div>
+                  <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#090909" }} />
                 </div>
-              )}
+              </div>
 
               {/* Plastic overlay / sheen */}
               <div style={{
