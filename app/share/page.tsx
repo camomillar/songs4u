@@ -124,11 +124,12 @@ function ClosedCase({ onOpen }: { onOpen: () => void }) {
 
 /* ── Open case ───────────────────────────────────────────────── */
 function OpenCase({
-  to, from, message, songs, currentIndex, setCurrentIndex,
+  to, from, message, songs, coverImage, currentIndex, setCurrentIndex,
   isPlaying, audioActive, setAudioActive, setIsPlaying,
 }: {
   to: string; from: string; message: string;
   songs: { id: string; title: string; artist: string }[];
+  coverImage?: string;
   currentIndex: number;
   setCurrentIndex: (i: number) => void;
   isPlaying: boolean;
@@ -240,10 +241,11 @@ function OpenCase({
           }} />
           {/* CD */}
           <Image
-            src="/cd.png"
+            src={coverImage || "/cd.png"}
             alt="CD"
             width={190}
             height={190}
+            unoptimized={!!coverImage}
             style={{
               borderRadius: "50%",
               objectFit: "cover",
@@ -378,6 +380,7 @@ function ShareContent() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioActive, setAudioActive] = useState(false);
 
+
   if (!playlist) {
     return (
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -394,6 +397,7 @@ function ShareContent() {
       from={playlist.from}
       message={playlist.message}
       songs={playlist.songs}
+      coverImage={playlist.coverImage}
       currentIndex={currentIndex}
       setCurrentIndex={setCurrentIndex}
       isPlaying={isPlaying}

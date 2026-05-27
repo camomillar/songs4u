@@ -9,6 +9,7 @@ export interface ValentinesPlaylist {
   from: string;
   message: string;
   songs: Song[];
+  coverImage?: string; // base64 compressed photo
 }
 
 export function encodePlaylist(playlist: ValentinesPlaylist): string {

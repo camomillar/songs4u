@@ -5,6 +5,7 @@ import HeartParticles from "@/components/HeartParticles";
 import QRShare from "@/components/QRShare";
 import { extractVideoId, getThumbnail } from "@/lib/youtube";
 import { encodePlaylist, type Song } from "@/lib/encode";
+import { compressImage } from "@/lib/compress";
 
 export default function Home() {
   const [to, setTo] = useState("");
@@ -19,8 +20,16 @@ export default function Home() {
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [urlError, setUrlError] = useState("");
 
+  const [coverImage, setCoverImage] = useState<string | null>(null);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const urlInputRef = useRef<HTMLInputElement>(null);
+
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const compressed = await compressImage(file);
+    setCoverImage(compressed);
+  };
 
   const handleUrlChange = (val: string) => {
     setYtUrl(val);
@@ -45,7 +54,7 @@ export default function Home() {
   const handleGenerate = () => {
     if (!to.trim()) { alert("Please enter who this is for!"); return; }
     if (songs.length === 0) { alert("Add at least one song!"); return; }
-    const encoded = encodePlaylist({ to: to.trim(), from: from.trim(), message: message.trim(), songs });
+    const encoded = encodePlaylist({ to: to.trim(), from: from.trim(), message: message.trim(), songs, ...(coverImage ? { coverImage } : {}) });
     const url = `${window.location.origin}/share?d=${encoded}`;
     setShareUrl(url);
   };
@@ -95,6 +104,47 @@ export default function Home() {
             rows={3}
             style={{ resize: "none" }}
           />
+        </div>
+
+        {/* Cover photo */}
+        <div className="pixel-card" style={{ marginBottom: 16 }}>
+          <p style={{ fontSize: 9, marginBottom: 16, color: "var(--accent2)" }}>
+            📷 Cover Photo
+          </p>
+          <p style={{ fontSize: 7, color: "var(--text2)", marginBottom: 12, lineHeight: 2 }}>
+            This will appear on the CD disc
+          </p>
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            {coverImage && (
+              <Image
+                src={coverImage}
+                alt="Cover"
+                width={72}
+                height={72}
+                style={{ borderRadius: "50%", border: "3px solid var(--text)", objectFit: "cover", flexShrink: 0 }}
+              />
+            )}
+            <label style={{ flex: 1 }}>
+              <div className="pixel-btn" style={{ width: "100%", cursor: "pointer" }}>
+                {coverImage ? "Change photo" : "+ Upload photo"}
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={handleCoverUpload}
+              />
+            </label>
+            {coverImage && (
+              <button
+                className="pixel-btn ghost"
+                style={{ fontSize: 10, padding: "6px 8px" }}
+                onClick={() => setCoverImage(null)}
+              >
+                ✕
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Add song */}
