@@ -171,9 +171,6 @@ function OpenCase({
         position: "relative",
         width: "100%",
         maxWidth: 700,
-        boxShadow: "0 8px 40px rgba(0,0,0,0.13)",
-        borderRadius: 4,
-        overflow: "hidden",
       }}>
 <Image
           src="/case-opened.png"
