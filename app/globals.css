@@ -301,6 +301,16 @@ html, body {
   margin: 20px 0;
 }
 
+/* ── CD spinner ── */
+@keyframes cd-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes cd-spin-reverse {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
+}
+
 /* ── Letter card ── */
 .letter-card {
   font-family: "Dancing Script", cursive;

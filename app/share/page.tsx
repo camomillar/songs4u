@@ -4,6 +4,7 @@ import { Suspense, useState } from "react";
 import Image from "next/image";
 import HeartParticles from "@/components/HeartParticles";
 import PixelAudioPlayer from "@/components/PixelAudioPlayer";
+import CDSpinner from "@/components/CDSpinner";
 import { decodePlaylist } from "@/lib/encode";
 import { getThumbnail } from "@/lib/youtube";
 
@@ -13,6 +14,7 @@ function ShareContent() {
   const playlist = encoded ? decodePlaylist(encoded) : null;
 
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   if (!playlist) {
     return (
@@ -58,6 +60,7 @@ function ShareContent() {
 
         {/* RIGHT — playlist */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <CDSpinner isPlaying={isPlaying} toName={playlist.to} />
           <p style={{ fontSize: 8, color: "var(--text2)", letterSpacing: 1, marginBottom: 4 }}>
             ♪ {playlist.songs.length} SONGS
           </p>
@@ -130,7 +133,8 @@ function ShareContent() {
               videoId={activeSong.id}
               title={activeSong.title}
               artist={activeSong.artist}
-              onClose={() => setActiveIndex(null)}
+              onClose={() => { setActiveIndex(null); setIsPlaying(false); }}
+              onPlayStateChange={setIsPlaying}
             />
           </div>
         </div>

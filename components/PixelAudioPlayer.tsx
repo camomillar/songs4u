@@ -36,6 +36,7 @@ export interface Props {
   title: string;
   artist: string;
   onClose: () => void;
+  onPlayStateChange?: (playing: boolean) => void;
 }
 
 function fmt(s: number) {
@@ -51,7 +52,7 @@ function ensureYTScript() {
   document.head.appendChild(s);
 }
 
-export default function PixelAudioPlayer({ videoId, title, artist, onClose }: Props) {
+export default function PixelAudioPlayer({ videoId, title, artist, onClose, onPlayStateChange }: Props) {
   const playerRef = useRef<YTPlayer | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -89,10 +90,12 @@ export default function PixelAudioPlayer({ videoId, title, artist, onClose }: Pr
             const { PLAYING, PAUSED, ENDED } = window.YT.PlayerState;
             if (e.data === PLAYING) {
               setIsPlaying(true);
+              onPlayStateChange?.(true);
               setDuration(playerRef.current?.getDuration() ?? 0);
               setLoading(false);
             } else if (e.data === PAUSED || e.data === ENDED) {
               setIsPlaying(false);
+              onPlayStateChange?.(false);
             }
           },
         },
