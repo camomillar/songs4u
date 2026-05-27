@@ -373,6 +373,7 @@ function JewelCaseWrapper({ playlist }: { playlist: ReturnType<typeof decodePlay
         onTogglePlay={togglePlay}
         onNext={next}
         song={song}
+        songs={songs}
         total={songs.length}
         onBack={() => window.history.back()}
       />

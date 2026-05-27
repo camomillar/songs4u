@@ -12,6 +12,7 @@ interface Props {
   onTogglePlay: () => void;
   onNext: () => void;
   song: { title: string; artist: string; albumArt?: string };
+  songs: { title: string; artist: string }[];
   total: number;
   onBack: () => void;
 }
@@ -25,7 +26,7 @@ type Phase = "closed" | "opening" | "open";
 export default function JewelCase({
   to, from, message, bgColor,
   isPlaying, ready, onTogglePlay, onNext,
-  song, total, onBack,
+  song, songs, total, onBack,
 }: Props) {
   const [phase, setPhase] = useState<Phase>("closed");
 
@@ -288,7 +289,49 @@ export default function JewelCase({
                   }} />
                 ))}
 
-                {/* Plain white — message is on the CD */}
+                {/* Song list */}
+                <div style={{
+                  position: "absolute", inset: 0,
+                  padding: "20px 18px",
+                  display: "flex", flexDirection: "column", justifyContent: "center",
+                  gap: 6,
+                  overflow: "hidden",
+                }}>
+                  {songs.map((s, i) => (
+                    <div key={i} style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+                      <span style={{
+                        fontFamily: "'OrdinaryLetter', cursive",
+                        fontSize: 11,
+                        color: "rgba(30,30,60,0.45)",
+                        flexShrink: 0,
+                        minWidth: 16,
+                      }}>
+                        {i + 1}.
+                      </span>
+                      <div style={{ minWidth: 0 }}>
+                        <p style={{
+                          fontFamily: "'OrdinaryLetter', cursive",
+                          fontSize: 12,
+                          color: "rgba(20,20,50,0.75)",
+                          margin: 0,
+                          overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                        }}>
+                          {s.title}
+                        </p>
+                        {s.artist && (
+                          <p style={{
+                            fontFamily: "'OrdinaryLetter', cursive",
+                            fontSize: 10,
+                            color: "rgba(20,20,50,0.45)",
+                            margin: 0,
+                          }}>
+                            {s.artist}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {/* ── CENTER HINGE ── */}
