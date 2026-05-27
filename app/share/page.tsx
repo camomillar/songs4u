@@ -1,7 +1,6 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
-// useEffect and useRef used in ClosedCase
 import Image from "next/image";
 import HeartParticles, { darkenHex } from "@/components/HeartParticles";
 import { decodePlaylist } from "@/lib/encode";
@@ -386,80 +385,11 @@ function ShareContent() {
   const encoded = params.get("d");
   const playlist = encoded ? decodePlaylist(encoded) : null;
   const [isOpen, setIsOpen] = useState(false);
-  const [authChecked, setAuthChecked] = useState(false);
-  const [isAuthed, setIsAuthed] = useState(false);
-
-  useEffect(() => {
-    fetch("/api/spotify/me")
-      .then(r => { setIsAuthed(r.ok); setAuthChecked(true); })
-      .catch(() => setAuthChecked(true));
-  }, []);
 
   if (!playlist) {
     return (
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <p style={{ fontFamily: "system-ui", fontSize: 14, color: "#999" }}>Link not found.</p>
-      </div>
-    );
-  }
-
-  // Loading auth check
-  if (!authChecked) {
-    return (
-      <div style={{ minHeight: "100vh", background: playlist.bgColor || "#fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <p style={{ fontFamily: "system-ui", fontSize: 14, color: "#999" }}>Loading...</p>
-      </div>
-    );
-  }
-
-  // Login screen
-  if (!isAuthed) {
-    const loginUrl = `/api/auth/login?context=player&redirect=${encodeURIComponent(typeof window !== "undefined" ? window.location.href : "/share")}`;
-    return (
-      <div style={{
-        minHeight: "100vh",
-        background: playlist.bgColor || "#fff",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 24,
-        padding: 24,
-        fontFamily: "system-ui, sans-serif",
-      }}>
-        <HeartParticles color={playlist.bgColor ? darkenHex(playlist.bgColor) : undefined} />
-
-        {/* Blurred closed case preview */}
-        <div style={{ position: "relative" }}>
-          <Image src="/case-closed.png" alt="CD" width={220} height={220}
-            style={{ objectFit: "contain", filter: "blur(2px)", opacity: 0.7 }} />
-          <div style={{
-            position: "absolute", inset: 0, display: "flex", alignItems: "center",
-            justifyContent: "center", fontSize: 36,
-          }}>🔒</div>
-        </div>
-
-        <div style={{ textAlign: "center", maxWidth: 320 }}>
-          <p style={{ fontFamily: "'Dancing Script', cursive", fontSize: 26, color: "#3a2010", marginBottom: 8 }}>
-            Someone made you a playlist ♥
-          </p>
-          <p style={{ fontSize: 14, color: "#888", marginBottom: 24, lineHeight: 1.6 }}>
-            Log in with Spotify to open it and listen to the full songs
-          </p>
-          <button
-            onClick={() => { window.location.href = loginUrl; }}
-            style={{
-              background: "#1DB954", color: "white", border: "none",
-              borderRadius: 50, padding: "14px 32px", fontSize: 15,
-              fontWeight: 600, cursor: "pointer", fontFamily: "system-ui",
-              display: "flex", alignItems: "center", gap: 10, margin: "0 auto",
-            }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-              <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
-            </svg>
-            Login with Spotify
-          </button>
-        </div>
       </div>
     );
   }
