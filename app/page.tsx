@@ -113,8 +113,12 @@ export default function Home() {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             rows={3}
+            maxLength={80}
             style={{ resize: "none" }}
           />
+          <p style={{ fontSize: 7, color: message.length > 70 ? "var(--accent2)" : "var(--text2)", marginTop: 6, textAlign: "right" }}>
+            {message.length}/80
+          </p>
         </div>
 
         {/* Cover photo */}

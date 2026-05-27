@@ -196,28 +196,28 @@ function OpenCase({
           fontFamily: "'Breathing', cursive",
         }}>
           <p style={{
-            fontSize: "clamp(15px, 2.6vw, 22px)",
+            fontSize: "clamp(18px, 3.2vw, 26px)",
             color: "#222",
-            lineHeight: 2,
-            marginBottom: "4%",
+            lineHeight: 1.9,
+            marginBottom: "5%",
           }}>
             My dearest {to},
           </p>
           {message && (
             <p style={{
-              fontSize: "clamp(14px, 2.4vw, 20px)",
+              fontSize: "clamp(17px, 3vw, 24px)",
               color: "#444",
-              lineHeight: 2,
-              marginBottom: "4%",
+              lineHeight: 1.9,
+              marginBottom: "5%",
             }}>
               {message}
             </p>
           )}
           {from && (
             <p style={{
-              fontSize: "clamp(14px, 2.4vw, 20px)",
+              fontSize: "clamp(17px, 3vw, 24px)",
               color: "#333",
-              lineHeight: 2,
+              lineHeight: 1.9,
             }}>
               Forever yours,<br />
               {from} <span style={{ color: "#e03050" }}>❤</span>
