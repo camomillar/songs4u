@@ -333,7 +333,7 @@ export default function JewelCase({
                   {songs.map((s, i) => (
                     <p key={i} style={{
                       fontFamily: "'OrdinaryLetter', cursive",
-                      fontSize: 14,
+                      fontSize: 17,
                       color: "rgba(20,20,50,0.72)",
                       margin: 0,
                       overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
