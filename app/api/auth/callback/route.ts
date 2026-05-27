@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
   const base = process.env.SPOTIFY_REDIRECT_URI!.replace("/api/auth/callback", "");
 
   if (!code || state !== storedState) {
-    return NextResponse.redirect(`${base}/?error=auth_failed`);
+    return NextResponse.redirect(`${base}/`);
   }
 
   const clientId = process.env.SPOTIFY_CLIENT_ID!;
@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
   });
 
   if (!tokenRes.ok) {
-    return NextResponse.redirect(`${base}/?error=token_failed`);
+    return NextResponse.redirect(`${base}/`);
   }
 
   const tokens = await tokenRes.json();
