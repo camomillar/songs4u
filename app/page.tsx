@@ -4,21 +4,63 @@ import Image from "next/image";
 import HeartParticles from "@/components/HeartParticles";
 import QRShare from "@/components/QRShare";
 import { encodePlaylist, type Song } from "@/lib/encode";
+import { compressImage } from "@/lib/compress";
+
+const F = "system-ui, -apple-system, sans-serif";
+
+const card: React.CSSProperties = {
+  background: "white",
+  borderRadius: 16,
+  padding: "20px 20px",
+  boxShadow: "0 2px 16px rgba(0,0,0,0.07)",
+  marginBottom: 16,
+};
+
+const label: React.CSSProperties = {
+  fontFamily: F,
+  fontSize: 11,
+  fontWeight: 600,
+  color: "#888",
+  letterSpacing: 0.5,
+  textTransform: "uppercase" as const,
+  display: "block",
+  marginBottom: 6,
+};
+
+const input: React.CSSProperties = {
+  fontFamily: F,
+  fontSize: 14,
+  color: "#111",
+  background: "#f7f7f8",
+  border: "1px solid #e8e8ea",
+  borderRadius: 10,
+  padding: "10px 14px",
+  width: "100%",
+  outline: "none",
+};
+
+const sectionTitle: React.CSSProperties = {
+  fontFamily: F,
+  fontSize: 13,
+  fontWeight: 700,
+  color: "#111",
+  marginBottom: 16,
+};
 
 export default function Home() {
+  const [authChecked, setAuthChecked] = useState(false);
+  const [isAuthed, setIsAuthed] = useState(false);
   const [to, setTo] = useState("");
   const [from, setFrom] = useState("");
   const [message, setMessage] = useState("");
   const [songs, setSongs] = useState<Song[]>([]);
 
-
-  const [authChecked, setAuthChecked] = useState(false);
-  const [isAuthed, setIsAuthed] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<{ id: string; title: string; artist: string; albumArt: string }[]>([]);
   const [searching, setSearching] = useState(false);
 
   const [bgColor, setBgColor] = useState("#FFE4E8");
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
 
   const PASTEL_COLOURS = [
     { hex: "#FFE4E8", name: "Rose" },
@@ -30,15 +72,11 @@ export default function Home() {
     { hex: "#FFD6F0", name: "Pink" },
   ];
 
-  const [shareUrl, setShareUrl] = useState<string | null>(null);
-
-
   useEffect(() => {
     fetch("/api/spotify/me")
       .then(r => { setIsAuthed(r.ok); setAuthChecked(true); })
       .catch(() => setAuthChecked(true));
   }, []);
-
 
   const handleSearch = async (q: string) => {
     setSearchQuery(q);
@@ -52,163 +90,181 @@ export default function Home() {
     finally { setSearching(false); }
   };
 
-  const handleAddSearchResult = (track: { id: string; title: string; artist: string; albumArt: string }) => {
-    if (songs.find(s => s.id === track.id)) return; // no duplicates
+  const handleAddSong = (track: { id: string; title: string; artist: string; albumArt: string }) => {
+    if (songs.find(s => s.id === track.id)) return;
     setSongs(prev => [...prev, track]);
     setSearchQuery("");
     setSearchResults([]);
   };
 
-  const handleRemoveSong = (i: number) => setSongs((prev) => prev.filter((_, idx) => idx !== i));
+  const handleRemoveSong = (i: number) => setSongs(prev => prev.filter((_, idx) => idx !== i));
 
   const handleGenerate = () => {
     if (!to.trim()) { alert("Please enter who this is for!"); return; }
     if (songs.length === 0) { alert("Add at least one song!"); return; }
-    const encoded = encodePlaylist({
-      to: to.trim(), from: from.trim(), message: message.trim(), songs,
-      bgColor,
-    });
+    const encoded = encodePlaylist({ to: to.trim(), from: from.trim(), message: message.trim(), songs, bgColor });
     setShareUrl(`${window.location.origin}/share?d=${encoded}`);
   };
 
   if (!authChecked) {
     return (
-      <div className="app-wrapper"><HeartParticles />
-        <div className="login-screen"><p style={{ fontSize: 8, color: "var(--text2)" }}>Loading<span className="loading-dots" /></p></div>
+      <div style={{ minHeight: "100vh", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <HeartParticles />
+        <p style={{ fontFamily: F, fontSize: 14, color: "#999" }}>Loading...</p>
       </div>
     );
   }
 
   if (!isAuthed) {
     return (
-      <div className="app-wrapper">
+      <div style={{ minHeight: "100vh", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <HeartParticles />
-        <div className="login-screen">
-          <div className="pixel-card login-card" style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 36, marginBottom: 12 }}>♥</div>
-            <h1 style={{ fontSize: 15, marginBottom: 8, textShadow: "2px 2px 0 var(--accent)" }}>Lovelist</h1>
-            <p style={{ fontSize: 8, color: "var(--text2)", marginBottom: 24, lineHeight: 2 }}>
-              make a playlist for someone special
-            </p>
-            <form action="/api/auth/login" method="GET" style={{ width: "100%" }}>
-              <button type="submit" className="pixel-btn green large" style={{ width: "100%" }}>
-                Login with Spotify ♥
-              </button>
-            </form>
-          </div>
+        <div style={{ textAlign: "center", maxWidth: 320, padding: 24 }}>
+          <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 36, marginBottom: 8, color: "#111" }}>Lovelist</p>
+          <p style={{ fontFamily: F, fontSize: 14, color: "#888", marginBottom: 32, lineHeight: 1.6 }}>
+            make a playlist for someone special
+          </p>
+          <form action="/api/auth/login" method="GET">
+            <button type="submit" style={{
+              fontFamily: F, fontSize: 15, fontWeight: 600,
+              background: "#1DB954", color: "white", border: "none",
+              borderRadius: 50, padding: "14px 32px", cursor: "pointer",
+              display: "flex", alignItems: "center", gap: 10, margin: "0 auto",
+            }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+              </svg>
+              Login with Spotify
+            </button>
+          </form>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="app-wrapper">
+    <div style={{ minHeight: "100vh", background: "#f5f5f7" }}>
       <HeartParticles />
-      <div className="page-content">
 
-        <div className="app-header" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div>
-            <span className="app-title">♥ Lovelist ♥</span>
-            <span className="app-subtitle" style={{ display: "block" }}>make a playlist for someone special</span>
-          </div>
-          <form action="/api/auth/logout" method="GET">
-            <button type="submit" className="pixel-btn" style={{ fontSize: 7, padding: "6px 10px" }}>Logout</button>
-          </form>
-        </div>
+      {/* Header */}
+      <div style={{
+        background: "white",
+        borderBottom: "1px solid #eee",
+        padding: "16px 20px",
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        position: "sticky", top: 0, zIndex: 20,
+        backdropFilter: "blur(8px)",
+      }}>
+        <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 24, color: "#111", margin: 0 }}>Lovelist</p>
+        <form action="/api/auth/logout" method="GET">
+          <button type="submit" style={{
+            fontFamily: F, fontSize: 13, color: "#555",
+            background: "#f0f0f2", border: "none", borderRadius: 20,
+            padding: "6px 14px", cursor: "pointer",
+          }}>Logout</button>
+        </form>
+      </div>
+
+      {/* Content */}
+      <div style={{ maxWidth: 480, margin: "0 auto", padding: "24px 16px 80px" }}>
 
         {/* Details */}
-        <div className="pixel-card" style={{ marginBottom: 16 }}>
-          <p style={{ fontSize: 9, marginBottom: 16, color: "var(--accent2)" }}>♥ The Details</p>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+        <div style={card}>
+          <p style={sectionTitle}>The details</p>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
             <div>
-              <label className="pixel-label">FOR</label>
-              <input className="pixel-input" placeholder="their name..." value={to} onChange={(e) => setTo(e.target.value)} />
+              <span style={label}>For</span>
+              <input style={input} placeholder="their name..." value={to} onChange={e => setTo(e.target.value)} />
             </div>
             <div>
-              <label className="pixel-label">FROM</label>
-              <input className="pixel-input" placeholder="your name..." value={from} onChange={(e) => setFrom(e.target.value)} />
+              <span style={label}>From</span>
+              <input style={input} placeholder="your name..." value={from} onChange={e => setFrom(e.target.value)} />
             </div>
           </div>
-          <label className="pixel-label">YOUR MESSAGE</label>
+          <span style={label}>Message</span>
           <textarea
-            className="pixel-input" placeholder="write something sweet..."
-            value={message} onChange={(e) => setMessage(e.target.value)}
-            rows={3} maxLength={80} style={{ resize: "none" }}
+            style={{ ...input, resize: "none" as const, lineHeight: 1.6 }}
+            placeholder="write something sweet..."
+            value={message}
+            onChange={e => setMessage(e.target.value)}
+            rows={3}
+            maxLength={80}
           />
-          <p style={{ fontSize: 7, color: message.length > 70 ? "var(--accent2)" : "var(--text2)", marginTop: 6, textAlign: "right" }}>
+          <p style={{ fontFamily: F, fontSize: 11, color: message.length > 70 ? "#e03050" : "#bbb", textAlign: "right", marginTop: 4 }}>
             {message.length}/80
           </p>
         </div>
 
-
         {/* Background colour */}
-        <div className="pixel-card" style={{ marginBottom: 16 }}>
-          <p style={{ fontSize: 9, marginBottom: 16, color: "var(--accent2)" }}>🎨 Background Colour</p>
+        <div style={card}>
+          <p style={sectionTitle}>Background colour</p>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-            {PASTEL_COLOURS.map((c) => (
+            {PASTEL_COLOURS.map(c => (
               <button key={c.hex} title={c.name} onClick={() => setBgColor(c.hex)} style={{
-                width: 40, height: 40, borderRadius: "50%", background: c.hex,
-                border: bgColor === c.hex ? "3px solid var(--text)" : "3px solid transparent",
-                boxShadow: bgColor === c.hex ? "2px 2px 0 var(--shadow)" : "none",
-                cursor: "pointer", outline: "none", position: "relative",
-              }}>
-                {bgColor === c.hex && (
-                  <span style={{ fontSize: 14, position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>✓</span>
-                )}
-              </button>
+                width: 36, height: 36, borderRadius: "50%", background: c.hex, border: "none",
+                outline: bgColor === c.hex ? "3px solid #111" : "3px solid transparent",
+                outlineOffset: 2, cursor: "pointer",
+              }} />
             ))}
           </div>
-          <p style={{ fontSize: 7, color: "var(--text2)", marginTop: 10 }}>
-            Selected: {PASTEL_COLOURS.find(c => c.hex === bgColor)?.name}
-          </p>
         </div>
 
-        {/* Song search */}
-        <div className="pixel-card" style={{ marginBottom: 16 }}>
-          <p style={{ fontSize: 9, marginBottom: 16, color: "var(--accent2)" }}>♪ Add Songs</p>
-          <label className="pixel-label">SEARCH SPOTIFY</label>
+        {/* Search songs */}
+        <div style={card}>
+          <p style={sectionTitle}>Add songs</p>
+          <span style={label}>Search Spotify</span>
           <input
-            className="pixel-input"
+            style={input}
             placeholder="Search for a song or artist..."
             value={searchQuery}
             onChange={e => handleSearch(e.target.value)}
-            style={{ marginBottom: searching ? 8 : searchResults.length ? 8 : 0 }}
           />
-          {searching && <p style={{ fontSize: 7, color: "var(--text2)", marginBottom: 8 }}>Searching<span className="loading-dots" /></p>}
+          {searching && <p style={{ fontFamily: F, fontSize: 12, color: "#999", marginTop: 8 }}>Searching...</p>}
           {searchResults.length > 0 && (
-            <ul className="pixel-list" style={{ gap: 2 }}>
+            <div style={{ marginTop: 10, borderRadius: 10, overflow: "hidden", border: "1px solid #eee" }}>
               {searchResults.map(track => (
-                <li key={track.id} className="pixel-list-item" onClick={() => handleAddSearchResult(track)} style={{ gap: 10 }}>
-                  <Image src={track.albumArt} alt={track.title} width={36} height={36} unoptimized
-                    style={{ objectFit: "cover", flexShrink: 0 }} />
-                  <div style={{ minWidth: 0 }}>
-                    <p style={{ fontSize: 7, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{track.title}</p>
-                    <p style={{ fontSize: 6, color: "var(--text2)", marginTop: 2 }}>{track.artist}</p>
+                <div key={track.id} onClick={() => handleAddSong(track)} style={{
+                  display: "flex", alignItems: "center", gap: 10,
+                  padding: "10px 14px", cursor: "pointer", background: "white",
+                  borderBottom: "1px solid #f0f0f0",
+                  transition: "background 0.1s",
+                }}
+                  onMouseEnter={e => (e.currentTarget.style.background = "#f7f7f8")}
+                  onMouseLeave={e => (e.currentTarget.style.background = "white")}
+                >
+                  {track.albumArt && (
+                    <Image src={track.albumArt} alt="" width={38} height={38} unoptimized
+                      style={{ borderRadius: 6, objectFit: "cover", flexShrink: 0 }} />
+                  )}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontFamily: F, fontSize: 13, fontWeight: 500, color: "#111", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{track.title}</p>
+                    <p style={{ fontFamily: F, fontSize: 12, color: "#888", margin: 0 }}>{track.artist}</p>
                   </div>
-                  <span style={{ fontSize: 14, color: "var(--accent3)", flexShrink: 0 }}>+</span>
-                </li>
+                  <span style={{ fontFamily: F, fontSize: 18, color: "#ccc", flexShrink: 0 }}>+</span>
+                </div>
               ))}
-            </ul>
+            </div>
           )}
         </div>
 
         {/* Song list */}
         {songs.length > 0 && (
-          <div className="pixel-card" style={{ marginBottom: 16 }}>
-            <p style={{ fontSize: 9, marginBottom: 14, color: "var(--accent2)" }}>♪ Songs ({songs.length})</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          <div style={card}>
+            <p style={sectionTitle}>Your songs ({songs.length})</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
               {songs.map((song, i) => (
-                <div key={i} className="song-row">
+                <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: i < songs.length - 1 ? "1px solid #f0f0f0" : "none" }}>
                   {song.albumArt && (
                     <Image src={song.albumArt} alt="" width={36} height={36} unoptimized
-                      style={{ borderRadius: 4, objectFit: "cover", flexShrink: 0 }} />
+                      style={{ borderRadius: 6, objectFit: "cover", flexShrink: 0 }} />
                   )}
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: 8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{song.title}</p>
-                    {song.artist && <p style={{ fontSize: 7, color: "var(--text2)", marginTop: 2 }}>{song.artist}</p>}
+                    <p style={{ fontFamily: F, fontSize: 13, fontWeight: 500, color: "#111", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{song.title}</p>
+                    <p style={{ fontFamily: F, fontSize: 12, color: "#888", margin: 0 }}>{song.artist}</p>
                   </div>
-                  <button className="pixel-btn ghost" onClick={() => handleRemoveSong(i)}
-                    style={{ fontSize: 12, padding: "4px 8px", flexShrink: 0 }}>✕</button>
+                  <button onClick={() => handleRemoveSong(i)} style={{
+                    fontFamily: F, fontSize: 12, color: "#bbb", background: "none", border: "none", cursor: "pointer", padding: "4px 8px", flexShrink: 0,
+                  }}>✕</button>
                 </div>
               ))}
             </div>
@@ -216,14 +272,22 @@ export default function Home() {
         )}
 
         {/* Generate */}
-        <button className="pixel-btn" onClick={handleGenerate}
+        <button
+          onClick={handleGenerate}
           disabled={songs.length === 0 || !to.trim()}
-          style={{ width: "100%", fontSize: 11, padding: "16px", marginBottom: 8 }}>
-          ♥ Generate Link &amp; QR Code
+          style={{
+            width: "100%", fontFamily: F, fontSize: 15, fontWeight: 600,
+            background: songs.length > 0 && to.trim() ? "#111" : "#ddd",
+            color: songs.length > 0 && to.trim() ? "white" : "#999",
+            border: "none", borderRadius: 14, padding: "16px",
+            cursor: songs.length > 0 && to.trim() ? "pointer" : "not-allowed",
+          }}
+        >
+          Generate Link & QR Code
         </button>
         {(songs.length === 0 || !to.trim()) && (
-          <p style={{ fontSize: 7, color: "var(--text2)", textAlign: "center" }}>
-            {!to.trim() ? "Add a name above to continue" : "Search and add at least one song to continue"}
+          <p style={{ fontFamily: F, fontSize: 12, color: "#bbb", textAlign: "center", marginTop: 8 }}>
+            {!to.trim() ? "Add a name to continue" : "Add at least one song to continue"}
           </p>
         )}
       </div>
