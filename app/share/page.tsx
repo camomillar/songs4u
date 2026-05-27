@@ -233,7 +233,7 @@ function OpenCase({
           )}
         </div>
 
-        {/* CD overlay — centred over the disc tray */}
+        {/* CD overlay — spin wrapper centred over the disc tray */}
         <div style={{
           position: "absolute",
           left: "73%",
@@ -241,15 +241,19 @@ function OpenCase({
           transform: "translate(-50%, -50%)",
           width: "32%",
           aspectRatio: "1",
+          animation: "cd-spin 4s linear infinite",
+          animationPlayState: isPlaying ? "running" : "paused",
         }}>
           <Image
             src="/cd.png"
             alt="CD"
-            fill
+            width={191}
+            height={188}
             style={{
+              width: "100%",
+              height: "100%",
               objectFit: "contain",
-              animation: "cd-spin 4s linear infinite",
-              animationPlayState: isPlaying ? "running" : "paused",
+              display: "block",
             }}
           />
         </div>
