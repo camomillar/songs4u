@@ -56,19 +56,22 @@ export default function QRShare({ url, onClose }: Props) {
           style={{ display: "block", margin: "0 auto 20px", borderRadius: 12 }}
         />
 
-        {/* URL box */}
+        {/* URL preview */}
         <div style={{
           background: "#f7f7f8",
           border: "1px solid #e8e8ea",
           borderRadius: 10,
           padding: "10px 14px",
-          fontFamily: F, fontSize: 11,
-          color: "#888",
-          wordBreak: "break-all",
-          lineHeight: 1.6,
+          fontFamily: F, fontSize: 12,
+          color: "#555",
           marginBottom: 16,
+          display: "flex", alignItems: "center", gap: 8,
+          overflow: "hidden",
         }}>
-          {url}
+          <span style={{ color: "#bbb", flexShrink: 0 }}>🔗</span>
+          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {url.split("?")[0]}<span style={{ color: "#bbb" }}>?d=...</span>
+          </span>
         </div>
 
         {/* Buttons */}
