@@ -25,12 +25,13 @@ interface YTPlayer {
   playVideo(): void;
   pauseVideo(): void;
   seekTo(seconds: number, allowSeekAhead: boolean): void;
+  loadVideoById(videoId: string): void;
   getCurrentTime(): number;
   getDuration(): number;
   destroy(): void;
 }
 
-interface Props {
+export interface Props {
   videoId: string;
   title: string;
   artist: string;
@@ -42,8 +43,7 @@ function fmt(s: number) {
   return `${m}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 }
 
-// Load the YT API script once globally
-function loadYTScript() {
+function ensureYTScript() {
   if (document.getElementById("yt-iframe-api")) return;
   const s = document.createElement("script");
   s.id = "yt-iframe-api";
@@ -55,16 +55,15 @@ export default function PixelAudioPlayer({ videoId, title, artist, onClose }: Pr
   const playerRef = useRef<YTPlayer | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const readyRef = useRef(false);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  // Create the player ONCE on mount
   useEffect(() => {
-    let destroyed = false;
-
-    // Hidden container for the iframe
     const wrapper = document.createElement("div");
     wrapper.style.cssText =
       "position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;bottom:0;left:0;overflow:hidden;";
@@ -73,24 +72,25 @@ export default function PixelAudioPlayer({ videoId, title, artist, onClose }: Pr
     document.body.appendChild(wrapper);
     wrapperRef.current = wrapper;
 
-    const initPlayer = () => {
-      if (destroyed) return;
+    const createPlayer = () => {
       playerRef.current = new window.YT.Player(playerDiv, {
         videoId,
         playerVars: { autoplay: 1, playsinline: 1 },
         events: {
           onReady: (e) => {
-            if (destroyed) return;
+            readyRef.current = true;
             e.target.playVideo();
-            setDuration(e.target.getDuration());
-            setLoading(false);
+            setTimeout(() => {
+              setDuration(e.target.getDuration());
+              setLoading(false);
+            }, 300);
           },
           onStateChange: (e) => {
-            if (destroyed) return;
             const { PLAYING, PAUSED, ENDED } = window.YT.PlayerState;
             if (e.data === PLAYING) {
               setIsPlaying(true);
               setDuration(playerRef.current?.getDuration() ?? 0);
+              setLoading(false);
             } else if (e.data === PAUSED || e.data === ENDED) {
               setIsPlaying(false);
             }
@@ -100,28 +100,36 @@ export default function PixelAudioPlayer({ videoId, title, artist, onClose }: Pr
     };
 
     if (window.YT?.Player) {
-      // API already loaded — init immediately
-      initPlayer();
+      createPlayer();
     } else {
-      // Queue up init for when the API fires
       const prev = window.onYouTubeIframeAPIReady;
       window.onYouTubeIframeAPIReady = () => {
         if (prev) prev();
-        initPlayer();
+        createPlayer();
       };
-      loadYTScript();
+      ensureYTScript();
     }
 
     return () => {
-      destroyed = true;
       if (tickRef.current) clearInterval(tickRef.current);
       playerRef.current?.destroy();
       playerRef.current = null;
+      readyRef.current = false;
       if (wrapperRef.current && document.body.contains(wrapperRef.current)) {
         document.body.removeChild(wrapperRef.current);
       }
     };
-  }, [videoId]);
+  }, []); // ← runs ONCE on mount
+
+  // When videoId changes — load new video into existing player
+  useEffect(() => {
+    if (!readyRef.current || !playerRef.current) return;
+    setLoading(true);
+    setCurrentTime(0);
+    setDuration(0);
+    setIsPlaying(false);
+    playerRef.current.loadVideoById(videoId);
+  }, [videoId]); // ← no player recreate, just swap video
 
   // Progress ticker
   useEffect(() => {
@@ -132,9 +140,7 @@ export default function PixelAudioPlayer({ videoId, title, artist, onClose }: Pr
     } else {
       if (tickRef.current) clearInterval(tickRef.current);
     }
-    return () => {
-      if (tickRef.current) clearInterval(tickRef.current);
-    };
+    return () => { if (tickRef.current) clearInterval(tickRef.current); };
   }, [isPlaying]);
 
   const togglePlay = () => {
@@ -172,25 +178,19 @@ export default function PixelAudioPlayer({ videoId, title, artist, onClose }: Pr
 
       {/* Song info */}
       <div style={{ marginBottom: 14 }}>
-        <p style={{ fontSize: 8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-          {title}
-        </p>
+        <p style={{ fontSize: 8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</p>
         {artist && <p style={{ fontSize: 7, color: "var(--text2)", marginTop: 4 }}>{artist}</p>}
       </div>
 
       {/* Progress bar */}
       <div
-        style={{
-          width: "100%", height: 10,
-          background: "var(--bg2)", border: "3px solid var(--text)",
-          cursor: "pointer", marginBottom: 12, overflow: "hidden",
-        }}
+        style={{ width: "100%", height: 10, background: "var(--bg2)", border: "3px solid var(--text)", cursor: "pointer", marginBottom: 12, overflow: "hidden" }}
         onClick={handleSeek}
       >
         <div style={{ height: "100%", width: `${Math.min(100, progress)}%`, background: "var(--accent)", transition: "width 0.4s linear" }} />
       </div>
 
-      {/* Time + controls */}
+      {/* Time + play */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <span style={{ fontSize: 7, color: "var(--text2)", minWidth: 32 }}>{fmt(currentTime)}</span>
         <button className="pixel-btn" onClick={togglePlay} disabled={loading} style={{ fontSize: 18, padding: "10px 24px" }}>
