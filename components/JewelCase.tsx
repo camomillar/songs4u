@@ -344,62 +344,71 @@ export default function JewelCase({
                   boxShadow: "inset 0 3px 10px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(0,0,0,0.4)",
                 }} />
 
-                {/* CD disc — white printable side */}
+                {/* CD disc — shiny silver iridescent */}
                 <div style={{
                   width: H * 0.84, height: H * 0.84,
                   borderRadius: "50%",
-                  background: "radial-gradient(circle, #f0f0f2 0%, #e8e8ea 60%, #d8d8dc 100%)",
-                  boxShadow: "0 2px 10px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.6)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
                   position: "relative",
                   animation: isPlaying ? "cd-spin 4s linear infinite" : undefined,
                   flexShrink: 0,
+                  boxShadow: "0 2px 14px rgba(0,0,0,0.45), 0 0 0 1px rgba(180,180,190,0.4)",
+                  // Silver base + iridescent layers
+                  background: `
+                    conic-gradient(
+                      from 45deg at 62% 38%,
+                      rgba(180,215,245,0.35) 0deg,
+                      rgba(210,245,185,0.25) 50deg,
+                      rgba(245,185,215,0.3) 100deg,
+                      rgba(215,185,245,0.25) 150deg,
+                      rgba(185,245,240,0.3) 200deg,
+                      rgba(245,235,185,0.2) 260deg,
+                      rgba(180,215,245,0.3) 310deg,
+                      rgba(180,215,245,0.35) 360deg
+                    ),
+                    repeating-conic-gradient(
+                      from 0deg,
+                      rgba(255,255,255,0.04) 0deg,
+                      rgba(210,210,220,0.08) 2deg,
+                      rgba(255,255,255,0.04) 4deg
+                    ),
+                    radial-gradient(circle, #f2f2f4 0%, #e4e4e8 35%, #d4d4da 65%, #c8c8d0 85%, #bcbcc6 100%)
+                  `,
                 }}>
-                  {/* Groove rings */}
-                  {[30, 45, 60, 75].map(r => (
-                    <div key={r} style={{
-                      position: "absolute",
-                      width: `${r}%`, height: `${r}%`,
-                      borderRadius: "50%",
-                      border: "0.5px solid rgba(0,0,0,0.05)",
-                    }} />
-                  ))}
-                  {/* Hub area */}
+                  {/* Outer rim */}
                   <div style={{
-                    width: "32%", height: "32%",
-                    borderRadius: "50%",
-                    background: "radial-gradient(circle, #888890 0%, #7a7a82 50%, #6a6a72 100%)",
-                    boxShadow: "0 1px 4px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2)",
+                    position: "absolute", inset: 0, borderRadius: "50%",
+                    boxShadow: "inset 0 0 0 3px rgba(180,180,195,0.5), inset 0 0 12px rgba(0,0,0,0.08)",
+                    pointerEvents: "none",
+                  }} />
+
+                  {/* Stacking ring (inner clear area around hub) */}
+                  <div style={{
+                    position: "absolute", top: "50%", left: "50%",
+                    transform: "translate(-50%,-50%)",
+                    width: "30%", height: "30%", borderRadius: "50%",
+                    background: "radial-gradient(circle, rgba(200,215,230,0.9) 0%, rgba(180,195,215,0.85) 60%, rgba(160,175,200,0.8) 100%)",
+                    boxShadow: "0 0 0 2px rgba(150,165,190,0.6), inset 0 1px 3px rgba(0,0,0,0.15)",
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    position: "relative",
                     zIndex: 2,
                   }}>
-                    {/* Hub mechanism — spider/star */}
+                    {/* Center hole */}
                     <div style={{
-                      width: "55%", height: "55%",
-                      borderRadius: "50%",
-                      background: "radial-gradient(circle, #2a2a2e 0%, #3a3a3e 100%)",
-                      boxShadow: "0 1px 3px rgba(0,0,0,0.5)",
+                      width: "48%", height: "48%", borderRadius: "50%",
+                      background: "radial-gradient(circle, #f5f5f6 0%, #e8e8ea 100%)",
+                      boxShadow: "inset 0 1px 3px rgba(0,0,0,0.2), 0 0 0 1px rgba(150,155,170,0.5)",
                     }} />
-                    {/* Star spokes */}
-                    {[0, 45, 90, 135].map(angle => (
-                      <div key={angle} style={{
-                        position: "absolute",
-                        width: "80%", height: 2,
-                        background: "rgba(40,40,44,0.7)",
-                        transform: `rotate(${angle}deg)`,
-                        borderRadius: 1,
-                      }} />
-                    ))}
                   </div>
-                  {/* Stacking ring */}
-                  <div style={{
-                    position: "absolute",
-                    width: "38%", height: "38%",
-                    borderRadius: "50%",
-                    border: "1px solid rgba(0,0,0,0.1)",
-                    zIndex: 1,
-                  }} />
+
+                  {/* Groove rings */}
+                  {[36, 50, 64, 78].map(r => (
+                    <div key={r} style={{
+                      position: "absolute", top: "50%", left: "50%",
+                      transform: "translate(-50%,-50%)",
+                      width: `${r}%`, height: `${r}%`,
+                      borderRadius: "50%",
+                      border: "0.5px solid rgba(150,150,165,0.12)",
+                    }} />
+                  ))}
                 </div>
               </div>
             </div>
