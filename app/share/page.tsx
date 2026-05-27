@@ -158,9 +158,21 @@ function OpenCase({
   const [currentIndex, setCurrentIndex] = useState(0);
   const total = songs.length;
   const song = songs[currentIndex];
-  const { isPlaying, toggle } = useYouTube(song.id);
+  const { isPlaying, play, pause } = useYouTube();
 
-  const next = () => setCurrentIndex((i) => (i + 1) % total);
+  const handlePlayPause = () => {
+    if (isPlaying) {
+      pause();
+    } else {
+      play(song.id);
+    }
+  };
+
+  const next = () => {
+    const ni = (currentIndex + 1) % total;
+    setCurrentIndex(ni);
+    play(songs[ni].id); // called directly in click — no React effect delay
+  };
 
   return (
     <div style={{
@@ -300,7 +312,7 @@ function OpenCase({
 
         {/* Play/pause */}
         <button
-          onClick={toggle}
+          onClick={handlePlayPause}
           style={{ width: 36, height: 36, borderRadius: "50%", border: "1.5px solid #ccc", background: "white", cursor: "pointer", fontSize: 13, color: "#333", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}
         >
           {isPlaying ? "⏸" : "▶"}

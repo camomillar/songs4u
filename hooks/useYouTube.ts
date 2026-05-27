@@ -12,33 +12,27 @@ function loadScript() {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type W = any;
 
-export function useYouTube(videoId: string) {
+export function useYouTube() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const playerRef = useRef<any>(null);
-  const divRef = useRef<HTMLDivElement | null>(null);
   const readyRef = useRef(false);
+  const loadedIdRef = useRef<string | null>(null);
   const isPlayingRef = useRef(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const div = document.createElement("div");
     div.style.cssText =
       "position:fixed;bottom:-200px;left:0;width:1px;height:1px;overflow:hidden;pointer-events:none;";
     document.body.appendChild(div);
-    divRef.current = div;
 
     const init = () => {
       const YT = (window as W).YT;
       if (!YT?.Player) return;
       playerRef.current = new YT.Player(div, {
-        videoId,
-        playerVars: { autoplay: 0, playsinline: 1, controls: 0 },
+        playerVars: { playsinline: 1, controls: 0 },
         events: {
-          onReady: () => {
-            readyRef.current = true;
-            setReady(true);
-          },
+          onReady: () => { readyRef.current = true; },
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           onStateChange: (e: any) => {
             const state = (window as W).YT?.PlayerState;
@@ -58,39 +52,30 @@ export function useYouTube(videoId: string) {
       init();
     } else {
       const prev = (window as W).onYouTubeIframeAPIReady;
-      (window as W).onYouTubeIframeAPIReady = () => {
-        prev?.();
-        init();
-      };
+      (window as W).onYouTubeIframeAPIReady = () => { prev?.(); init(); };
       loadScript();
     }
 
     return () => {
       playerRef.current?.destroy();
-      playerRef.current = null;
-      if (divRef.current && document.body.contains(divRef.current)) {
-        document.body.removeChild(divRef.current);
-      }
+      if (div.parentNode) div.parentNode.removeChild(div);
     };
-  }, []); // mount once
+  }, []);
 
-  // Swap video when song changes
-  useEffect(() => {
-    if (readyRef.current && playerRef.current) {
-      playerRef.current.loadVideoById(videoId);
-      isPlayingRef.current = true;
-      setIsPlaying(true);
-    }
-  }, [videoId]);
-
-  const toggle = () => {
-    if (!playerRef.current || !readyRef.current) return;
-    if (isPlayingRef.current) {
-      playerRef.current.pauseVideo();
-    } else {
+  /** Play a video — resumes if same song, loads fresh if different */
+  const play = (videoId: string) => {
+    if (!readyRef.current || !playerRef.current) return;
+    if (loadedIdRef.current === videoId) {
       playerRef.current.playVideo();
+    } else {
+      playerRef.current.loadVideoById(videoId);
+      loadedIdRef.current = videoId;
     }
   };
 
-  return { isPlaying, ready, toggle };
+  const pause = () => {
+    playerRef.current?.pauseVideo();
+  };
+
+  return { isPlaying, play, pause };
 }
