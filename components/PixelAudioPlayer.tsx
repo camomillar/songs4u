@@ -69,11 +69,12 @@ const PixelAudioPlayer = forwardRef<PixelAudioPlayerHandle, Props>(function Pixe
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [loading, setLoading] = useState(true);
+  const isPlayingRef = useRef(false); // always up-to-date, no stale closure
 
   useImperativeHandle(ref, () => ({
     toggle: () => {
       if (!playerRef.current) return;
-      if (isPlaying) {
+      if (isPlayingRef.current) {
         playerRef.current.pauseVideo();
       } else {
         playerRef.current.playVideo();
@@ -94,24 +95,23 @@ const PixelAudioPlayer = forwardRef<PixelAudioPlayerHandle, Props>(function Pixe
     const createPlayer = () => {
       playerRef.current = new window.YT.Player(playerDiv, {
         videoId,
-        playerVars: { autoplay: 1, playsinline: 1 },
+        playerVars: { autoplay: 0, playsinline: 1 },
         events: {
           onReady: (e) => {
             readyRef.current = true;
-            e.target.playVideo();
-            setTimeout(() => {
-              setDuration(e.target.getDuration());
-              setLoading(false);
-            }, 300);
+            setDuration(e.target.getDuration());
+            setLoading(false);
           },
           onStateChange: (e) => {
             const { PLAYING, PAUSED, ENDED } = window.YT.PlayerState;
             if (e.data === PLAYING) {
+              isPlayingRef.current = true;
               setIsPlaying(true);
               onPlayStateChange?.(true);
               setDuration(playerRef.current?.getDuration() ?? 0);
               setLoading(false);
             } else if (e.data === PAUSED || e.data === ENDED) {
+              isPlayingRef.current = false;
               setIsPlaying(false);
               onPlayStateChange?.(false);
             }

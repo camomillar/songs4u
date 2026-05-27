@@ -148,7 +148,7 @@ function ClosedCase({ onOpen, coverImage, bgColor }: { onOpen: () => void; cover
 /* ── Open case ───────────────────────────────────────────────── */
 function OpenCase({
   to, from, message, songs, coverImage, bgColor, currentIndex, setCurrentIndex,
-  isPlaying, audioActive, setAudioActive, setIsPlaying, audioRef, onBack,
+  isPlaying, setIsPlaying, audioRef, onBack,
 }: {
   to: string; from: string; message: string;
   songs: { id: string; title: string; artist: string }[];
@@ -158,8 +158,6 @@ function OpenCase({
   currentIndex: number;
   setCurrentIndex: (i: number) => void;
   isPlaying: boolean;
-  audioActive: boolean;
-  setAudioActive: (v: boolean) => void;
   setIsPlaying: (v: boolean) => void;
   onBack: () => void;
 }) {
@@ -309,7 +307,7 @@ function OpenCase({
 
         {/* Play/pause */}
         <button
-          onClick={() => { if (!audioActive) { setAudioActive(true); } else { audioRef.current?.toggle(); } }}
+          onClick={() => audioRef.current?.toggle()}
           style={{ width: 36, height: 36, borderRadius: "50%", border: "1.5px solid #ccc", background: "white", cursor: "pointer", fontSize: 13, color: "#333", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}
         >
           {isPlaying ? "⏸" : "▶"}
@@ -336,18 +334,17 @@ function OpenCase({
       </p>
 
       {/* Hidden audio */}
-      {audioActive && (
-        <div style={{ display: "none" }}>
-          <PixelAudioPlayer
-            ref={audioRef}
-            videoId={song.id}
-            title={song.title}
-            artist={song.artist}
-            onClose={() => setAudioActive(false)}
-            onPlayStateChange={setIsPlaying}
-          />
-        </div>
-      )}
+      {/* Always mounted so the player is ready when user clicks play */}
+      <div style={{ display: "none" }}>
+        <PixelAudioPlayer
+          ref={audioRef}
+          videoId={song.id}
+          title={song.title}
+          artist={song.artist}
+          onClose={() => {}}
+          onPlayStateChange={setIsPlaying}
+        />
+      </div>
     </div>
   );
 }
@@ -361,7 +358,6 @@ function ShareContent() {
   const [isOpen, setIsOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [audioActive, setAudioActive] = useState(false);
   const audioRef = useRef<PixelAudioPlayerHandle>(null);
 
   if (!playlist) {
@@ -383,12 +379,10 @@ function ShareContent() {
       coverImage={playlist.coverImage}
       bgColor={playlist.bgColor}
       audioRef={audioRef}
-      onBack={() => { setIsOpen(false); setIsPlaying(false); setAudioActive(false); }}
+      onBack={() => { setIsOpen(false); setIsPlaying(false); }}
       currentIndex={currentIndex}
       setCurrentIndex={setCurrentIndex}
       isPlaying={isPlaying}
-      audioActive={audioActive}
-      setAudioActive={setAudioActive}
       setIsPlaying={setIsPlaying}
     />
   );
