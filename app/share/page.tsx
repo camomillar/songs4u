@@ -60,7 +60,7 @@ function ShareContent() {
 
         {/* RIGHT — playlist */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <CDSpinner isPlaying={isPlaying} toName={playlist.to} />
+          <CDSpinner isPlaying={isPlaying} />
           <p style={{ fontSize: 8, color: "var(--text2)", letterSpacing: 1, marginBottom: 4 }}>
             ♪ {playlist.songs.length} SONGS
           </p>
