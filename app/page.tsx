@@ -205,10 +205,10 @@ export default function Home() {
             value={message}
             onChange={e => setMessage(e.target.value)}
             rows={3}
-            maxLength={80}
+            maxLength={30}
           />
-          <p style={{ fontFamily: F, fontSize: 11, color: message.length > 70 ? "#e03050" : "#bbb", textAlign: "right", marginTop: 4 }}>
-            {message.length}/80
+          <p style={{ fontFamily: F, fontSize: 11, color: message.length > 24 ? "#e03050" : "#bbb", textAlign: "right", marginTop: 4 }}>
+            {message.length}/30
           </p>
         </div>
 
