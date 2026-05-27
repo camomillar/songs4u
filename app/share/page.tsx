@@ -196,7 +196,7 @@ function OpenCase({
           fontFamily: "'Breathing', cursive",
         }}>
           {/* My dearest [name], */}
-          <p style={{ fontSize: "clamp(12px, 2vw, 16px)", color: "#1d3d8e", lineHeight: 1.4, marginBottom: "8%" }}>
+          <p style={{ fontSize: "clamp(11px, 1.7vw, 14px)", color: "#1d3d8e", lineHeight: 1.4, marginBottom: "8%" }}>
             My dearest {to},
           </p>
 
@@ -214,7 +214,7 @@ function OpenCase({
                 Forever yours,
               </p>
               {/* Name */}
-              <p style={{ fontSize: "clamp(12px, 2vw, 16px)", color: "#1d3d8e", lineHeight: 1.4 }}>
+              <p style={{ fontSize: "clamp(11px, 1.7vw, 14px)", color: "#1d3d8e", lineHeight: 1.4 }}>
                 {from}
               </p>
             </>
