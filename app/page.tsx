@@ -229,7 +229,6 @@ export default function Home() {
         {/* Search songs */}
         <div style={card}>
           <p style={sectionTitle}>Add songs</p>
-          <span style={label}>Search Spotify</span>
           <input
             style={input}
             placeholder="Search for a song or artist..."
