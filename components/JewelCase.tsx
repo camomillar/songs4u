@@ -527,8 +527,18 @@ export default function JewelCase({
             )}
           </div>
 
-          <p style={{ fontFamily: "system-ui", fontSize: 11, color: "#bbb" }}>
-            made with ♥ · <a href="/" style={{ color: "#bbb", textDecoration: "none" }}>make your own</a>
+          <p style={{
+            fontFamily: "system-ui", fontSize: 11, color: "#bbb",
+            position: "fixed", bottom: 20, left: "50%", transform: "translateX(-50%)",
+            whiteSpace: "nowrap", zIndex: 10,
+          }}>
+            made with ♥ by{" "}
+            <a href="https://www.instagram.com/caahmills/" target="_blank" rel="noopener noreferrer"
+              style={{ color: "#bbb", textDecoration: "none", borderBottom: "1px solid #ddd" }}>
+              caahmills
+            </a>
+            {" "}·{" "}
+            <a href="/" style={{ color: "#bbb", textDecoration: "none" }}>make your own</a>
           </p>
         </>
       )}
