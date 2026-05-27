@@ -28,7 +28,7 @@ function ShareContent() {
   const activeSong = activeIndex !== null ? playlist.songs[activeIndex] : null;
 
   return (
-    <div style={{ minHeight: "100vh", padding: "32px 24px 120px", maxWidth: 900, margin: "0 auto" }}>
+    <div style={{ minHeight: "100vh", padding: "32px 24px 48px", maxWidth: 900, margin: "0 auto" }}>
 
       {/* Two-column layout */}
       <div style={{
@@ -118,25 +118,16 @@ function ShareContent() {
         </div>
       </div>
 
-      {/* Fixed bottom player */}
+      {/* Hidden audio player — no UI, just keeps the YouTube iframe alive */}
       {activeSong && (
-        <div style={{
-          position: "fixed", bottom: 0, left: 0, right: 0,
-          padding: "12px 16px",
-          background: "var(--card)",
-          borderTop: "4px solid var(--text)",
-          boxShadow: "0 -4px 0 0 var(--shadow)",
-          zIndex: 50,
-        }}>
-          <div style={{ maxWidth: 640, margin: "0 auto" }}>
-            <PixelAudioPlayer
-              videoId={activeSong.id}
-              title={activeSong.title}
-              artist={activeSong.artist}
-              onClose={() => { setActiveIndex(null); setIsPlaying(false); }}
-              onPlayStateChange={setIsPlaying}
-            />
-          </div>
+        <div style={{ display: "none" }}>
+          <PixelAudioPlayer
+            videoId={activeSong.id}
+            title={activeSong.title}
+            artist={activeSong.artist}
+            onClose={() => { setActiveIndex(null); setIsPlaying(false); }}
+            onPlayStateChange={setIsPlaying}
+          />
         </div>
       )}
     </div>
