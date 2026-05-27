@@ -243,7 +243,7 @@ export default function JewelCase({
               {coverImage && (
                 <>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={coverImage} alt="cover" style={{ position: "absolute", left: 18, top: 0, right: 0, bottom: 0, width: "calc(100% - 18px)", height: "100%", objectFit: "cover" }} />
+                  <img src={coverImage} alt="cover" style={{ position: "absolute", left: 18, top: 0, right: 0, bottom: 0, width: "calc(100% - 18px)", height: "100%", objectFit: "cover", imageRendering: "auto" }} />
                   {/* Plastic sheen over photo */}
                   <div style={{ position: "absolute", left: 18, top: 0, right: 0, bottom: 0, background: "linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 40%)", pointerEvents: "none" }} />
                 </>
