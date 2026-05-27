@@ -12,8 +12,6 @@ function ShareContent() {
   const encoded = params.get("d");
   const playlist = encoded ? decodePlaylist(encoded) : null;
 
-  // activeIndex drives ONE persistent player — clicking a song updates it,
-  // clicking again (or close) hides it. No unmount/remount on song switch.
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   if (!playlist) {
@@ -28,78 +26,116 @@ function ShareContent() {
   const activeSong = activeIndex !== null ? playlist.songs[activeIndex] : null;
 
   return (
-    <div className="page-content" style={{ paddingBottom: activeSong ? 160 : 48 }}>
-      {/* Header */}
-      <div className="share-header">
-        <p style={{ fontSize: 22, marginBottom: 12, letterSpacing: 6 }}>♥ ♥ ♥</p>
-        <p className="share-to">For {playlist.to}</p>
-        {playlist.message && <p className="share-message">"{playlist.message}"</p>}
-        {playlist.from && <p className="share-from">— with love, {playlist.from} ♥</p>}
-      </div>
+    <div style={{ minHeight: "100vh", padding: "32px 24px 120px", maxWidth: 900, margin: "0 auto" }}>
 
-      <hr className="pixel-divider" />
+      {/* Two-column layout */}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr",
+        gap: 24,
+        alignItems: "start",
+      }}>
 
-      {/* Song list — always visible */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        {playlist.songs.map((song, i) => {
-          const isActive = i === activeIndex;
-          return (
-            <div
-              key={i}
-              className={`pixel-card ${isActive ? "active-song" : ""}`}
-              style={{
-                padding: 10,
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                cursor: "pointer",
-                outline: isActive ? "3px solid var(--accent2)" : "none",
-                outlineOffset: "-3px",
-              }}
-              onClick={() => setActiveIndex(isActive ? null : i)}
-            >
-              <div style={{ position: "relative", flexShrink: 0 }}>
-                <Image
-                  src={getThumbnail(song.id)}
-                  alt={song.title}
-                  width={80}
-                  height={45}
-                  unoptimized
-                  style={{ border: "2px solid var(--text)", display: "block" }}
-                />
-                <div style={{
-                  position: "absolute", inset: 0,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  background: isActive ? "rgba(61,0,21,0.5)" : "rgba(61,0,21,0.25)",
-                  fontSize: 16, color: "white",
-                }}>
-                  {isActive ? "♥" : "▶"}
+        {/* LEFT — message */}
+        <div className="pixel-card" style={{ position: "sticky", top: 24 }}>
+          <p style={{ fontSize: 20, marginBottom: 20, letterSpacing: 4, textAlign: "center" }}>♥ ♥ ♥</p>
+
+          <p style={{ fontSize: 11, color: "var(--accent2)", textShadow: "2px 2px 0 var(--text)", marginBottom: 16 }}>
+            For {playlist.to}
+          </p>
+
+          {playlist.message && (
+            <p style={{
+              fontSize: 8,
+              color: "var(--text2)",
+              lineHeight: 2.4,
+              fontStyle: "italic",
+              marginBottom: 16,
+              padding: "12px",
+              background: "var(--card2)",
+              border: "2px solid var(--accent3)",
+            }}>
+              "{playlist.message}"
+            </p>
+          )}
+
+          {playlist.from && (
+            <p style={{ fontSize: 8, color: "var(--text2)", textAlign: "right" }}>
+              — with love, {playlist.from} ♥
+            </p>
+          )}
+
+          <hr className="pixel-divider" style={{ margin: "20px 0" }} />
+
+          <p style={{ fontSize: 7, color: "var(--accent3)", textAlign: "center", lineHeight: 2.4 }}>
+            made with ♥ on Lovelist
+            <br />
+            <a href="/" style={{ color: "var(--accent2)", textDecoration: "none" }}>
+              make your own →
+            </a>
+          </p>
+        </div>
+
+        {/* RIGHT — playlist */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <p style={{ fontSize: 8, color: "var(--text2)", letterSpacing: 1, marginBottom: 4 }}>
+            ♪ {playlist.songs.length} SONGS
+          </p>
+
+          {playlist.songs.map((song, i) => {
+            const isActive = i === activeIndex;
+            return (
+              <div
+                key={i}
+                className="pixel-card"
+                style={{
+                  padding: 10,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  cursor: "pointer",
+                  outline: isActive ? "3px solid var(--accent2)" : "none",
+                  outlineOffset: "-3px",
+                  background: isActive ? "var(--card2)" : "var(--card)",
+                }}
+                onClick={() => setActiveIndex(isActive ? null : i)}
+              >
+                <div style={{ position: "relative", flexShrink: 0 }}>
+                  <Image
+                    src={getThumbnail(song.id)}
+                    alt={song.title}
+                    width={72}
+                    height={40}
+                    unoptimized
+                    style={{ border: "2px solid var(--text)", display: "block" }}
+                  />
+                  <div style={{
+                    position: "absolute", inset: 0,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    background: isActive ? "rgba(61,0,21,0.5)" : "rgba(61,0,21,0.25)",
+                    fontSize: 14, color: "white",
+                  }}>
+                    {isActive ? "♥" : "▶"}
+                  </div>
                 </div>
-              </div>
 
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontSize: 8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {song.title}
-                </p>
-                {song.artist && (
-                  <p style={{ fontSize: 7, color: "var(--text2)", marginTop: 4 }}>{song.artist}</p>
-                )}
-              </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: 7, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {song.title}
+                  </p>
+                  {song.artist && (
+                    <p style={{ fontSize: 6, color: "var(--text2)", marginTop: 3 }}>{song.artist}</p>
+                  )}
+                </div>
 
-              <span style={{ fontSize: 16, color: isActive ? "var(--accent2)" : "var(--accent3)", flexShrink: 0 }}>♥</span>
-            </div>
-          );
-        })}
+                <span style={{ fontSize: 14, color: isActive ? "var(--accent2)" : "var(--accent3)", flexShrink: 0 }}>♥</span>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Footer */}
-      <p style={{ textAlign: "center", fontSize: 7, color: "var(--accent3)", marginTop: 32, lineHeight: 2.5 }}>
-        made with ♥ on Lovelist
-        <br />
-        <a href="/" style={{ color: "var(--accent2)", textDecoration: "none" }}>make your own →</a>
-      </p>
-
-      {/* Single persistent player — stays mounted, just changes videoId */}
+      {/* Fixed bottom player */}
       {activeSong && (
         <div style={{
           position: "fixed", bottom: 0, left: 0, right: 0,
@@ -108,15 +144,15 @@ function ShareContent() {
           borderTop: "4px solid var(--text)",
           boxShadow: "0 -4px 0 0 var(--shadow)",
           zIndex: 50,
-          maxWidth: 640,
-          margin: "0 auto",
         }}>
-          <PixelAudioPlayer
-            videoId={activeSong.id}
-            title={activeSong.title}
-            artist={activeSong.artist}
-            onClose={() => setActiveIndex(null)}
-          />
+          <div style={{ maxWidth: 640, margin: "0 auto" }}>
+            <PixelAudioPlayer
+              videoId={activeSong.id}
+              title={activeSong.title}
+              artist={activeSong.artist}
+              onClose={() => setActiveIndex(null)}
+            />
+          </div>
         </div>
       )}
     </div>
