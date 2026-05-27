@@ -243,12 +243,12 @@ export default function JewelCase({
               onClick={handleOpen}
               style={{
                 fontFamily: "'Lora', serif", fontStyle: "italic",
-                fontSize: 15, color: "#aaa", cursor: "pointer",
-                letterSpacing: 0.3, borderBottom: "1px solid #ddd", paddingBottom: 2,
+                fontSize: 15, color: "#555", cursor: "pointer",
+                letterSpacing: 0.3, borderBottom: "1px solid #999", paddingBottom: 2,
                 marginTop: 40,
               }}
               onMouseEnter={(e) => (e.currentTarget.style.color = "#e03050")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "#aaa")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "#555")}
             >
               click to open
             </p>
