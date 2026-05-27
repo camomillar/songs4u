@@ -158,8 +158,7 @@ function OpenCase({
   const [currentIndex, setCurrentIndex] = useState(0);
   const total = songs.length;
   const song = songs[currentIndex];
-  // Pass first song so the player initialises with a valid videoId
-  const { isPlaying, play, pause } = useYouTube(songs[0].id);
+  const { isPlaying, play, pause } = useYouTube();
 
   const handlePlayPause = () => {
     if (isPlaying) {
