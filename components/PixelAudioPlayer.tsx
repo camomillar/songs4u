@@ -42,9 +42,18 @@ function fmt(s: number) {
   return `${m}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 }
 
+// Load the YT API script once globally
+function loadYTScript() {
+  if (document.getElementById("yt-iframe-api")) return;
+  const s = document.createElement("script");
+  s.id = "yt-iframe-api";
+  s.src = "https://www.youtube.com/iframe_api";
+  document.head.appendChild(s);
+}
+
 export default function PixelAudioPlayer({ videoId, title, artist, onClose }: Props) {
   const playerRef = useRef<YTPlayer | null>(null);
-  const hiddenRef = useRef<HTMLDivElement | null>(null);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -53,26 +62,31 @@ export default function PixelAudioPlayer({ videoId, title, artist, onClose }: Pr
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mount a hidden div to host the YouTube iframe
+    let destroyed = false;
+
+    // Hidden container for the iframe
     const wrapper = document.createElement("div");
     wrapper.style.cssText =
       "position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;bottom:0;left:0;overflow:hidden;";
     const playerDiv = document.createElement("div");
     wrapper.appendChild(playerDiv);
     document.body.appendChild(wrapper);
-    hiddenRef.current = wrapper;
+    wrapperRef.current = wrapper;
 
-    const init = () => {
+    const initPlayer = () => {
+      if (destroyed) return;
       playerRef.current = new window.YT.Player(playerDiv, {
         videoId,
         playerVars: { autoplay: 1, playsinline: 1 },
         events: {
           onReady: (e) => {
+            if (destroyed) return;
             e.target.playVideo();
             setDuration(e.target.getDuration());
             setLoading(false);
           },
           onStateChange: (e) => {
+            if (destroyed) return;
             const { PLAYING, PAUSED, ENDED } = window.YT.PlayerState;
             if (e.data === PLAYING) {
               setIsPlaying(true);
@@ -86,28 +100,30 @@ export default function PixelAudioPlayer({ videoId, title, artist, onClose }: Pr
     };
 
     if (window.YT?.Player) {
-      init();
+      // API already loaded — init immediately
+      initPlayer();
     } else {
+      // Queue up init for when the API fires
       const prev = window.onYouTubeIframeAPIReady;
       window.onYouTubeIframeAPIReady = () => {
         if (prev) prev();
-        init();
+        initPlayer();
       };
-      if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
-        const script = document.createElement("script");
-        script.src = "https://www.youtube.com/iframe_api";
-        document.head.appendChild(script);
-      }
+      loadYTScript();
     }
 
     return () => {
-      playerRef.current?.destroy();
-      if (hiddenRef.current) document.body.removeChild(hiddenRef.current);
+      destroyed = true;
       if (tickRef.current) clearInterval(tickRef.current);
+      playerRef.current?.destroy();
+      playerRef.current = null;
+      if (wrapperRef.current && document.body.contains(wrapperRef.current)) {
+        document.body.removeChild(wrapperRef.current);
+      }
     };
   }, [videoId]);
 
-  // Tick progress
+  // Progress ticker
   useEffect(() => {
     if (isPlaying) {
       tickRef.current = setInterval(() => {
@@ -116,7 +132,9 @@ export default function PixelAudioPlayer({ videoId, title, artist, onClose }: Pr
     } else {
       if (tickRef.current) clearInterval(tickRef.current);
     }
-    return () => { if (tickRef.current) clearInterval(tickRef.current); };
+    return () => {
+      if (tickRef.current) clearInterval(tickRef.current);
+    };
   }, [isPlaying]);
 
   const togglePlay = () => {
@@ -136,7 +154,7 @@ export default function PixelAudioPlayer({ videoId, title, artist, onClose }: Pr
 
   return (
     <div className="pixel-card" style={{ padding: 16 }}>
-      {/* Top row: bars + close */}
+      {/* Bars + close */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
         <div className={`music-bars ${isPlaying ? "playing" : ""}`}>
           {[6, 14, 10, 18, 8, 14, 10].map((h, i) => (
@@ -147,11 +165,7 @@ export default function PixelAudioPlayer({ videoId, title, artist, onClose }: Pr
             />
           ))}
         </div>
-        <button
-          className="pixel-btn ghost"
-          style={{ fontSize: 10, padding: "4px 8px" }}
-          onClick={onClose}
-        >
+        <button className="pixel-btn ghost" style={{ fontSize: 10, padding: "4px 8px" }} onClick={onClose}>
           ✕
         </button>
       </div>
@@ -161,48 +175,28 @@ export default function PixelAudioPlayer({ videoId, title, artist, onClose }: Pr
         <p style={{ fontSize: 8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {title}
         </p>
-        {artist && (
-          <p style={{ fontSize: 7, color: "var(--text2)", marginTop: 4 }}>{artist}</p>
-        )}
+        {artist && <p style={{ fontSize: 7, color: "var(--text2)", marginTop: 4 }}>{artist}</p>}
       </div>
 
       {/* Progress bar */}
       <div
         style={{
-          width: "100%",
-          height: 10,
-          background: "var(--bg2)",
-          border: "3px solid var(--text)",
-          cursor: "pointer",
-          marginBottom: 12,
-          overflow: "hidden",
+          width: "100%", height: 10,
+          background: "var(--bg2)", border: "3px solid var(--text)",
+          cursor: "pointer", marginBottom: 12, overflow: "hidden",
         }}
         onClick={handleSeek}
       >
-        <div
-          style={{
-            height: "100%",
-            width: `${Math.min(100, progress)}%`,
-            background: "var(--accent)",
-            transition: "width 0.4s linear",
-          }}
-        />
+        <div style={{ height: "100%", width: `${Math.min(100, progress)}%`, background: "var(--accent)", transition: "width 0.4s linear" }} />
       </div>
 
-      {/* Time + play button */}
+      {/* Time + controls */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <span style={{ fontSize: 7, color: "var(--text2)", minWidth: 32 }}>{fmt(currentTime)}</span>
-        <button
-          className="pixel-btn"
-          onClick={togglePlay}
-          disabled={loading}
-          style={{ fontSize: 18, padding: "10px 24px" }}
-        >
+        <button className="pixel-btn" onClick={togglePlay} disabled={loading} style={{ fontSize: 18, padding: "10px 24px" }}>
           {loading ? "…" : isPlaying ? "⏸" : "▶"}
         </button>
-        <span style={{ fontSize: 7, color: "var(--text2)", minWidth: 32, textAlign: "right" }}>
-          {fmt(duration)}
-        </span>
+        <span style={{ fontSize: 7, color: "var(--text2)", minWidth: 32, textAlign: "right" }}>{fmt(duration)}</span>
       </div>
     </div>
   );
