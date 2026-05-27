@@ -1,6 +1,7 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
+// useEffect, useRef used in ClosedCase
 import Image from "next/image";
 import HeartParticles, { darkenHex } from "@/components/HeartParticles";
 import { decodePlaylist } from "@/lib/encode";
@@ -154,35 +155,9 @@ function OpenCase({
   onBack: () => void;
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [progress, setProgress] = useState(0);
-  const [previewPlaying, setPreviewPlaying] = useState(false);
-  const audioRef = useRef<HTMLAudioElement>(null);
   const total = songs.length;
   const song = songs[currentIndex];
-
-  // Use preview URLs stored in the song data (fetched at build time)
-  const previewUrl = song.previewUrl ?? null;
-  const isPlaying = previewPlaying;
-
-  // Reset audio on song change (preview fallback)
-  useEffect(() => {
-    setPreviewPlaying(false);
-    setProgress(0);
-    if (audioRef.current) { audioRef.current.pause(); audioRef.current.currentTime = 0; }
-  }, [currentIndex]);
-
-  const togglePlay = () => {
-    const audio = audioRef.current;
-    if (!audio || !previewUrl) return;
-    if (previewPlaying) { audio.pause(); setPreviewPlaying(false); }
-    else { audio.play().catch(() => {}); setPreviewPlaying(true); }
-  };
-
-  const next = () => {
-    setCurrentIndex(i => (i + 1) % total);
-  };
-
-  const displayTrack = { title: song.title, artist: song.artist, albumArt: song.albumArt };
+  const next = () => setCurrentIndex(i => (i + 1) % total);
 
   return (
     <div style={{
@@ -291,58 +266,31 @@ function OpenCase({
       </div>
 
 
-      {/* Player */}
+      {/* Player — Spotify embed (works without API or Premium) */}
       <div style={{ width: "100%", maxWidth: 700, marginTop: 16 }}>
-
-        {/* Hidden HTML5 audio for non-premium fallback */}
-        {previewUrl && (
-          <audio ref={audioRef} src={previewUrl}
-            onTimeUpdate={() => setProgress(audioRef.current?.currentTime ?? 0)}
-            onEnded={() => { setPreviewPlaying(false); next(); }} />
-        )}
-
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          {/* Album art */}
-          {displayTrack.albumArt ? (
-            <Image src={displayTrack.albumArt} alt={displayTrack.title} width={52} height={52} unoptimized
-              style={{ borderRadius: 8, objectFit: "cover", flexShrink: 0 }} />
-          ) : (
-            <div style={{ width: 52, height: 52, borderRadius: 8, background: "#eee", flexShrink: 0 }} />
-          )}
-
-          {/* Title + artist + progress */}
-          <div style={{ flex: 1, minWidth: 0 }}>
+        {/* Song title + next button */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+          <div style={{ minWidth: 0 }}>
             <p style={{ fontSize: 13, fontWeight: 600, color: "#111", fontFamily: "system-ui", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {displayTrack.title}
+              {song.title}
             </p>
-            {displayTrack.artist && (
-              <p style={{ fontSize: 11, color: "#888", fontFamily: "system-ui", marginTop: 2 }}>{displayTrack.artist}</p>
-            )}
-            {/* Progress bar */}
-            <div style={{ marginTop: 6, height: 3, background: "#eee", borderRadius: 2, overflow: "hidden" }}>
-              <div style={{ height: "100%", width: `${Math.min(100, (progress / 30) * 100)}%`, background: "#333", borderRadius: 2, transition: "width 0.5s linear" }} />
-            </div>
+            {song.artist && <p style={{ fontSize: 11, color: "#888", fontFamily: "system-ui", marginTop: 2 }}>{song.artist}</p>}
           </div>
-
-          {/* Play/pause */}
-          <button onClick={togglePlay}
-            disabled={!previewUrl}
-            title={!previewUrl ? "No preview available for this song" : undefined}
-            style={{ width: 38, height: 38, borderRadius: "50%", border: "1.5px solid #ccc", background: "white", cursor: previewUrl ? "pointer" : "not-allowed", fontSize: 14, color: "#333", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            {isPlaying ? "⏸" : "▶"}
-          </button>
-
-          {/* Next */}
           {total > 1 && (
-            <button onClick={next} style={{ width: 38, height: 38, borderRadius: "50%", border: "1.5px solid #ccc", background: "white", cursor: "pointer", fontSize: 13, color: "#333", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>⏭</button>
+            <button onClick={next} style={{ width: 36, height: 36, borderRadius: "50%", border: "1.5px solid #ccc", background: "white", cursor: "pointer", fontSize: 13, color: "#333", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", marginLeft: 12 }}>⏭</button>
           )}
         </div>
 
-        {!previewUrl && (
-          <p style={{ fontSize: 11, color: "#bbb", fontFamily: "system-ui", marginTop: 6, textAlign: "center" }}>
-            No preview available for this song
-          </p>
-        )}
+        {/* Spotify embed — plays 30s preview for everyone, full song if logged in */}
+        <iframe
+          key={song.id}
+          src={`https://open.spotify.com/embed/track/${song.id}?utm_source=generator&theme=0`}
+          width="100%"
+          height="80"
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          style={{ border: "none", borderRadius: 12 }}
+          loading="lazy"
+        />
       </div>
 
       {/* Footer */}
