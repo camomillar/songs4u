@@ -196,7 +196,7 @@ function OpenCase({
           fontFamily: "'Breathing', cursive",
         }}>
           <p style={{
-            fontSize: "clamp(11px, 2vw, 16px)",
+            fontSize: "clamp(15px, 2.6vw, 22px)",
             color: "#222",
             lineHeight: 2,
             marginBottom: "4%",
@@ -205,7 +205,7 @@ function OpenCase({
           </p>
           {message && (
             <p style={{
-              fontSize: "clamp(10px, 1.8vw, 15px)",
+              fontSize: "clamp(14px, 2.4vw, 20px)",
               color: "#444",
               lineHeight: 2,
               marginBottom: "4%",
@@ -215,7 +215,7 @@ function OpenCase({
           )}
           {from && (
             <p style={{
-              fontSize: "clamp(10px, 1.8vw, 15px)",
+              fontSize: "clamp(14px, 2.4vw, 20px)",
               color: "#333",
               lineHeight: 2,
             }}>
