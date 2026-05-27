@@ -13,13 +13,9 @@ export default function Home() {
   const [songs, setSongs] = useState<Song[]>([]);
 
 
-  const [spotifyUrl, setSpotifyUrl] = useState("");
-  const [songTitle, setSongTitle] = useState("");
-  const [songArtist, setSongArtist] = useState("");
-  const [previewThumb, setPreviewThumb] = useState<string | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [playlistUrl, setPlaylistUrl] = useState("");
   const [fetching, setFetching] = useState(false);
-  const [urlError, setUrlError] = useState("");
+  const [fetchError, setFetchError] = useState("");
 
   const [coverImage, setCoverImage] = useState<string | null>(null);
   const [bgColor, setBgColor] = useState("#FFE4E8");
@@ -42,34 +38,20 @@ export default function Home() {
     setCoverImage(await compressImage(file));
   };
 
-  const handleUrlChange = async (val: string) => {
-    setSpotifyUrl(val);
-    setUrlError("");
-    setPreviewThumb(null);
-    if (!val.includes("spotify.com/track/")) return;
+  const handleFetchPlaylist = async () => {
+    if (!playlistUrl.trim()) return;
     setFetching(true);
+    setFetchError("");
     try {
-      const res = await fetch(`/api/track-info?url=${encodeURIComponent(val)}`);
+      const res = await fetch(`/api/playlist-tracks?url=${encodeURIComponent(playlistUrl)}`);
       const data = await res.json();
-      if (data.title) setSongTitle(data.title);
-      if (data.artist) setSongArtist(data.artist);
-      if (data.thumbnail) setPreviewThumb(data.thumbnail);
-      if (data.previewUrl) setPreviewUrl(data.previewUrl);
-    } catch { /* silent */ } finally { setFetching(false); }
-  };
-
-  const handleAddSong = () => {
-    const match = spotifyUrl.match(/track\/([a-zA-Z0-9]+)/);
-    if (!match) { setUrlError("Paste a valid Spotify track link."); return; }
-    if (!songTitle.trim()) { setUrlError("Paste a Spotify link and wait for the song info to load."); return; }
-    setSongs(prev => [...prev, {
-      id: match[1],
-      title: songTitle.trim(),
-      artist: songArtist.trim(),
-      ...(previewThumb ? { albumArt: previewThumb } : {}),
-      ...(previewUrl ? { previewUrl } : {}),
-    }]);
-    setSpotifyUrl(""); setSongTitle(""); setSongArtist(""); setPreviewThumb(null); setPreviewUrl(null); setUrlError("");
+      if (data.error) throw new Error(data.error);
+      setSongs(data.songs);
+    } catch (e) {
+      setFetchError(e instanceof Error ? e.message : "Could not fetch playlist");
+    } finally {
+      setFetching(false);
+    }
   };
 
   const handleRemoveSong = (i: number) => setSongs((prev) => prev.filter((_, idx) => idx !== i));
@@ -162,33 +144,28 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Add song */}
+        {/* Spotify playlist */}
         <div className="pixel-card" style={{ marginBottom: 16 }}>
-          <p style={{ fontSize: 9, marginBottom: 16, color: "var(--accent2)" }}>♪ Add a Song</p>
+          <p style={{ fontSize: 9, marginBottom: 16, color: "var(--accent2)" }}>♪ Spotify Playlist</p>
           <p style={{ fontSize: 7, color: "var(--text2)", lineHeight: 2, marginBottom: 12 }}>
-            On Spotify: right-click any song → Share → Copy Song Link
+            On Spotify: open playlist → Share → Copy link to playlist
           </p>
-          <label className="pixel-label">SPOTIFY TRACK LINK</label>
+          <label className="pixel-label">PLAYLIST LINK</label>
           <input
             className="pixel-input"
-            placeholder="https://open.spotify.com/track/..."
-            value={spotifyUrl}
-            onChange={(e) => handleUrlChange(e.target.value)}
+            placeholder="https://open.spotify.com/playlist/..."
+            value={playlistUrl}
+            onChange={(e) => setPlaylistUrl(e.target.value)}
             style={{ marginBottom: 12 }}
           />
-          {fetching && <p style={{ fontSize: 7, color: "var(--text2)", marginBottom: 10 }}>Fetching song info<span className="loading-dots" /></p>}
-          {previewThumb && songTitle && (
-            <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 12, padding: 8, background: "var(--bg2)", border: "2px solid var(--accent3)" }}>
-              <Image src={previewThumb} alt="" width={48} height={48} unoptimized style={{ objectFit: "cover", flexShrink: 0 }} />
-              <div>
-                <p style={{ fontSize: 8 }}>{songTitle}</p>
-                {songArtist && <p style={{ fontSize: 7, color: "var(--text2)", marginTop: 2 }}>{songArtist}</p>}
-              </div>
-            </div>
-          )}
-          {urlError && <p style={{ fontSize: 7, color: "var(--accent2)", marginBottom: 10 }}>⚠ {urlError}</p>}
-          <button className="pixel-btn" onClick={handleAddSong} disabled={!spotifyUrl || !songTitle || fetching} style={{ width: "100%" }}>
-            + Add Song
+          {fetchError && <p style={{ fontSize: 7, color: "var(--accent2)", marginBottom: 10 }}>⚠ {fetchError}</p>}
+          <button
+            className="pixel-btn"
+            onClick={handleFetchPlaylist}
+            disabled={!playlistUrl.trim() || fetching}
+            style={{ width: "100%" }}
+          >
+            {fetching ? "Loading songs..." : "Load Songs from Spotify"}
           </button>
         </div>
 
@@ -223,7 +200,7 @@ export default function Home() {
         </button>
         {(songs.length === 0 || !to.trim()) && (
           <p style={{ fontSize: 7, color: "var(--text2)", textAlign: "center" }}>
-            {!to.trim() ? "Add a name above to continue" : "Add at least one song to continue"}
+            {!to.trim() ? "Add a name above to continue" : "Load a playlist to continue"}
           </p>
         )}
       </div>
