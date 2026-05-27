@@ -116,41 +116,35 @@ export default function JewelCase({
               zIndex: 2,
             }}
           >
-            {/* FRONT FACE — case exterior with artwork */}
+            {/* FRONT FACE — plain jewel case exterior */}
             <div style={{
               position: "absolute", inset: 0,
-              background: "#111",
+              background: "linear-gradient(160deg, #1c1c1c 0%, #0a0a0a 100%)",
               backfaceVisibility: "hidden",
               overflow: "hidden",
             }}>
-              {/* Artwork photo — takes up full face */}
-              <Image
-                src={song.albumArt || "/cd.png"}
-                alt="cover"
-                fill
-                unoptimized={!!song.albumArt}
-                style={{ objectFit: "cover" }}
-              />
-              {/* Plastic sheen overlay */}
+              {/* Plastic sheen */}
               <div style={{
                 position: "absolute", inset: 0,
-                background: "linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 50%, rgba(0,0,0,0.15) 100%)",
+                background: "linear-gradient(135deg, rgba(255,255,255,0.07) 0%, transparent 40%)",
                 pointerEvents: "none",
               }} />
-              {/* Bottom hint */}
+              {/* Inner frame — like the clear plastic tray of a real case */}
               <div style={{
-                position: "absolute", bottom: 0, left: 0, right: 0,
-                padding: "8px 10px",
-                background: "linear-gradient(to top, rgba(0,0,0,0.55), transparent)",
-                display: "flex", justifyContent: "flex-end",
+                position: "absolute",
+                top: 6, bottom: 6, left: 6, right: 6,
+                border: "1px solid rgba(255,255,255,0.06)",
+                pointerEvents: "none",
+              }} />
+              {/* Hint */}
+              <p style={{
+                position: "absolute", bottom: 10, right: 12,
+                fontFamily: "'Lora', serif", fontStyle: "italic",
+                fontSize: 10, color: "rgba(255,255,255,0.2)", letterSpacing: 0.5,
+                margin: 0,
               }}>
-                <p style={{
-                  fontFamily: "'Lora', serif", fontStyle: "italic",
-                  fontSize: 10, color: "rgba(255,255,255,0.6)", letterSpacing: 0.5,
-                }}>
-                  click to open ♥
-                </p>
-              </div>
+                click to open ♥
+              </p>
             </div>
 
             {/* BACK FACE — letter (liner notes) */}
