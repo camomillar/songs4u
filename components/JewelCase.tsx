@@ -352,32 +352,40 @@ export default function JewelCase({
                   animation: isPlaying ? "cd-spin 4s linear infinite" : undefined,
                   flexShrink: 0,
                   boxShadow: "0 2px 14px rgba(0,0,0,0.45), 0 0 0 1px rgba(180,180,190,0.4)",
-                  // Silver base + iridescent layers
+                  // Mirror silver + vivid iridescent + radial streaks
                   background: `
+                    radial-gradient(ellipse at 65% 30%, rgba(255,255,255,0.95) 0%, transparent 45%),
                     conic-gradient(
-                      from 45deg at 62% 38%,
-                      rgba(180,215,245,0.35) 0deg,
-                      rgba(210,245,185,0.25) 50deg,
-                      rgba(245,185,215,0.3) 100deg,
-                      rgba(215,185,245,0.25) 150deg,
-                      rgba(185,245,240,0.3) 200deg,
-                      rgba(245,235,185,0.2) 260deg,
-                      rgba(180,215,245,0.3) 310deg,
-                      rgba(180,215,245,0.35) 360deg
+                      from 20deg at 60% 35%,
+                      rgba(150,200,255,0.55) 0deg,
+                      rgba(150,255,180,0.4) 45deg,
+                      rgba(255,150,200,0.5) 90deg,
+                      rgba(200,150,255,0.45) 135deg,
+                      rgba(150,240,255,0.5) 180deg,
+                      rgba(255,230,120,0.4) 225deg,
+                      rgba(255,160,130,0.45) 270deg,
+                      rgba(150,200,255,0.5) 315deg,
+                      rgba(150,200,255,0.55) 360deg
                     ),
                     repeating-conic-gradient(
                       from 0deg,
-                      rgba(255,255,255,0.04) 0deg,
-                      rgba(210,210,220,0.08) 2deg,
-                      rgba(255,255,255,0.04) 4deg
+                      rgba(255,255,255,0.06) 0deg,
+                      rgba(180,185,200,0.12) 1.5deg,
+                      rgba(255,255,255,0.06) 3deg
                     ),
-                    radial-gradient(circle, #f2f2f4 0%, #e4e4e8 35%, #d4d4da 65%, #c8c8d0 85%, #bcbcc6 100%)
+                    radial-gradient(circle, #f8f8fa 0%, #ececf0 25%, #d8d8e0 55%, #c8c8d4 80%, #b8b8c8 100%)
                   `,
                 }}>
                   {/* Outer rim */}
                   <div style={{
                     position: "absolute", inset: 0, borderRadius: "50%",
-                    boxShadow: "inset 0 0 0 3px rgba(180,180,195,0.5), inset 0 0 12px rgba(0,0,0,0.08)",
+                    boxShadow: "inset 0 0 0 3px rgba(180,180,195,0.5), inset 0 0 14px rgba(0,0,0,0.1)",
+                    pointerEvents: "none",
+                  }} />
+                  {/* Hot specular highlight — top-left bright streak */}
+                  <div style={{
+                    position: "absolute", inset: 0, borderRadius: "50%",
+                    background: "radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.2) 25%, transparent 55%)",
                     pointerEvents: "none",
                   }} />
 
