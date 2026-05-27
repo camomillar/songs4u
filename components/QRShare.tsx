@@ -2,6 +2,8 @@
 import { useState } from "react";
 import Image from "next/image";
 
+const F = "system-ui, -apple-system, sans-serif";
+
 interface Props {
   url: string;
   onClose: () => void;
@@ -10,7 +12,7 @@ interface Props {
 export default function QRShare({ url, onClose }: Props) {
   const [copied, setCopied] = useState(false);
 
-  const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=3d0015&bgcolor=fff8fb&data=${encodeURIComponent(url)}`;
+  const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=111111&bgcolor=ffffff&data=${encodeURIComponent(url)}`;
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(url);
@@ -19,53 +21,88 @@ export default function QRShare({ url, onClose }: Props) {
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <p style={{ fontSize: 11, marginBottom: 20, color: "var(--accent2)" }}>
-          ♥ Share your playlist ♥
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed", inset: 0,
+        background: "rgba(0,0,0,0.4)",
+        backdropFilter: "blur(6px)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        zIndex: 200, padding: 24,
+      }}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          background: "white",
+          borderRadius: 20,
+          padding: 28,
+          maxWidth: 360, width: "100%",
+          boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
+        }}
+      >
+        {/* Title */}
+        <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 26, color: "#111", textAlign: "center", margin: "0 0 20px" }}>
+          share your playlist ♥
         </p>
 
+        {/* QR Code */}
         <Image
           src={qrSrc}
           alt="QR Code"
-          width={200}
-          height={200}
-          className="album-art"
-          style={{ margin: "0 auto 20px", display: "block", imageRendering: "pixelated" }}
+          width={180}
+          height={180}
           unoptimized
+          style={{ display: "block", margin: "0 auto 20px", borderRadius: 12 }}
         />
 
-        <p style={{ fontSize: 7, color: "var(--text2)", marginBottom: 12, lineHeight: 2 }}>
-          Scan or copy the link below:
-        </p>
-
-        <div
-          style={{
-            background: "var(--bg2)",
-            border: "2px solid var(--text)",
-            padding: "8px 10px",
-            fontSize: 6,
-            wordBreak: "break-all",
-            color: "var(--text)",
-            marginBottom: 14,
-            lineHeight: 2,
-            textAlign: "left",
-          }}
-        >
+        {/* URL box */}
+        <div style={{
+          background: "#f7f7f8",
+          border: "1px solid #e8e8ea",
+          borderRadius: 10,
+          padding: "10px 14px",
+          fontFamily: F, fontSize: 11,
+          color: "#888",
+          wordBreak: "break-all",
+          lineHeight: 1.6,
+          marginBottom: 16,
+        }}>
           {url}
         </div>
 
+        {/* Buttons */}
         <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
-          <button className="pixel-btn" style={{ flex: 1 }} onClick={handleCopy}>
+          <button
+            onClick={handleCopy}
+            style={{
+              flex: 1, fontFamily: F, fontSize: 14, fontWeight: 600,
+              background: copied ? "#1DB954" : "#111", color: "white",
+              border: "none", borderRadius: 12, padding: "12px",
+              cursor: "pointer", transition: "background 0.2s",
+            }}
+          >
             {copied ? "✓ Copied!" : "Copy Link"}
           </button>
           <a href={url} target="_blank" rel="noopener noreferrer" style={{ flex: 1 }}>
-            <button className="pixel-btn green" style={{ width: "100%" }}>
+            <button style={{
+              width: "100%", fontFamily: F, fontSize: 14, fontWeight: 600,
+              background: "#f0f0f2", color: "#111",
+              border: "none", borderRadius: 12, padding: "12px",
+              cursor: "pointer",
+            }}>
               Open ↗
             </button>
           </a>
         </div>
-        <button className="pixel-btn ghost" style={{ width: "100%" }} onClick={onClose}>
+        <button
+          onClick={onClose}
+          style={{
+            width: "100%", fontFamily: F, fontSize: 13,
+            background: "none", color: "#aaa",
+            border: "none", padding: "8px", cursor: "pointer",
+          }}
+        >
           Close
         </button>
       </div>
