@@ -305,11 +305,11 @@ export default function JewelCase({
                   {songs.map((s, i) => (
                     <p key={i} style={{
                       fontFamily: "'OrdinaryLetter', cursive",
-                      fontSize: 11,
+                      fontSize: 14,
                       color: "rgba(20,20,50,0.72)",
                       margin: 0,
                       overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                      lineHeight: 1.3,
+                      lineHeight: 1.4,
                     }}>
                       {i + 1}. {s.artist && `${s.artist} - `}{s.title}
                     </p>
