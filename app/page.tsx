@@ -169,24 +169,17 @@ export default function Home() {
             style={{ marginBottom: 12 }}
           />
           {fetching && <p style={{ fontSize: 7, color: "var(--text2)", marginBottom: 10 }}>Fetching song info<span className="loading-dots" /></p>}
-          {previewThumb && (
+          {previewThumb && songTitle && (
             <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 12, padding: 8, background: "var(--bg2)", border: "2px solid var(--accent3)" }}>
               <Image src={previewThumb} alt="" width={48} height={48} unoptimized style={{ objectFit: "cover", flexShrink: 0 }} />
-              <p style={{ fontSize: 7, color: "var(--text2)" }}>✓ Song found!</p>
+              <div>
+                <p style={{ fontSize: 8 }}>{songTitle}</p>
+                {songArtist && <p style={{ fontSize: 7, color: "var(--text2)", marginTop: 2 }}>{songArtist}</p>}
+              </div>
             </div>
           )}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
-            <div>
-              <label className="pixel-label">SONG TITLE</label>
-              <input className="pixel-input" placeholder="title..." value={songTitle} onChange={(e) => setSongTitle(e.target.value)} />
-            </div>
-            <div>
-              <label className="pixel-label">ARTIST</label>
-              <input className="pixel-input" placeholder="artist..." value={songArtist} onChange={(e) => setSongArtist(e.target.value)} />
-            </div>
-          </div>
           {urlError && <p style={{ fontSize: 7, color: "var(--accent2)", marginBottom: 10 }}>⚠ {urlError}</p>}
-          <button className="pixel-btn" onClick={handleAddSong} disabled={!spotifyUrl || !songTitle} style={{ width: "100%" }}>
+          <button className="pixel-btn" onClick={handleAddSong} disabled={!spotifyUrl || !songTitle || fetching} style={{ width: "100%" }}>
             + Add Song
           </button>
         </div>
