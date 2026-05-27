@@ -332,7 +332,23 @@ export default function JewelCase({
                 position: "relative",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 flexShrink: 0,
+                overflow: "visible",
               }}>
+                {/* Edge clips — same as left panel */}
+                {[
+                  { top: -10, left: 28 }, { top: -10, right: 28 },
+                  { bottom: -10, left: 28 }, { bottom: -10, right: 28 },
+                ].map((pos, i) => (
+                  <div key={`clip-${i}`} style={{
+                    position: "absolute", ...pos,
+                    width: 20, height: 20, borderRadius: "50%",
+                    background: "linear-gradient(135deg, #3a3a3c, #505052)",
+                    border: "1px solid #222",
+                    boxShadow: "inset 0 1px 3px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.06)",
+                    zIndex: 4,
+                  }} />
+                ))}
+
                 {/* Tray corner bumps */}
                 {[
                   { top: 8, left: 8 }, { top: 8, right: 8 },
