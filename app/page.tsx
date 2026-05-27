@@ -166,7 +166,7 @@ export default function Home() {
       </div>
 
       {/* Content */}
-      <div style={{ maxWidth: 480, margin: "0 auto", padding: "24px 16px 80px" }}>
+      <div style={{ maxWidth: 480, margin: "0 auto", padding: "24px 16px 80px", position: "relative", zIndex: 1 }}>
 
         {/* Intro */}
         <div style={{
