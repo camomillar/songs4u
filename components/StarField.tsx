@@ -1,18 +1,28 @@
 "use client";
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
+
+interface Star {
+  id: number;
+  top: number;
+  left: number;
+  delay: number;
+  size: number;
+}
 
 export default function StarField() {
-  const stars = useMemo(
-    () =>
+  const [stars, setStars] = useState<Star[]>([]);
+
+  useEffect(() => {
+    setStars(
       Array.from({ length: 30 }, (_, i) => ({
         id: i,
         top: Math.random() * 100,
         left: Math.random() * 100,
         delay: Math.random() * 2,
         size: Math.random() > 0.5 ? 4 : 6,
-      })),
-    []
-  );
+      }))
+    );
+  }, []);
 
   return (
     <div className="stars" aria-hidden>

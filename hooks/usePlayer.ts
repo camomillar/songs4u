@@ -219,12 +219,13 @@ export function usePlayer() {
     }
   }, []);
 
-  // Poll state every 5s as fallback
+  // Poll state every 5s — only when authenticated
   useEffect(() => {
+    if (isPremium === null) return;
     const iv = setInterval(pollState, 5000);
     pollState();
     return () => clearInterval(iv);
-  }, [pollState]);
+  }, [pollState, isPremium]);
 
   const currentTrack = state?.track_window?.current_track ?? null;
 

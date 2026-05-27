@@ -7,21 +7,18 @@
 }
 
 :root {
-  --bg: #f0e6ff;
-  --bg2: #e8d5ff;
-  --card: #fff5fd;
-  --card2: #ffeaf8;
-  --accent: #c9a7ff;
-  --accent2: #ffb3de;
-  --accent3: #a8e6cf;
-  --accent4: #ffe0a8;
-  --text: #4a3560;
-  --text2: #7a5fa0;
-  --border: #c9a7ff;
-  --shadow: #b08fd4;
-  --green: #5ecba1;
-  --pink: #ff7ab8;
-  --pixel: 4px;
+  --bg:      #fff0f5;
+  --bg2:     #ffd6e7;
+  --card:    #fff8fb;
+  --card2:   #ffe8f0;
+  --accent:  #ff6b8a;
+  --accent2: #ff4d6d;
+  --accent3: #ffb3c6;
+  --accent4: #ffd6e7;
+  --text:    #3d0015;
+  --text2:   #8b2a40;
+  --shadow:  #cc3355;
+  --pixel:   4px;
 }
 
 html, body {
@@ -35,264 +32,148 @@ html, body {
   image-rendering: pixelated;
 }
 
-/* Scrollbar */
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: var(--bg2); }
-::-webkit-scrollbar-thumb {
-  background: var(--accent);
-  border: 2px solid var(--bg2);
-}
+::-webkit-scrollbar-thumb { background: var(--accent3); border: 2px solid var(--bg2); }
 
-/* ── Pixel card ─────────────────────────────── */
+/* ── Pixel card ── */
 .pixel-card {
   background: var(--card);
   border: var(--pixel) solid var(--text);
   box-shadow: var(--pixel) var(--pixel) 0 0 var(--shadow);
-  padding: 16px;
+  padding: 20px;
   position: relative;
 }
 
-.pixel-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border: 2px solid var(--card2);
-  pointer-events: none;
-}
-
-/* ── Pixel button ────────────────────────────── */
+/* ── Pixel button ── */
 .pixel-btn {
   font-family: "Press Start 2P", monospace;
-  font-size: 10px;
-  color: var(--text);
+  font-size: 9px;
+  color: var(--card);
   background: var(--accent);
   border: var(--pixel) solid var(--text);
   box-shadow: var(--pixel) var(--pixel) 0 0 var(--shadow);
-  padding: 8px 14px;
+  padding: 10px 16px;
   cursor: pointer;
-  transition: none;
   user-select: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
   line-height: 1;
+  transition: none;
 }
-
 .pixel-btn:hover {
   background: var(--accent2);
   transform: translate(1px, 1px);
   box-shadow: calc(var(--pixel) - 1px) calc(var(--pixel) - 1px) 0 0 var(--shadow);
 }
-
 .pixel-btn:active {
   transform: translate(var(--pixel), var(--pixel));
   box-shadow: none;
 }
-
 .pixel-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
   transform: none;
   box-shadow: var(--pixel) var(--pixel) 0 0 var(--shadow);
 }
+.pixel-btn.ghost {
+  background: transparent;
+  color: var(--text);
+}
+.pixel-btn.ghost:hover { background: var(--card2); }
 
-.pixel-btn.green {
-  background: var(--accent3);
-}
-.pixel-btn.pink {
-  background: var(--accent2);
-}
-.pixel-btn.icon {
-  padding: 10px;
-  font-size: 16px;
-  min-width: 44px;
-  min-height: 44px;
-}
-.pixel-btn.large {
-  padding: 14px 24px;
-  font-size: 12px;
-}
-
-/* ── Progress bar ────────────────────────────── */
-.pixel-progress {
+/* ── Pixel input ── */
+.pixel-input {
+  font-family: "Press Start 2P", monospace;
+  font-size: 9px;
+  color: var(--text);
+  background: var(--card);
+  border: var(--pixel) solid var(--text);
+  box-shadow: inset 2px 2px 0 0 var(--bg2);
+  padding: 10px 12px;
   width: 100%;
-  height: 12px;
-  background: var(--bg2);
-  border: var(--pixel) solid var(--text);
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
+  outline: none;
+  line-height: 1.6;
 }
-
-.pixel-progress-fill {
-  height: 100%;
-  background: var(--accent);
-  transition: width 0.3s linear;
-  position: relative;
+.pixel-input:focus {
+  border-color: var(--accent);
+  box-shadow: inset 2px 2px 0 0 var(--accent4);
 }
+.pixel-input::placeholder { color: var(--accent3); }
 
-.pixel-progress-fill::after {
-  content: "";
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 8px;
-  height: 100%;
-  background: var(--text);
-}
-
-/* ── Album art ───────────────────────────────── */
-.album-art {
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
-  border: var(--pixel) solid var(--text);
-  box-shadow: var(--pixel) var(--pixel) 0 0 var(--shadow);
+/* ── Label ── */
+.pixel-label {
+  font-size: 8px;
+  color: var(--text2);
   display: block;
+  margin-bottom: 6px;
+  letter-spacing: 1px;
 }
 
-/* ── Scrollable list ─────────────────────────── */
-.pixel-list {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.pixel-list-item {
+/* ── Song row ── */
+.song-row {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 10px;
+  padding: 8px;
   background: var(--card2);
   border: 2px solid transparent;
-  cursor: pointer;
-  transition: none;
 }
+.song-row:hover { border-color: var(--accent3); }
 
-.pixel-list-item:hover {
-  border-color: var(--accent);
-  background: var(--bg2);
-}
-
-.pixel-list-item.active {
-  border-color: var(--text);
-  background: var(--accent);
-  box-shadow: 2px 2px 0 0 var(--shadow);
-}
-
-/* ── Pixel stars / decorations ───────────────── */
-.stars {
+/* ── Hearts bg ── */
+.hearts-bg {
   position: fixed;
   inset: 0;
   pointer-events: none;
   overflow: hidden;
   z-index: 0;
 }
-
-.star {
+.heart-particle {
   position: absolute;
-  width: 4px;
-  height: 4px;
-  background: var(--accent);
-  animation: twinkle 2s infinite;
+  bottom: -40px;
+  font-size: 16px;
+  animation: floatUp linear infinite;
+  opacity: 0.5;
+}
+@keyframes floatUp {
+  0%   { transform: translateY(0) rotate(0deg); opacity: 0.5; }
+  100% { transform: translateY(-110vh) rotate(20deg); opacity: 0; }
 }
 
-@keyframes twinkle {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 1; }
-}
-
-/* ── Marquee for long song names ─────────────── */
-.marquee-container {
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-.marquee-text {
-  display: inline-block;
-  animation: marquee 12s linear infinite;
-}
-
-.marquee-text.short {
-  animation: none;
-}
-
-@keyframes marquee {
-  0% { transform: translateX(0); }
-  30% { transform: translateX(0); }
-  80% { transform: translateX(-50%); }
-  100% { transform: translateX(-50%); }
-}
-
-/* ── Layout ──────────────────────────────────── */
-.app-layout {
+/* ── Layout ── */
+.app-wrapper {
   min-height: 100vh;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
   position: relative;
   z-index: 1;
 }
-
-.main-content {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 16px;
-  padding: 16px;
-  max-width: 960px;
+.page-content {
+  max-width: 640px;
   margin: 0 auto;
-  width: 100%;
+  padding: 24px 16px 48px;
 }
 
-@media (max-width: 640px) {
-  .main-content {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ── Header ──────────────────────────────────── */
+/* ── Header ── */
 .app-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  background: var(--card);
-  border-bottom: var(--pixel) solid var(--text);
-  box-shadow: 0 var(--pixel) 0 0 var(--shadow);
-}
-
-.app-title {
-  font-size: 14px;
-  color: var(--text);
-  text-shadow: 2px 2px 0 var(--accent);
-}
-
-/* ── Bottom player ───────────────────────────── */
-.player-bar {
-  background: var(--card);
-  border-top: var(--pixel) solid var(--text);
-  box-shadow: 0 calc(-1 * var(--pixel)) 0 0 var(--shadow);
-  padding: 12px 16px;
-}
-
-/* ── Login screen ────────────────────────────── */
-.login-screen {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 24px;
-  padding: 24px;
-}
-
-.login-card {
   text-align: center;
-  max-width: 360px;
-  width: 100%;
+  padding: 28px 16px 12px;
+}
+.app-title {
+  font-size: 18px;
+  color: var(--accent2);
+  text-shadow: 3px 3px 0 var(--text);
+  display: block;
+}
+.app-subtitle {
+  font-size: 8px;
+  color: var(--text2);
+  margin-top: 8px;
+  display: block;
 }
 
-/* ── Loading dots ────────────────────────────── */
+/* ── Loading dots ── */
 .loading-dots::after {
   content: "";
   animation: dots 1.5s steps(4, end) infinite;
@@ -305,16 +186,117 @@ html, body {
   100% { content: ""; }
 }
 
-/* ── Now playing vinyl animation ─────────────── */
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+/* ── Share page special ── */
+.share-header {
+  text-align: center;
+  padding: 32px 16px 24px;
+}
+.share-to {
+  font-size: 14px;
+  color: var(--accent2);
+  text-shadow: 2px 2px 0 var(--text);
+}
+.share-message {
+  font-size: 8px;
+  color: var(--text2);
+  line-height: 2.2;
+  margin-top: 10px;
+  font-style: italic;
+}
+.share-from {
+  font-size: 8px;
+  color: var(--text2);
+  margin-top: 8px;
 }
 
-.spinning {
-  animation: spin 4s linear infinite;
+/* ── YouTube embed ── */
+.yt-thumb {
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.yt-thumb img {
+  display: block;
+  border: 2px solid var(--text);
+  image-rendering: pixelated;
+}
+.yt-play-btn {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(61, 0, 21, 0.35);
+  font-size: 20px;
+  color: white;
+  transition: background 0.1s;
+}
+.yt-thumb:hover .yt-play-btn {
+  background: rgba(61, 0, 21, 0.55);
+}
+.yt-embed-wrapper {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%;
+  border: var(--pixel) solid var(--text);
+  box-shadow: var(--pixel) var(--pixel) 0 0 var(--shadow);
+  overflow: hidden;
+}
+.yt-embed-wrapper iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
 }
 
-.paused {
-  animation-play-state: paused;
+/* ── Music bars ── */
+.music-bars {
+  display: flex;
+  gap: 3px;
+  align-items: flex-end;
+  height: 22px;
+}
+.music-bar {
+  width: 5px;
+  height: var(--bh, 8px);
+  background: var(--accent3);
+  transform-origin: bottom;
+  transform: scaleY(0.3);
+}
+.music-bars.playing .music-bar {
+  animation: bar-bounce 0.55s ease infinite alternate;
+  background: var(--accent);
+}
+@keyframes bar-bounce {
+  from { transform: scaleY(0.25); }
+  to   { transform: scaleY(1); }
+}
+
+/* ── QR modal ── */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(61, 0, 21, 0.6);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.modal-content {
+  background: var(--card);
+  border: var(--pixel) solid var(--text);
+  box-shadow: var(--pixel) var(--pixel) 0 0 var(--shadow);
+  padding: 24px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+/* ── Divider ── */
+.pixel-divider {
+  border: none;
+  border-top: 4px solid var(--accent3);
+  margin: 20px 0;
 }
