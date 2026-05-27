@@ -3,6 +3,7 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import PixelAudioPlayer, { type PixelAudioPlayerHandle } from "@/components/PixelAudioPlayer";
+import HeartParticles, { darkenHex } from "@/components/HeartParticles";
 import { decodePlaylist } from "@/lib/encode";
 import { getThumbnail } from "@/lib/youtube";
 
@@ -77,6 +78,7 @@ function ClosedCase({ onOpen, coverImage, bgColor }: { onOpen: () => void; cover
       justifyContent: "center",
       gap: 24,
     }}>
+      <HeartParticles color={bgColor ? darkenHex(bgColor) : undefined} />
       {/* 3D draggable case */}
       <div
         ref={imgRef}
@@ -181,6 +183,8 @@ function OpenCase({
       animation: "fadeUp 0.5s ease",
       transition: "background 0.4s ease",
     }}>
+      <HeartParticles color={bgColor ? darkenHex(bgColor) : undefined} />
+
       {/* Back button */}
       <button
         onClick={onBack}

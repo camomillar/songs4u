@@ -10,14 +10,27 @@ interface Heart {
   emoji: string;
 }
 
-const EMOJIS = ["♥", "♥", "♥", "✦", "♡"];
+const EMOJIS = ["♥", "♥", "♥", "✦", "♡", "•", "•"];
 
-export default function HeartParticles() {
+/** Darkens a hex colour by `amount` (0–255) */
+export function darkenHex(hex: string, amount = 60): string {
+  const clean = hex.replace("#", "");
+  const r = Math.max(0, parseInt(clean.slice(0, 2), 16) - amount);
+  const g = Math.max(0, parseInt(clean.slice(2, 4), 16) - amount);
+  const b = Math.max(0, parseInt(clean.slice(4, 6), 16) - amount);
+  return `rgb(${r},${g},${b})`;
+}
+
+interface Props {
+  color?: string; // CSS colour string — defaults to CSS variable
+}
+
+export default function HeartParticles({ color }: Props) {
   const [hearts, setHearts] = useState<Heart[]>([]);
 
   useEffect(() => {
     setHearts(
-      Array.from({ length: 18 }, (_, i) => ({
+      Array.from({ length: 22 }, (_, i) => ({
         id: i,
         left: Math.random() * 100,
         duration: 6 + Math.random() * 8,
@@ -39,6 +52,7 @@ export default function HeartParticles() {
             fontSize: h.size,
             animationDuration: `${h.duration}s`,
             animationDelay: `${h.delay}s`,
+            color: color ?? "var(--accent)",
           }}
         >
           {h.emoji}
