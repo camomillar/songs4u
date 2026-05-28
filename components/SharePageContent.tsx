@@ -49,10 +49,15 @@ export default function SharePageContent({ playlist }: { playlist: ValentinesPla
   const [authChecked, setAuthChecked] = useState(false);
   const [isAuthed, setIsAuthed] = useState(false);
 
-  // Fix background on body so it doesn't scroll on mobile
+  // Fix background on html+body so it doesn't scroll or leak on mobile
   useEffect(() => {
-    document.body.style.background = playlist.bgColor || "#fff";
-    return () => { document.body.style.background = ""; };
+    const color = playlist.bgColor || "#fff";
+    document.documentElement.style.background = color;
+    document.body.style.background = color;
+    return () => {
+      document.documentElement.style.background = "";
+      document.body.style.background = "";
+    };
   }, [playlist.bgColor]);
 
   useEffect(() => {

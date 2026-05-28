@@ -89,10 +89,15 @@ export default function JewelCase({
     setTimeout(() => setPhase("open"), 420);
   };
 
-  // Fix background on body so it doesn't scroll on mobile
+  // Fix background on html+body so it doesn't scroll or leak on mobile
   useEffect(() => {
-    document.body.style.background = bgColor || "#fff";
-    return () => { document.body.style.background = ""; };
+    const color = bgColor || "#fff";
+    document.documentElement.style.background = color;
+    document.body.style.background = color;
+    return () => {
+      document.documentElement.style.background = "";
+      document.body.style.background = "";
+    };
   }, [bgColor]);
 
   return (
