@@ -1,6 +1,6 @@
 "use client";
-import { useState } from "react";
-import Image from "next/image";
+import { useState, useEffect, useRef } from "react";
+import QRCode from "qrcode";
 
 const F = "system-ui, -apple-system, sans-serif";
 
@@ -12,8 +12,20 @@ interface Props {
 export default function QRShare({ url, onClose }: Props) {
   const [copied, setCopied] = useState(false);
   const [copiedMsg, setCopiedMsg] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const message = `I made something special for you 🎵\n\n${url}`;
+
+  // Generate QR code client-side — no URL length limits
+  useEffect(() => {
+    if (canvasRef.current) {
+      QRCode.toCanvas(canvasRef.current, url, {
+        width: 180,
+        margin: 1,
+        color: { dark: "#111111", light: "#ffffff" },
+      });
+    }
+  }, [url]);
 
   const handleCopyMessage = async () => {
     await navigator.clipboard.writeText(message);
@@ -21,7 +33,6 @@ export default function QRShare({ url, onClose }: Props) {
     setTimeout(() => setCopiedMsg(false), 2000);
   };
 
-  const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=111111&bgcolor=ffffff&data=${encodeURIComponent(url)}`;
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(url);
@@ -55,13 +66,9 @@ export default function QRShare({ url, onClose }: Props) {
           share your playlist ♥
         </p>
 
-        {/* QR Code */}
-        <Image
-          src={qrSrc}
-          alt="QR Code"
-          width={180}
-          height={180}
-          unoptimized
+        {/* QR Code — generated client-side */}
+        <canvas
+          ref={canvasRef}
           style={{ display: "block", margin: "0 auto 20px", borderRadius: 12 }}
         />
 
