@@ -322,8 +322,8 @@ export default function JewelCase({
                   gap: 6,
                   overflow: "hidden",
                 }}>
-                  {/* <3 top-left decoration */}
-                  <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 13, color: "rgba(20,20,50,0.3)", margin: "0 0 4px", lineHeight: 1 }}>&lt;3</p>
+                  {/* <3 top-right decoration */}
+                  <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 13, color: "rgba(20,20,50,0.3)", margin: "0 0 4px", lineHeight: 1, textAlign: "right" }}>&lt;3</p>
 
                   {songs.map((s, i) => (
                     <p key={i} style={{
@@ -499,10 +499,10 @@ export default function JewelCase({
                       return (
                         <>
                           <text fontFamily="'OrdinaryLetter', cursive" fontSize="9" fill="rgba(15,20,50,0.72)" textAnchor="middle">
-                            <textPath href="#cdArcMsg1" startOffset="50%">{line1}</textPath>
+                            <textPath href="#cdArcMsg2" startOffset="50%">{line1}</textPath>
                           </text>
                           <text fontFamily="'OrdinaryLetter', cursive" fontSize="9" fill="rgba(15,20,50,0.65)" textAnchor="middle">
-                            <textPath href="#cdArcMsg2" startOffset="50%">{line2}</textPath>
+                            <textPath href="#cdArcMsg1" startOffset="50%">{line2}</textPath>
                           </text>
                         </>
                       );
