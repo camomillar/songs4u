@@ -353,7 +353,7 @@ export default function JewelCase({
                   {songs.map((s, i) => (
                     <p key={i} style={{
                       fontFamily: "'OrdinaryLetter', cursive",
-                      fontSize: 17,
+                      fontSize: 20,
                       color: "rgba(20,20,50,0.72)",
                       margin: 0,
                       overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
@@ -503,7 +503,7 @@ export default function JewelCase({
                       if (words.length <= 1 || message.length <= 14) {
                         // Single line
                         return (
-                          <text fontFamily="'OrdinaryLetter', cursive" fontSize="9" fill="rgba(15,20,50,0.72)" textAnchor="middle">
+                          <text fontFamily="'OrdinaryLetter', cursive" fontSize="11" fill="rgba(15,20,50,0.72)" textAnchor="middle">
                             <textPath href="#cdArcMsg1" startOffset="50%">{message}</textPath>
                           </text>
                         );
@@ -521,10 +521,10 @@ export default function JewelCase({
                       const line2 = words.slice(splitIdx).join(" ");
                       return (
                         <>
-                          <text fontFamily="'OrdinaryLetter', cursive" fontSize="9" fill="rgba(15,20,50,0.72)" textAnchor="middle">
+                          <text fontFamily="'OrdinaryLetter', cursive" fontSize="11" fill="rgba(15,20,50,0.72)" textAnchor="middle">
                             <textPath href="#cdArcMsg2" startOffset="50%">{line1}</textPath>
                           </text>
-                          <text fontFamily="'OrdinaryLetter', cursive" fontSize="9" fill="rgba(15,20,50,0.65)" textAnchor="middle">
+                          <text fontFamily="'OrdinaryLetter', cursive" fontSize="11" fill="rgba(15,20,50,0.65)" textAnchor="middle">
                             <textPath href="#cdArcMsg1" startOffset="50%">{line2}</textPath>
                           </text>
                         </>
@@ -533,13 +533,13 @@ export default function JewelCase({
 
 
                     {/* To — bottom inner */}
-                    <text fontFamily="'OrdinaryLetter', cursive" fontSize="10" fill="rgba(15,20,50,0.78)" textAnchor="middle">
+                    <text fontFamily="'OrdinaryLetter', cursive" fontSize="12" fill="rgba(15,20,50,0.78)" textAnchor="middle">
                       <textPath href="#cdArcBot1" startOffset="50%">to: {to}</textPath>
                     </text>
 
                     {/* From — bottom outer */}
                     {from && (
-                      <text fontFamily="'OrdinaryLetter', cursive" fontSize="9.5" fill="rgba(15,20,50,0.65)" textAnchor="middle">
+                      <text fontFamily="'OrdinaryLetter', cursive" fontSize="11.5" fill="rgba(15,20,50,0.65)" textAnchor="middle">
                         <textPath href="#cdArcBot2" startOffset="50%">from: {from}</textPath>
                       </text>
                     )}
