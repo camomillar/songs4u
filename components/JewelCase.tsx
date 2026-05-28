@@ -544,7 +544,7 @@ export default function JewelCase({
           <div
             onClick={e => e.stopPropagation()}
             style={{
-            width: "100%", maxWidth: PW,
+            width: "100%", maxWidth: W,
             background: "white", borderRadius: 6,
             padding: "12px 16px",
             display: "flex", alignItems: "center", gap: 12,
