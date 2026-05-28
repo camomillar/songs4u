@@ -37,7 +37,9 @@ export async function GET(req: NextRequest) {
   const tokens = await tokenRes.json();
   const expiresAt = Date.now() + tokens.expires_in * 1000;
 
-  const response = NextResponse.redirect(`${base}${returnTo}`);
+  // If returnTo is already a full URL use it directly, otherwise prepend base
+  const destination = returnTo.startsWith("http") ? returnTo : `${base}${returnTo}`;
+  const response = NextResponse.redirect(destination);
   const cookieOpts = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
