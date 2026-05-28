@@ -140,7 +140,7 @@ export default function Home() {
         <div style={{ textAlign: "center", maxWidth: 320, padding: 24 }}>
           <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 36, marginBottom: 8, color: "#111" }}>songs4u</p>
           <p style={{ fontFamily: F, fontSize: 14, color: "#888", marginBottom: 32, lineHeight: 1.6 }}>
-            Choose songs, write a message, share the love!
+            Choose songs, write a message,<br />share the love!
           </p>
           <form action="/api/auth/login" method="GET">
             <button type="submit" style={{
