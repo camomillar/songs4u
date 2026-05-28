@@ -11,6 +11,15 @@ interface Props {
 
 export default function QRShare({ url, onClose }: Props) {
   const [copied, setCopied] = useState(false);
+  const [copiedMsg, setCopiedMsg] = useState(false);
+
+  const message = `I made something special for you 🎵\n\n${url}`;
+
+  const handleCopyMessage = async () => {
+    await navigator.clipboard.writeText(message);
+    setCopiedMsg(true);
+    setTimeout(() => setCopiedMsg(false), 2000);
+  };
 
   const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=111111&bgcolor=ffffff&data=${encodeURIComponent(url)}`;
 
@@ -73,6 +82,23 @@ export default function QRShare({ url, onClose }: Props) {
             {url.split("?")[0]}<span style={{ color: "#bbb" }}>?d=...</span>
           </span>
         </div>
+
+        {/* Copy message */}
+        <button
+          onClick={handleCopyMessage}
+          style={{
+            width: "100%", fontFamily: F, fontSize: 13,
+            background: copiedMsg ? "#f0fdf4" : "#f7f7f8",
+            color: copiedMsg ? "#16a34a" : "#555",
+            border: `1px solid ${copiedMsg ? "#bbf7d0" : "#e8e8ea"}`,
+            borderRadius: 10, padding: "10px 14px",
+            cursor: "pointer", marginBottom: 12,
+            textAlign: "left",
+            transition: "all 0.2s",
+          }}
+        >
+          {copiedMsg ? "✓ Message copied!" : `💬  "I made something special for you 🎵 + link"`}
+        </button>
 
         {/* Buttons */}
         <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
