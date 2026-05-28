@@ -17,10 +17,13 @@ export function GET(req: NextRequest) {
   const url = new URL(req.url);
   const clientId = process.env.SPOTIFY_CLIENT_ID!;
   const redirectUri = process.env.SPOTIFY_REDIRECT_URI!;
-  const state = Math.random().toString(36).substring(2, 15);
+  const nonce = Math.random().toString(36).substring(2, 15);
   const returnTo = url.searchParams.get("redirect") ?? "/";
   const context = url.searchParams.get("context") ?? "builder";
   const scopes = context === "player" ? PLAYER_SCOPES : BUILDER_SCOPES;
+
+  // Encode returnTo in state — Spotify preserves & returns it, no cookie needed
+  const state = Buffer.from(JSON.stringify({ nonce, returnTo })).toString("base64");
 
   const params = new URLSearchParams({
     response_type: "code",
@@ -34,17 +37,14 @@ export function GET(req: NextRequest) {
     `https://accounts.spotify.com/authorize?${params}`
   );
 
-  // Store state nonce + return destination in cookies
-  // secure:true required on HTTPS (production) so cookies survive the redirect
-  const cookieOpts = {
+  // Only store nonce for CSRF verification
+  response.cookies.set("spotify_auth_state", nonce, {
     httpOnly: true,
     maxAge: 600,
     path: "/",
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax" as const,
-  };
-  response.cookies.set("spotify_auth_state", state, cookieOpts);
-  response.cookies.set("spotify_return_to", returnTo, cookieOpts);
+    sameSite: "lax",
+  });
 
   return response;
 }

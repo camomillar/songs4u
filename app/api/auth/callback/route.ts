@@ -3,13 +3,23 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const code = url.searchParams.get("code");
-  const state = url.searchParams.get("state");
-  const storedState = req.cookies.get("spotify_auth_state")?.value;
-  const returnTo = req.cookies.get("spotify_return_to")?.value ?? "/";
+  const stateParam = url.searchParams.get("state") ?? "";
+  const storedNonce = req.cookies.get("spotify_auth_state")?.value;
 
   const base = process.env.SPOTIFY_REDIRECT_URI!.replace("/api/auth/callback", "");
 
-  if (!code || state !== storedState) {
+  // Decode state — contains nonce + returnTo URL
+  let nonce = "";
+  let returnTo = "/";
+  try {
+    const decoded = JSON.parse(Buffer.from(stateParam, "base64").toString());
+    nonce = decoded.nonce ?? "";
+    returnTo = decoded.returnTo ?? "/";
+  } catch {
+    return NextResponse.redirect(`${base}/`);
+  }
+
+  if (!code || !storedNonce || nonce !== storedNonce) {
     return NextResponse.redirect(`${base}/`);
   }
 
@@ -37,9 +47,10 @@ export async function GET(req: NextRequest) {
   const tokens = await tokenRes.json();
   const expiresAt = Date.now() + tokens.expires_in * 1000;
 
-  // If returnTo is already a full URL use it directly, otherwise prepend base
+  // Redirect to returnTo (full URL or path)
   const destination = returnTo.startsWith("http") ? returnTo : `${base}${returnTo}`;
   const response = NextResponse.redirect(destination);
+
   const cookieOpts = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -50,7 +61,6 @@ export async function GET(req: NextRequest) {
   response.cookies.set("spotify_refresh_token", tokens.refresh_token, { ...cookieOpts, maxAge: 60 * 60 * 24 * 30 });
   response.cookies.set("spotify_expires_at", String(expiresAt), { ...cookieOpts, maxAge: tokens.expires_in });
   response.cookies.delete("spotify_auth_state");
-  response.cookies.delete("spotify_return_to");
 
   return response;
 }
