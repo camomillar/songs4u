@@ -117,7 +117,7 @@ export default function SharePageContent({ playlist }: { playlist: ValentinesPla
         </div>
         <div style={{ textAlign: "center", maxWidth: 300, zIndex: 1 }}>
           <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 32, color: "#3a2010", marginBottom: 10, lineHeight: 1.3 }}>
-            Someone made you a playlist
+            Someone made you a playlist &lt;3
           </p>
           <p style={{ fontFamily: "system-ui", fontSize: 14, color: "#888", marginBottom: 24, lineHeight: 1.8 }}>
             Log in with Spotify to open it<br />and hear the full songs
