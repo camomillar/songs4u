@@ -322,6 +322,9 @@ export default function JewelCase({
                   gap: 6,
                   overflow: "hidden",
                 }}>
+                  {/* <3 top-left decoration */}
+                  <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 13, color: "rgba(20,20,50,0.3)", margin: "0 0 4px", lineHeight: 1 }}>&lt;3</p>
+
                   {songs.map((s, i) => (
                     <p key={i} style={{
                       fontFamily: "'OrdinaryLetter', cursive",
@@ -334,6 +337,9 @@ export default function JewelCase({
                       {i + 1}. {s.artist && `${s.artist} - `}{s.title}
                     </p>
                   ))}
+
+                  {/* :) bottom-right decoration */}
+                  <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 13, color: "rgba(20,20,50,0.3)", margin: "4px 0 0", lineHeight: 1, textAlign: "right" }}>:)</p>
                 </div>
               </div>
 
@@ -502,19 +508,6 @@ export default function JewelCase({
                       );
                     })()}
 
-                    {/* ♥ left side */}
-                    <text
-                      fontFamily="'OrdinaryLetter', cursive"
-                      fontSize="9" fill="rgba(15,20,50,0.65)"
-                      textAnchor="middle" x="19" y="52"
-                    >&lt;3</text>
-
-                    {/* :) right side */}
-                    <text
-                      fontFamily="'OrdinaryLetter', cursive"
-                      fontSize="9" fill="rgba(15,20,50,0.65)"
-                      textAnchor="middle" x="81" y="52"
-                    >:)</text>
 
                     {/* To — bottom inner */}
                     <text fontFamily="'OrdinaryLetter', cursive" fontSize="10" fill="rgba(15,20,50,0.78)" textAnchor="middle">
