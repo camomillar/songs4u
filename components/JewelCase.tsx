@@ -146,6 +146,7 @@ export default function JewelCase({
           .case-closed-wrapper {
             transform: scale(0.75) !important;
             transform-origin: center center;
+            filter: none !important;
           }
         }
       `}</style>
