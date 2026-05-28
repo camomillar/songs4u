@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   let nonce = "";
   let returnTo = "/";
   try {
-    const decoded = JSON.parse(Buffer.from(stateParam, "base64").toString());
+    const decoded = JSON.parse(Buffer.from(stateParam, "base64url").toString());
     nonce = decoded.nonce ?? "";
     returnTo = decoded.returnTo ?? "/";
   } catch {

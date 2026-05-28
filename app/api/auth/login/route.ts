@@ -23,7 +23,8 @@ export function GET(req: NextRequest) {
   const scopes = context === "player" ? PLAYER_SCOPES : BUILDER_SCOPES;
 
   // Encode returnTo in state — Spotify preserves & returns it, no cookie needed
-  const state = Buffer.from(JSON.stringify({ nonce, returnTo })).toString("base64");
+  // Use base64url (URL-safe) so Spotify doesn't mangle +/= chars
+  const state = Buffer.from(JSON.stringify({ nonce, returnTo })).toString("base64url");
 
   const params = new URLSearchParams({
     response_type: "code",
