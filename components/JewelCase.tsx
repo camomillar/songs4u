@@ -265,6 +265,16 @@ export default function JewelCase({
           </div>
           </div>{/* end shadow wrapper */}
 
+          {/* Ground shadow — always visible on all devices */}
+          {(phase === "closed" || phase === "opening") && (
+            <div style={{
+              width: 260, height: 28, flexShrink: 0,
+              marginTop: -12,
+              background: "radial-gradient(ellipse, rgba(0,0,0,0.28) 0%, transparent 70%)",
+              borderRadius: "50%",
+            }} />
+          )}
+
           {phase === "closed" && (
             <p
               onClick={handleOpen}
