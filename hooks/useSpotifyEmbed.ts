@@ -83,6 +83,8 @@ export function useSpotifyEmbed(initialTrackId: string, onSongEnd?: () => void) 
     lastDurationRef.current = 0;
     endFiredRef.current = false;
     controllerRef.current.loadUri(`spotify:track:${trackId}`);
+    // Resume after a short delay to let the embed load the track
+    setTimeout(() => controllerRef.current?.resume(), 500);
     setIsPlaying(true);
   };
 
