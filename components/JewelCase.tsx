@@ -375,7 +375,7 @@ export default function JewelCase({
               {/* ── RIGHT: CD tray ── */}
               <div style={{
                 width: PW, height: H,
-                background: darkenHex(bgColor || "#888"),
+                background: bgColor || "#3a3a3c",
                 position: "relative",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 flexShrink: 0,
@@ -611,7 +611,7 @@ export default function JewelCase({
               disabled={!ready}
               style={{
                 width: 44, height: 44, borderRadius: "50%",
-                background: ready ? darkenHex(bgColor || "#888") : "#ddd",
+                background: ready ? (bgColor || "#888") : "#ddd",
                 border: "none",
                 cursor: ready ? "pointer" : "not-allowed",
                 flexShrink: 0,
