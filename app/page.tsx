@@ -106,11 +106,20 @@ export default function Home() {
     setCoverImage(await compressImage(file));
   };
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (!to.trim()) { alert("Please enter who this is for!"); return; }
     if (songs.length === 0) { alert("Add at least one song!"); return; }
-    const encoded = encodePlaylist({ to: to.trim(), from: from.trim(), message: message.trim(), songs, bgColor, ...(coverImage ? { coverImage } : {}) });
-    setShareUrl(`${window.location.origin}/share?d=${encoded}`);
+    try {
+      const res = await fetch("/api/playlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ to: to.trim(), from: from.trim(), message: message.trim(), songs, bgColor, ...(coverImage ? { coverImage } : {}) }),
+      });
+      const { id } = await res.json();
+      setShareUrl(`${window.location.origin}/s/${id}`);
+    } catch {
+      alert("Could not generate link. Please try again.");
+    }
   };
 
   if (!authChecked) {
