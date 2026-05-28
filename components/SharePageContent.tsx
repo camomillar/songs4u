@@ -84,6 +84,11 @@ export default function SharePageContent({ playlist }: { playlist: ValentinesPla
 
   if (!isAuthed) {
     const redirectUrl = typeof window !== "undefined" ? window.location.href : "/";
+    const hex = (playlist.bgColor || "#fff").replace("#", "");
+    const r = parseInt(hex.slice(0, 2), 16);
+    const g = parseInt(hex.slice(2, 4), 16);
+    const b = parseInt(hex.slice(4, 6), 16);
+    const isDark = (r * 299 + g * 587 + b * 114) / 1000 < 128;
     return (
       <div style={{ minHeight: "100vh", background: playlist.bgColor || "#fff", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 28, padding: 24 }}>
         <HeartParticles color={playlist.bgColor ? darkenHex(playlist.bgColor) : undefined} />
@@ -118,7 +123,7 @@ export default function SharePageContent({ playlist }: { playlist: ValentinesPla
           <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40 }}>🔒</div>
         </div>
         <div style={{ textAlign: "center", maxWidth: 300, zIndex: 1 }}>
-          <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 32, color: "#3a2010", marginBottom: 10, lineHeight: 1.3 }}>
+          <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 32, color: isDark ? "#fff" : "#3a2010", marginBottom: 10, lineHeight: 1.3 }}>
             Someone made you<br />a playlist &lt;3
           </p>
           <p style={{ fontFamily: "system-ui", fontSize: 14, color: "#888", marginBottom: 24, lineHeight: 1.8 }}>
