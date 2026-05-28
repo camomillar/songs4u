@@ -35,7 +35,7 @@ export default function HeartParticles({ color }: Props) {
         left: Math.random() * 100,
         duration: 6 + Math.random() * 8,
         delay: Math.random() * 8,
-        size: 10 + Math.floor(Math.random() * 3) * 4,
+        size: 16 + Math.floor(Math.random() * 3) * 6,
         emoji: EMOJIS[Math.floor(Math.random() * EMOJIS.length)],
       }))
     );
