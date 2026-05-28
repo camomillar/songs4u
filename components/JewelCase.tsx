@@ -540,15 +540,15 @@ export default function JewelCase({
             </div>
           </div>
 
-          {/* Player */}
+          {/* Player — aligned with CD tray width, less rounded */}
           <div
             onClick={e => e.stopPropagation()}
             style={{
-            width: "100%", maxWidth: W,
-            background: "white", borderRadius: 16,
+            width: "100%", maxWidth: PW,
+            background: "white", borderRadius: 6,
             padding: "12px 16px",
             display: "flex", alignItems: "center", gap: 12,
-            boxShadow: "0 2px 16px rgba(0,0,0,0.08)",
+            boxShadow: "0 2px 12px rgba(0,0,0,0.1)",
             animation: "fadeUp 0.4s ease 0.3s both",
           }}>
             {song.albumArt ? (
