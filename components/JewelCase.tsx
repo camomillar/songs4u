@@ -322,8 +322,6 @@ export default function JewelCase({
                   gap: 6,
                   overflow: "hidden",
                 }}>
-                  {/* <3 top-right decoration */}
-                  <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 13, color: "rgba(20,20,50,0.3)", margin: "0 0 4px", lineHeight: 1, textAlign: "right" }}>&lt;3</p>
 
                   {songs.map((s, i) => (
                     <p key={i} style={{
@@ -338,8 +336,6 @@ export default function JewelCase({
                     </p>
                   ))}
 
-                  {/* :) bottom-right decoration */}
-                  <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 13, color: "rgba(20,20,50,0.3)", margin: "4px 0 0", lineHeight: 1, textAlign: "right" }}>:)</p>
                 </div>
               </div>
 
@@ -466,8 +462,8 @@ export default function JewelCase({
                   >
                     <defs>
                       {/* Message arcs — 270° spans, inner + outer for 2-line support */}
-                      <path id="cdArcMsg1" d="M 32,68 A 26,26 0 1 1 68,68" />
-                      <path id="cdArcMsg2" d="M 27,74 A 33,33 0 1 1 73,74" />
+                      <path id="cdArcMsg1" d="M 34,66 A 24,24 0 1 1 66,66" />
+                      <path id="cdArcMsg2" d="M 25,76 A 35,35 0 1 1 75,76" />
                       {/* Bottom arcs */}
                       <path id="cdArcBot1" d="M 21,50 A 29,29 0 0 0 79,50" />
                       <path id="cdArcBot2" d="M 13,50 A 37,37 0 0 0 87,50" />
