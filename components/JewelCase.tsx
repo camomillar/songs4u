@@ -160,7 +160,7 @@ export default function JewelCase({
           display: "flex", flexDirection: "column", alignItems: "center", gap: 20,
         }}>
           {/* Shadow wrapper — kept separate so filter doesn't flatten preserve-3d */}
-          <div className="case-closed-wrapper" style={{ filter: "drop-shadow(12px 20px 24px rgba(0,0,0,0.4)) drop-shadow(4px 6px 8px rgba(0,0,0,0.25))", padding: "20px" }}>
+          <div className="case-closed-wrapper" style={{ filter: "drop-shadow(12px 20px 24px rgba(0,0,0,0.4)) drop-shadow(4px 6px 8px rgba(0,0,0,0.25))" }}>
           {/* The case — draggable in 3D */}
           <div
             ref={caseRef}
