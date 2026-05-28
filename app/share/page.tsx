@@ -357,6 +357,12 @@ function JewelCaseWrapper({ playlist }: { playlist: ReturnType<typeof decodePlay
     loadTrack(songs[ni].id);
   };
 
+  const prev = () => {
+    const pi = (currentIndex - 1 + songs.length) % songs.length;
+    setCurrentIndex(pi);
+    loadTrack(songs[pi].id);
+  };
+
   return (
     <>
       {/* Hidden Spotify embed container */}
@@ -373,6 +379,7 @@ function JewelCaseWrapper({ playlist }: { playlist: ReturnType<typeof decodePlay
         ready={ready}
         onTogglePlay={togglePlay}
         onNext={next}
+        onPrev={prev}
         song={song}
         songs={songs}
         total={songs.length}

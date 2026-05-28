@@ -18,6 +18,12 @@ function JewelCaseWrapper({ playlist }: { playlist: ValentinesPlaylist }) {
     loadTrack(songs[ni].id);
   };
 
+  const prev = () => {
+    const pi = (currentIndexRef.current - 1 + songs.length) % songs.length;
+    setCurrentIndex(pi);
+    loadTrack(songs[pi].id);
+  };
+
   const { containerRef, isPlaying, ready, loadTrack, togglePlay } = useSpotifyEmbed(songs[0].id, next);
   const song = songs[currentIndex];
 
@@ -36,6 +42,7 @@ function JewelCaseWrapper({ playlist }: { playlist: ValentinesPlaylist }) {
         ready={ready}
         onTogglePlay={togglePlay}
         onNext={next}
+        onPrev={prev}
         song={song}
         songs={songs}
         total={songs.length}

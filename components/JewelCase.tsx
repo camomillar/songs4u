@@ -12,6 +12,7 @@ interface Props {
   ready: boolean;
   onTogglePlay: () => void;
   onNext: () => void;
+  onPrev: () => void;
   song: { title: string; artist: string; albumArt?: string };
   songs: { title: string; artist: string }[];
   coverImage?: string;
@@ -27,7 +28,7 @@ type Phase = "closed" | "opening" | "open" | "closing";
 
 export default function JewelCase({
   to, from, message, bgColor,
-  isPlaying, ready, onTogglePlay, onNext,
+  isPlaying, ready, onTogglePlay, onNext, onPrev,
   song, songs, coverImage, total, onBack,
 }: Props) {
   const [phase, setPhase] = useState<Phase>("closed");
@@ -581,6 +582,29 @@ export default function JewelCase({
               <p style={{ fontSize: 14, fontWeight: 700, color: "#111", fontFamily: "system-ui", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{song.title}</p>
               <p style={{ fontSize: 12, color: "#888", fontFamily: "system-ui", marginTop: 2 }}>{song.artist}</p>
             </div>
+            {/* Prev */}
+            {total > 1 && (
+              <button
+                onClick={onPrev}
+                style={{
+                  width: 40, height: 40, borderRadius: "50%",
+                  background: "rgba(255,255,255,0.85)",
+                  backdropFilter: "blur(6px)",
+                  border: "1px solid rgba(0,0,0,0.1)",
+                  cursor: "pointer", flexShrink: 0,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  transition: "transform 0.15s",
+                }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1.08)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)"; }}
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M12 3.5L6 8L12 12.5V3.5Z" fill="#333"/>
+                  <rect x="3" y="3.5" width="2" height="9" rx="1" fill="#333"/>
+                </svg>
+              </button>
+            )}
+
             {/* Play / Pause */}
             <button
               onClick={onTogglePlay}
