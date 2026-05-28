@@ -375,7 +375,7 @@ export default function JewelCase({
               {/* ── RIGHT: CD tray ── */}
               <div style={{
                 width: PW, height: H,
-                background: "linear-gradient(160deg, #3a3a3c 0%, #252527 100%)",
+                background: darkenHex(bgColor || "#888"),
                 position: "relative",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 flexShrink: 0,
@@ -611,7 +611,7 @@ export default function JewelCase({
               disabled={!ready}
               style={{
                 width: 44, height: 44, borderRadius: "50%",
-                background: ready ? (bgColor || "#111") : "#ddd",
+                background: ready ? darkenHex(bgColor || "#888") : "#ddd",
                 border: "none",
                 cursor: ready ? "pointer" : "not-allowed",
                 flexShrink: 0,
@@ -622,9 +622,9 @@ export default function JewelCase({
               onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)"; }}
             >
               {isPlaying ? (
-                <svg width="16" height="16" viewBox="0 0 16 16" fill={isDark ? "white" : "#111"}><rect x="3" y="2" width="4" height="12" rx="1.5"/><rect x="9" y="2" width="4" height="12" rx="1.5"/></svg>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="white"><rect x="3" y="2" width="4" height="12" rx="1.5"/><rect x="9" y="2" width="4" height="12" rx="1.5"/></svg>
               ) : (
-                <svg width="16" height="16" viewBox="0 0 16 16" fill={isDark ? "white" : "#111"}><path d="M5 3.5L13 8L5 12.5V3.5Z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="white"><path d="M5 3.5L13 8L5 12.5V3.5Z"/></svg>
               )}
             </button>
 
