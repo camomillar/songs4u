@@ -87,13 +87,29 @@ export default function SharePageContent({ playlist }: { playlist: ValentinesPla
     return (
       <div style={{ minHeight: "100vh", background: playlist.bgColor || "#fff", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 28, padding: 24 }}>
         <HeartParticles color={playlist.bgColor ? darkenHex(playlist.bgColor) : undefined} />
-        <div style={{ position: "relative" }}>
+        {/* CD case with cover image + lock */}
+        <div style={{ position: "relative", width: 220, height: 220 }}>
           <Image src="/case-closed.png" alt="CD" width={220} height={220} style={{ objectFit: "contain", filter: "blur(3px)", opacity: 0.6 }} />
+          {/* Cover image overlay on the case front */}
+          {playlist.coverImage && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={playlist.coverImage} alt="cover" style={{
+              position: "absolute", top: "4%", left: "13%",
+              width: "79%", height: "90%",
+              objectFit: "cover",
+              filter: "blur(2px)", opacity: 0.5,
+              imageRendering: "auto",
+            }} />
+          )}
           <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40 }}>🔒</div>
         </div>
         <div style={{ textAlign: "center", maxWidth: 300, zIndex: 1 }}>
-          <p style={{ fontFamily: "'Dancing Script', cursive", fontSize: 26, color: "#3a2010", marginBottom: 10 }}>Someone made you a playlist ♥</p>
-          <p style={{ fontFamily: "system-ui", fontSize: 14, color: "#888", marginBottom: 24, lineHeight: 1.6 }}>Log in with Spotify to open it and hear the full songs</p>
+          <p style={{ fontFamily: "'BeautyDemo', cursive", fontSize: 32, color: "#3a2010", marginBottom: 10, lineHeight: 1.3 }}>
+            Someone made you a playlist ♥
+          </p>
+          <p style={{ fontFamily: "system-ui", fontSize: 14, color: "#888", marginBottom: 24, lineHeight: 1.8 }}>
+            Log in with Spotify to open it<br />and hear the full songs
+          </p>
           <form action={`/api/auth/login?context=player&redirect=${encodeURIComponent(redirectUrl)}`} method="GET">
             <button type="submit" style={{ background: "#1DB954", color: "white", border: "none", borderRadius: 50, padding: "14px 32px", fontSize: 15, fontWeight: 600, cursor: "pointer", fontFamily: "system-ui", display: "flex", alignItems: "center", gap: 10, margin: "0 auto" }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="white">

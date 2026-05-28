@@ -15,6 +15,13 @@
 }
 
 @font-face {
+  font-family: "BeautyDemo";
+  src: url("/fonts/beauty_2/BeautyDemo.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
   font-family: "StillAlone";
   src: url("/fonts/still_alone/Still Alone.otf") format("opentype");
   font-weight: normal;
