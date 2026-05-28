@@ -35,7 +35,14 @@ export function GET(req: NextRequest) {
   );
 
   // Store state nonce + return destination in cookies
-  const cookieOpts = { httpOnly: true, maxAge: 600, path: "/" };
+  // secure:true required on HTTPS (production) so cookies survive the redirect
+  const cookieOpts = {
+    httpOnly: true,
+    maxAge: 600,
+    path: "/",
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax" as const,
+  };
   response.cookies.set("spotify_auth_state", state, cookieOpts);
   response.cookies.set("spotify_return_to", returnTo, cookieOpts);
 
