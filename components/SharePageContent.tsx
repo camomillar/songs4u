@@ -49,6 +49,12 @@ export default function SharePageContent({ playlist }: { playlist: ValentinesPla
   const [authChecked, setAuthChecked] = useState(false);
   const [isAuthed, setIsAuthed] = useState(false);
 
+  // Fix background on body so it doesn't scroll on mobile
+  useEffect(() => {
+    document.body.style.background = playlist.bgColor || "#fff";
+    return () => { document.body.style.background = ""; };
+  }, [playlist.bgColor]);
+
   useEffect(() => {
     fetch("/api/spotify/me")
       .then(r => { setIsAuthed(r.ok); setAuthChecked(true); })

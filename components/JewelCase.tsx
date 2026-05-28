@@ -86,14 +86,19 @@ export default function JewelCase({
   const handleOpen = () => {
     if (phase !== "closed") return;
     setPhase("opening");
-    // halfway through the fold → switch to open layout
     setTimeout(() => setPhase("open"), 420);
   };
+
+  // Fix background on body so it doesn't scroll on mobile
+  useEffect(() => {
+    document.body.style.background = bgColor || "#fff";
+    return () => { document.body.style.background = ""; };
+  }, [bgColor]);
 
   return (
     <div style={{
       minHeight: "100vh",
-      background: bgColor || "#fff",
+      background: "transparent",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
