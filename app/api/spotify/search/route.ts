@@ -25,6 +25,7 @@ export async function GET(req: NextRequest) {
     title: t.name,
     artist: t.artists.map((a: { name: string }) => a.name).join(", "),
     albumArt: t.album.images[1]?.url ?? t.album.images[0]?.url ?? "",
+    previewUrl: t.preview_url ?? null,
   }));
 
   return NextResponse.json({ tracks });

@@ -48,15 +48,13 @@ const sectionTitle: React.CSSProperties = {
 };
 
 export default function Home() {
-  const [authChecked, setAuthChecked] = useState(false);
-  const [isAuthed, setIsAuthed] = useState(false);
   const [to, setTo] = useState("");
   const [from, setFrom] = useState("");
   const [message, setMessage] = useState("");
   const [songs, setSongs] = useState<Song[]>([]);
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<{ id: string; title: string; artist: string; albumArt: string }[]>([]);
+  const [searchResults, setSearchResults] = useState<{ id: string; title: string; artist: string; albumArt: string; previewUrl?: string | null }[]>([]);
   const [searching, setSearching] = useState(false);
 
   const [bgColor, setBgColor] = useState("#FFE4E8");
@@ -75,27 +73,21 @@ export default function Home() {
     { hex: "#2C2C2C", name: "Dark Gray" },
   ];
 
-  useEffect(() => {
-    fetch("/api/spotify/me")
-      .then(r => { setIsAuthed(r.ok); setAuthChecked(true); })
-      .catch(() => setAuthChecked(true));
-  }, []);
-
   const handleSearch = async (q: string) => {
     setSearchQuery(q);
     if (!q.trim()) { setSearchResults([]); return; }
     setSearching(true);
     try {
-      const res = await fetch(`/api/spotify/search?q=${encodeURIComponent(q)}`);
+      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
       const data = await res.json();
       setSearchResults(data.tracks ?? []);
     } catch { setSearchResults([]); }
     finally { setSearching(false); }
   };
 
-  const handleAddSong = (track: { id: string; title: string; artist: string; albumArt: string }) => {
+  const handleAddSong = (track: { id: string; title: string; artist: string; albumArt: string; previewUrl?: string | null }) => {
     if (songs.find(s => s.id === track.id)) return;
-    setSongs(prev => [...prev, track]);
+    setSongs(prev => [...prev, { ...track, previewUrl: track.previewUrl ?? undefined }]);
     setSearchQuery("");
     setSearchResults([]);
   };
@@ -124,42 +116,6 @@ export default function Home() {
     }
   };
 
-  if (!authChecked) {
-    return (
-      <div style={{ minHeight: "100vh", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <HeartParticles />
-        <p style={{ fontFamily: F, fontSize: 14, color: "#999" }}>Loading...</p>
-      </div>
-    );
-  }
-
-  if (!isAuthed) {
-    return (
-      <div style={{ minHeight: "100vh", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <HeartParticles />
-        <div style={{ textAlign: "center", maxWidth: 320, padding: 24 }}>
-          <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 36, marginBottom: 8, color: "#111" }}>songs4u</p>
-          <p style={{ fontFamily: F, fontSize: 14, color: "#888", marginBottom: 32, lineHeight: 1.6 }}>
-            Choose songs, write a message<br />and share the love!
-          </p>
-          <form action="/api/auth/login" method="GET">
-            <button type="submit" style={{
-              fontFamily: F, fontSize: 15, fontWeight: 600,
-              background: "#1DB954", color: "white", border: "none",
-              borderRadius: 50, padding: "14px 32px", cursor: "pointer",
-              display: "flex", alignItems: "center", gap: 10, margin: "0 auto",
-            }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-                <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
-              </svg>
-              Login with Spotify
-            </button>
-          </form>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div style={{ minHeight: "100vh", background: "#f5f5f7" }}>
       <HeartParticles />
@@ -174,13 +130,6 @@ export default function Home() {
         backdropFilter: "blur(8px)",
       }}>
         <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 24, color: "#111", margin: 0 }}>songs4u</p>
-        <form action="/api/auth/logout" method="GET">
-          <button type="submit" style={{
-            fontFamily: F, fontSize: 13, color: "#555",
-            background: "#f0f0f2", border: "none", borderRadius: 20,
-            padding: "6px 14px", cursor: "pointer",
-          }}>Logout</button>
-        </form>
       </div>
 
       {/* Content */}
