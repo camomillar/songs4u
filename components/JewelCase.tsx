@@ -102,15 +102,18 @@ export default function JewelCase({
 
   return (
     <div style={{
-      minHeight: "100vh",
+      height: "100vh",
+      maxHeight: "-webkit-fill-available",
+      overflow: "hidden",
       background: "transparent",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
-      gap: 24,
-      padding: "40px 16px",
+      gap: 16,
+      padding: "16px",
       transition: "background 0.4s ease",
+      position: "relative",
     }}>
       <style>{`
         @keyframes caseFoldOut {
@@ -136,6 +139,10 @@ export default function JewelCase({
         @media (max-width: 600px) {
           .case-liner-panel { display: none !important; }
           .case-hinge { display: none !important; }
+          .case-closed-wrapper {
+            transform: scale(0.75) !important;
+            transform-origin: center center;
+          }
         }
       `}</style>
 
@@ -149,7 +156,7 @@ export default function JewelCase({
           display: "flex", flexDirection: "column", alignItems: "center", gap: 20,
         }}>
           {/* Shadow wrapper — kept separate so filter doesn't flatten preserve-3d */}
-          <div style={{ filter: "drop-shadow(12px 20px 24px rgba(0,0,0,0.4)) drop-shadow(4px 6px 8px rgba(0,0,0,0.25))" }}>
+          <div className="case-closed-wrapper" style={{ filter: "drop-shadow(12px 20px 24px rgba(0,0,0,0.4)) drop-shadow(4px 6px 8px rgba(0,0,0,0.25))", padding: "20px" }}>
           {/* The case — draggable in 3D */}
           <div
             ref={caseRef}
