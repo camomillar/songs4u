@@ -9,7 +9,7 @@
 
 @font-face {
   font-family: "OrdinaryLetter";
-  src: url("/ordinary_letter/Ordinary Letter.otf") format("opentype");
+  src: url("/fonts/ordinary_letter/Ordinary Letter.otf") format("opentype");
   font-weight: normal;
   font-style: normal;
 }
