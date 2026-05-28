@@ -122,7 +122,7 @@ export default function SharePageContent({ playlist }: { playlist: ValentinesPla
             Someone made you a playlist &lt;3
           </p>
           <p style={{ fontFamily: "system-ui", fontSize: 14, color: "#888", marginBottom: 24, lineHeight: 1.8 }}>
-            Log in with Spotify to open it<br />and hear the full songs
+            Log in with Spotify to open<br />and hear the songs
           </p>
           <form action={`/api/auth/login?context=player&redirect=${encodeURIComponent(redirectUrl)}`} method="GET">
             <button type="submit" style={{ background: "#1DB954", color: "white", border: "none", borderRadius: 50, padding: "14px 32px", fontSize: 15, fontWeight: 600, cursor: "pointer", fontFamily: "system-ui", display: "flex", alignItems: "center", gap: 10, margin: "0 auto" }}>
