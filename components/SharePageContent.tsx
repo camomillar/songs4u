@@ -89,19 +89,31 @@ export default function SharePageContent({ playlist }: { playlist: ValentinesPla
         <HeartParticles color={playlist.bgColor ? darkenHex(playlist.bgColor) : undefined} />
         {/* CD case with cover image + lock */}
         <div style={{ position: "relative", width: 220, height: 220 }}>
-          <Image src="/case-closed.png" alt="CD" width={220} height={220} style={{ objectFit: "contain", filter: "blur(3px)", opacity: 0.6 }} />
-          {/* Cover image overlay on the case front */}
-          {playlist.coverImage && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={playlist.coverImage} alt="cover" style={{
-              position: "absolute",
-              top: "4%", left: "15%",
-              width: "80%", height: "90%",
-              objectFit: "cover",
-              filter: "blur(2px)",
-              opacity: 0.55,
-              imageRendering: "auto",
-            }} />
+          {playlist.coverImage ? (
+            <>
+              {/* Case frame with user's cover photo */}
+              <div style={{
+                width: 220, height: 220,
+                position: "relative",
+                borderRadius: 4,
+                overflow: "hidden",
+                filter: "blur(1.5px)",
+                opacity: 0.65,
+                boxShadow: "4px 6px 20px rgba(0,0,0,0.25)",
+              }}>
+                {/* Spine */}
+                <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 18, background: "#1a1a1a", zIndex: 2 }} />
+                {/* Cover photo */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={playlist.coverImage} alt="cover" style={{
+                  position: "absolute", left: 18, top: 0, right: 0, bottom: 0,
+                  width: "calc(100% - 18px)", height: "100%",
+                  objectFit: "cover", imageRendering: "auto", display: "block",
+                }} />
+              </div>
+            </>
+          ) : (
+            <Image src="/case-closed.png" alt="CD" width={220} height={220} style={{ objectFit: "contain", filter: "blur(3px)", opacity: 0.6 }} />
           )}
           <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40 }}>🔒</div>
         </div>
