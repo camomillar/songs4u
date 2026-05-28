@@ -30,7 +30,7 @@ export default function HeartParticles({ color }: Props) {
 
   useEffect(() => {
     setHearts(
-      Array.from({ length: 22 }, (_, i) => ({
+      Array.from({ length: 40 }, (_, i) => ({
         id: i,
         left: Math.random() * 100,
         duration: 6 + Math.random() * 8,
