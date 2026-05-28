@@ -92,17 +92,26 @@ export default function SharePageContent({ playlist }: { playlist: ValentinesPla
           <Image src="/case-closed.png" alt="CD" width={220} height={220} style={{ objectFit: "contain", filter: "blur(3px)", opacity: 0.6 }} />
           {/* Cover image overlay on the case front */}
           {playlist.coverImage && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={playlist.coverImage} alt="cover" style={{
+            <div style={{
               position: "absolute",
               top: "3%", left: "14%",
-              width: "83%", height: "93%",
-              objectFit: "cover",
-              filter: "blur(2px)",
-              opacity: 0.55,
-              imageRendering: "auto",
+              width: "82%", height: "91%",
+              // Match the perspective angle of case-closed.png
+              transform: "perspective(700px) rotateY(-16deg) rotateX(4deg)",
+              transformOrigin: "left center",
+              overflow: "hidden",
               borderRadius: 2,
-            }} />
+            }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={playlist.coverImage} alt="cover" style={{
+                width: "100%", height: "100%",
+                objectFit: "cover",
+                filter: "blur(2px)",
+                opacity: 0.6,
+                imageRendering: "auto",
+                display: "block",
+              }} />
+            </div>
           )}
           <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40 }}>🔒</div>
         </div>
