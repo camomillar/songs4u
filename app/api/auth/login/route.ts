@@ -7,10 +7,6 @@ const BUILDER_SCOPES = [
 
 const PLAYER_SCOPES = [
   "user-read-private",
-  "streaming",
-  "user-read-playback-state",
-  "user-modify-playback-state",
-  "user-read-currently-playing",
 ].join(" ");
 
 export function GET(req: NextRequest) {
