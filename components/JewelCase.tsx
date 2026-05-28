@@ -123,6 +123,10 @@ export default function JewelCase({
           from { transform: rotate(0deg); }
           to   { transform: rotate(360deg); }
         }
+        @media (max-width: 600px) {
+          .case-liner-panel { display: none !important; }
+          .case-hinge { display: none !important; }
+        }
       `}</style>
 
 
@@ -282,8 +286,8 @@ export default function JewelCase({
               overflow: "hidden",
             }}>
 
-              {/* ── LEFT: Liner notes panel ── */}
-              <div style={{
+              {/* ── LEFT: Liner notes panel (hidden on mobile) ── */}
+              <div className="case-liner-panel" style={{
                 width: PW, height: H,
                 background: "linear-gradient(160deg, #f8f8f8 0%, #efefef 100%)",
                 position: "relative",
@@ -328,8 +332,8 @@ export default function JewelCase({
                 </div>
               </div>
 
-              {/* ── CENTER HINGE ── */}
-              <div style={{
+              {/* ── CENTER HINGE (hidden on mobile) ── */}
+              <div className="case-hinge" style={{
                 width: 10, height: H, flexShrink: 0,
                 background: "linear-gradient(to right, #1a1a1a, #3a3a3a 50%, #1a1a1a)",
               }} />
