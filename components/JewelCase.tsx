@@ -153,8 +153,6 @@ export default function JewelCase({
           .case-liner-panel { display: none !important; }
           .case-hinge { display: none !important; }
           .case-closed-wrapper {
-            transform: scale(0.75) !important;
-            transform-origin: center center;
             filter: none !important;
           }
         }
@@ -178,6 +176,7 @@ export default function JewelCase({
             onTouchStart={(e) => { isDragging.current = true; lastPos.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }; }}
             style={{
               width: 340, height: 340,
+              maxWidth: "90vw",
               position: "relative",
               flexShrink: 0,
               cursor: "grab",
