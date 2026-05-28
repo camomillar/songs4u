@@ -11,7 +11,13 @@ export function useSpotifyEmbed(initialTrackId: string, onSongEnd?: () => void) 
   const [isPlaying, setIsPlaying] = useState(false);
   const [ready, setReady] = useState(false);
   const onSongEndRef = useRef(onSongEnd);
-  onSongEndRef.current = onSongEnd; // always up to date
+  onSongEndRef.current = onSongEnd;
+
+  // Track playback state to detect song end reliably
+  const wasPlayingRef = useRef(false);
+  const lastPositionRef = useRef(0);
+  const lastDurationRef = useRef(0);
+  const endFiredRef = useRef(false); // prevent double-fire
 
   useEffect(() => {
     const initApi = (IFrameAPI: W) => {
@@ -22,13 +28,30 @@ export function useSpotifyEmbed(initialTrackId: string, onSongEnd?: () => void) 
         (controller: W) => {
           controllerRef.current = controller;
           setReady(true);
+
           controller.addListener("playback_update", (e: W) => {
             const playing = !e.data.isPaused;
+            const pos = e.data.position ?? 0;
+            const dur = e.data.duration ?? 0;
+
             setIsPlaying(playing);
-            // Detect natural song end: paused AND position is at/near duration
-            if (!playing && e.data.duration > 0 && e.data.position >= e.data.duration - 1500) {
-              onSongEndRef.current?.();
+
+            // Detect song end: was playing → now paused
+            if (wasPlayingRef.current && !playing && !endFiredRef.current) {
+              const wasNearEnd = lastPositionRef.current > 0 && lastDurationRef.current > 0 &&
+                lastPositionRef.current >= lastDurationRef.current * 0.8;
+              const posReset = pos < 1000 && lastPositionRef.current > 0;
+
+              if (wasNearEnd || posReset) {
+                endFiredRef.current = true;
+                setTimeout(() => { endFiredRef.current = false; }, 2000);
+                onSongEndRef.current?.();
+              }
             }
+
+            wasPlayingRef.current = playing;
+            if (pos > 0) lastPositionRef.current = pos;
+            if (dur > 0) lastDurationRef.current = dur;
           });
         }
       );
@@ -52,8 +75,13 @@ export function useSpotifyEmbed(initialTrackId: string, onSongEnd?: () => void) 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Reset end detection when track changes
   const loadTrack = (trackId: string) => {
     if (!controllerRef.current) return;
+    wasPlayingRef.current = false;
+    lastPositionRef.current = 0;
+    lastDurationRef.current = 0;
+    endFiredRef.current = false;
     controllerRef.current.loadUri(`spotify:track:${trackId}`);
     setIsPlaying(true);
   };
