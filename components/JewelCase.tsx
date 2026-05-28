@@ -83,6 +83,15 @@ export default function JewelCase({
     };
   }, [phase]);
 
+  // Detect dark background to adjust text colors
+  const isDark = (() => {
+    const hex = (bgColor || "#fff").replace("#", "");
+    const r = parseInt(hex.slice(0, 2), 16);
+    const g = parseInt(hex.slice(2, 4), 16);
+    const b = parseInt(hex.slice(4, 6), 16);
+    return (r * 299 + g * 587 + b * 114) / 1000 < 128;
+  })();
+
   const handleOpen = () => {
     if (phase !== "closed") return;
     setPhase("opening");
@@ -272,12 +281,12 @@ export default function JewelCase({
               onClick={handleOpen}
               style={{
                 fontFamily: "'Lora', serif", fontStyle: "italic",
-                fontSize: 15, color: "#555", cursor: "pointer",
-                letterSpacing: 0.3, borderBottom: "1px solid #999", paddingBottom: 2,
+                fontSize: 15, color: isDark ? "#aaa" : "#555", cursor: "pointer",
+                letterSpacing: 0.3, borderBottom: `1px solid ${isDark ? "#666" : "#999"}`, paddingBottom: 2,
                 marginTop: 40,
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#333")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "#555")}
+              onMouseEnter={(e) => (e.currentTarget.style.color = isDark ? "#ddd" : "#333")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = isDark ? "#aaa" : "#555")}
             >
               click to open
             </p>
@@ -621,17 +630,17 @@ export default function JewelCase({
           </div>
 
           <p style={{
-            fontFamily: "system-ui", fontSize: 11, color: "#555",
+            fontFamily: "system-ui", fontSize: 11, color: isDark ? "#888" : "#555",
             position: "fixed", bottom: 20, left: "50%", transform: "translateX(-50%)",
             whiteSpace: "nowrap", zIndex: 10,
           }}>
             made with ♥ by{" "}
             <a href="https://www.instagram.com/caahmills/" target="_blank" rel="noopener noreferrer"
-              style={{ color: "#444", textDecoration: "none", borderBottom: "1px solid #aaa" }}>
+              style={{ color: isDark ? "#aaa" : "#444", textDecoration: "none", borderBottom: `1px solid ${isDark ? "#666" : "#aaa"}` }}>
               caahmills
             </a>
             {" "}·{" "}
-            <a href="/" style={{ color: "#555", textDecoration: "none" }}>create your own playlist</a>
+            <a href="/" style={{ color: isDark ? "#888" : "#555", textDecoration: "none" }}>create your own playlist</a>
           </p>
         </>
       )}
