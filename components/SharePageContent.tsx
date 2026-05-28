@@ -94,18 +94,21 @@ export default function SharePageContent({ playlist }: { playlist: ValentinesPla
           {playlist.coverImage && (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={playlist.coverImage} alt="cover" style={{
-              position: "absolute", top: "4%", left: "13%",
-              width: "79%", height: "90%",
+              position: "absolute",
+              top: "3%", left: "14%",
+              width: "83%", height: "93%",
               objectFit: "cover",
-              filter: "blur(2px)", opacity: 0.5,
+              filter: "blur(2px)",
+              opacity: 0.55,
               imageRendering: "auto",
+              borderRadius: 2,
             }} />
           )}
           <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40 }}>🔒</div>
         </div>
         <div style={{ textAlign: "center", maxWidth: 300, zIndex: 1 }}>
-          <p style={{ fontFamily: "'BeautyDemo', cursive", fontSize: 32, color: "#3a2010", marginBottom: 10, lineHeight: 1.3 }}>
-            Someone made you a playlist ♥
+          <p style={{ fontFamily: "'StillAlone', cursive", fontSize: 32, color: "#3a2010", marginBottom: 10, lineHeight: 1.3 }}>
+            Someone made you a playlist
           </p>
           <p style={{ fontFamily: "system-ui", fontSize: 14, color: "#888", marginBottom: 24, lineHeight: 1.8 }}>
             Log in with Spotify to open it<br />and hear the full songs
