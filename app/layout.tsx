@@ -2,8 +2,13 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Lovelist ♥",
-  description: "Make a Valentine's playlist for someone special",
+  title: "songs4u",
+  description: "Make a playlist for someone special",
+  openGraph: {
+    title: "songs4u ♥",
+    description: "Make a playlist for someone special",
+    siteName: "songs4u",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
