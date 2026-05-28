@@ -89,14 +89,20 @@ export default function JewelCase({
     setTimeout(() => setPhase("open"), 420);
   };
 
-  // Fix background on html+body so it doesn't scroll or leak on mobile
+  // Fix background + prevent scroll on mobile
   useEffect(() => {
     const color = bgColor || "#fff";
     document.documentElement.style.background = color;
     document.body.style.background = color;
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.width = "100%";
     return () => {
       document.documentElement.style.background = "";
       document.body.style.background = "";
+      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.width = "";
     };
   }, [bgColor]);
 
@@ -104,7 +110,6 @@ export default function JewelCase({
     <div style={{
       height: "100vh",
       maxHeight: "-webkit-fill-available",
-      overflow: "hidden",
       background: "transparent",
       display: "flex",
       flexDirection: "column",
@@ -113,7 +118,6 @@ export default function JewelCase({
       gap: 16,
       padding: "16px",
       transition: "background 0.4s ease",
-      position: "relative",
     }}>
       <style>{`
         @keyframes caseFoldOut {
