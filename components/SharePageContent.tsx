@@ -116,7 +116,7 @@ export default function SharePageContent({ playlist }: { playlist: ValentinesPla
           <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40 }}>🔒</div>
         </div>
         <div style={{ textAlign: "center", maxWidth: 300, zIndex: 1 }}>
-          <p style={{ fontFamily: "'StillAlone', cursive", fontSize: 32, color: "#3a2010", marginBottom: 10, lineHeight: 1.3 }}>
+          <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 32, color: "#3a2010", marginBottom: 10, lineHeight: 1.3 }}>
             Someone made you a playlist
           </p>
           <p style={{ fontFamily: "system-ui", fontSize: 14, color: "#888", marginBottom: 24, lineHeight: 1.8 }}>
