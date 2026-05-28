@@ -71,6 +71,8 @@ export default function Home() {
     { hex: "#FFFBE4", name: "Butter" },
     { hex: "#FFE8D6", name: "Peach" },
     { hex: "#FFD6F0", name: "Pink" },
+    { hex: "#F0F0F0", name: "Light Gray" },
+    { hex: "#2C2C2C", name: "Dark Gray" },
   ];
 
   useEffect(() => {
@@ -246,7 +248,7 @@ export default function Home() {
         <div style={card}>
           <p style={sectionTitle}>Cover photo</p>
           <p style={{ fontFamily: F, fontSize: 12, color: "#999", marginBottom: 14, lineHeight: 1.5 }}>
-            This photo will appear on the front of the closed CD case
+            This photo will appear on your cd cover
           </p>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             {coverImage ? (
