@@ -32,6 +32,22 @@ export default function JewelCase({
   song, songs, coverImage, total, onBack,
 }: Props) {
   const [phase, setPhase] = useState<Phase>("closed");
+  const [spinState, setSpinState] = useState<"playing" | "stopping" | "stopped">("stopped");
+  const stopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (isPlaying) {
+      if (stopTimerRef.current) clearTimeout(stopTimerRef.current);
+      setSpinState("playing");
+    } else {
+      if (spinState === "playing") {
+        setSpinState("stopping");
+        stopTimerRef.current = setTimeout(() => setSpinState("stopped"), 2500);
+      }
+    }
+    return () => { if (stopTimerRef.current) clearTimeout(stopTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPlaying]);
 
   // 3D drag for closed state
   const caseRef = useRef<HTMLDivElement>(null);
@@ -147,6 +163,10 @@ export default function JewelCase({
           to   { opacity: 1; transform: translateY(0); }
         }
         @keyframes cd-spin {
+          from { transform: rotate(0deg); }
+          to   { transform: rotate(360deg); }
+        }
+        @keyframes cd-spin-slow {
           from { transform: rotate(0deg); }
           to   { transform: rotate(360deg); }
         }
@@ -424,7 +444,11 @@ export default function JewelCase({
                   width: H * 0.84, height: H * 0.84,
                   borderRadius: "50%",
                   position: "relative",
-                  animation: isPlaying ? "cd-spin 4s linear infinite" : undefined,
+                  animation: spinState === "playing"
+                    ? "cd-spin 4s linear infinite"
+                    : spinState === "stopping"
+                    ? "cd-spin-slow 2.5s ease-out forwards"
+                    : undefined,
                   flexShrink: 0,
                   boxShadow: "0 2px 14px rgba(0,0,0,0.45), 0 0 0 1px rgba(180,180,190,0.4)",
                   // Mirror silver + vivid iridescent + radial streaks
