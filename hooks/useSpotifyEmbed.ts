@@ -26,7 +26,7 @@ export function useSpotifyEmbed(initialTrackId: string, onSongEnd?: () => void) 
             const playing = !e.data.isPaused;
             setIsPlaying(playing);
             // Detect natural song end: paused AND position is at/near duration
-            if (!playing && e.data.duration > 0 && e.data.position >= e.data.duration - 800) {
+            if (!playing && e.data.duration > 0 && e.data.position >= e.data.duration - 1500) {
               onSongEndRef.current?.();
             }
           });
@@ -55,10 +55,6 @@ export function useSpotifyEmbed(initialTrackId: string, onSongEnd?: () => void) 
   const loadTrack = (trackId: string) => {
     if (!controllerRef.current) return;
     controllerRef.current.loadUri(`spotify:track:${trackId}`);
-    // Give the embed a moment to load the track, then start playing
-    setTimeout(() => {
-      controllerRef.current?.resume();
-    }, 300);
     setIsPlaying(true);
   };
 
