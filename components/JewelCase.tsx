@@ -245,25 +245,19 @@ export default function JewelCase({
           </div>{/* end shadow wrapper */}
 
           {phase === "closed" && (
-            <button
+            <p
               onClick={handleOpen}
               style={{
-                fontFamily: "system-ui, -apple-system, sans-serif",
-                fontSize: 14, fontWeight: 500,
-                color: "#111",
-                background: "white",
-                border: "1px solid rgba(0,0,0,0.12)",
-                borderRadius: 6,
-                padding: "10px 24px",
-                cursor: "pointer",
-                marginTop: 20,
-                letterSpacing: 0.2,
+                fontFamily: "'Lora', serif", fontStyle: "italic",
+                fontSize: 15, color: "#555", cursor: "pointer",
+                letterSpacing: 0.3, borderBottom: "1px solid #999", paddingBottom: 2,
+                marginTop: 40,
               }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#f5f5f5"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "white"; }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#333")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "#555")}
             >
               click to open
-            </button>
+            </p>
           )}
         </div>
         </>
