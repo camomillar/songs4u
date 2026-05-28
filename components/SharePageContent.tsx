@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import Image from "next/image";
 import HeartParticles, { darkenHex } from "@/components/HeartParticles";
 import { ValentinesPlaylist } from "@/lib/encode";
@@ -9,14 +9,17 @@ import JewelCase from "@/components/JewelCase";
 function JewelCaseWrapper({ playlist }: { playlist: ValentinesPlaylist }) {
   const songs = playlist.songs;
   const [currentIndex, setCurrentIndex] = useState(0);
-  const { containerRef, isPlaying, ready, loadTrack, togglePlay } = useSpotifyEmbed(songs[0].id);
-  const song = songs[currentIndex];
+  const currentIndexRef = useRef(currentIndex);
+  currentIndexRef.current = currentIndex;
 
   const next = () => {
-    const ni = (currentIndex + 1) % songs.length;
+    const ni = (currentIndexRef.current + 1) % songs.length;
     setCurrentIndex(ni);
     loadTrack(songs[ni].id);
   };
+
+  const { containerRef, isPlaying, ready, loadTrack, togglePlay } = useSpotifyEmbed(songs[0].id, next);
+  const song = songs[currentIndex];
 
   return (
     <>

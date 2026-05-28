@@ -4,12 +4,14 @@ import { useEffect, useRef, useState } from "react";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type W = any;
 
-export function useSpotifyEmbed(initialTrackId: string) {
-  const containerRef = useRef<HTMLDivElement>(null); // div placeholder — Spotify replaces it with an iframe
+export function useSpotifyEmbed(initialTrackId: string, onSongEnd?: () => void) {
+  const containerRef = useRef<HTMLDivElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const controllerRef = useRef<any>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [ready, setReady] = useState(false);
+  const onSongEndRef = useRef(onSongEnd);
+  onSongEndRef.current = onSongEnd; // always up to date
 
   useEffect(() => {
     const initApi = (IFrameAPI: W) => {
@@ -21,7 +23,12 @@ export function useSpotifyEmbed(initialTrackId: string) {
           controllerRef.current = controller;
           setReady(true);
           controller.addListener("playback_update", (e: W) => {
-            setIsPlaying(!e.data.isPaused);
+            const playing = !e.data.isPaused;
+            setIsPlaying(playing);
+            // Detect natural song end: paused AND position is at/near duration
+            if (!playing && e.data.duration > 0 && e.data.position >= e.data.duration - 800) {
+              onSongEndRef.current?.();
+            }
           });
         }
       );
