@@ -10,7 +10,7 @@ interface Heart {
   emoji: string;
 }
 
-const EMOJIS = ["♥", "♥", "♥", "✦", "♡", "•", "•"];
+const EMOJIS = ["♥", "♥", "♥", "✦", "♡", "✦", "✧"];
 
 /** Darkens a hex colour by `amount` (0–255) */
 export function darkenHex(hex: string, amount = 60): string {
