@@ -30,5 +30,5 @@ export default function ShortLinkPage() {
     </div>
   );
 
-  return <SharePageContent playlist={playlist} />;
+  return <SharePageContent playlist={playlist} playlistId={id} />;
 }

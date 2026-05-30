@@ -4,7 +4,7 @@ import { ValentinesPlaylist } from "@/lib/encode";
 import { useAudioPlayer } from "@/hooks/useAudioPlayer";
 import JewelCase from "@/components/JewelCase";
 
-function JewelCaseWrapper({ playlist }: { playlist: ValentinesPlaylist }) {
+function JewelCaseWrapper({ playlist, playlistId }: { playlist: ValentinesPlaylist; playlistId?: string }) {
   const songs = playlist.songs;
   const [currentIndex, setCurrentIndex] = useState(0);
   const currentIndexRef = useRef(currentIndex);
@@ -41,11 +41,12 @@ function JewelCaseWrapper({ playlist }: { playlist: ValentinesPlaylist }) {
       songs={songs}
       total={songs.length}
       onBack={() => window.history.back()}
+      playlistId={playlistId}
     />
   );
 }
 
-export default function SharePageContent({ playlist }: { playlist: ValentinesPlaylist }) {
+export default function SharePageContent({ playlist, playlistId }: { playlist: ValentinesPlaylist; playlistId?: string }) {
   useEffect(() => {
     const color = playlist.bgColor || "#fff";
     document.documentElement.style.background = color;
@@ -56,5 +57,5 @@ export default function SharePageContent({ playlist }: { playlist: ValentinesPla
     };
   }, [playlist.bgColor]);
 
-  return <JewelCaseWrapper playlist={playlist} />;
+  return <JewelCaseWrapper playlist={playlist} playlistId={playlistId} />;
 }
