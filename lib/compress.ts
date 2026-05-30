@@ -1,6 +1,6 @@
 /**
  * Compress an image to base64 JPEG for the CD cover.
- * 120×120px at 0.65 quality — good balance of quality vs URL size.
+ * 600×600px at 0.92 quality — high quality cover art.
  */
 export function compressImage(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -15,13 +15,13 @@ export function compressImage(file: File): Promise<string> {
         const sy = (img.height - size) / 2;
 
         const canvas = document.createElement("canvas");
-        canvas.width = 200;
-        canvas.height = 200;
+        canvas.width = 600;
+        canvas.height = 600;
         const ctx = canvas.getContext("2d")!;
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = "high";
-        ctx.drawImage(img, sx, sy, size, size, 0, 0, 200, 200);
-        resolve(canvas.toDataURL("image/jpeg", 0.8));
+        ctx.drawImage(img, sx, sy, size, size, 0, 0, 600, 600);
+        resolve(canvas.toDataURL("image/jpeg", 0.92));
       };
       img.src = e.target?.result as string;
     };
