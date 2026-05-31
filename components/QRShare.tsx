@@ -52,10 +52,18 @@ export default function QRShare({ url, onClose }: Props) {
           boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
         }}
       >
-        {/* Title */}
-        <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 26, color: "#111", textAlign: "center", margin: "0 0 20px" }}>
-          share your playlist ♥
-        </p>
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: 26, color: "#111", margin: 0 }}>
+            Share your playlist ♥
+          </p>
+          <button onClick={onClose} style={{
+            background: "#f0f0f2", border: "none", borderRadius: "50%",
+            width: 32, height: 32, cursor: "pointer", fontSize: 16,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            color: "#888", flexShrink: 0,
+          }}>✕</button>
+        </div>
 
         {/* QR Code — generated client-side */}
         <canvas
@@ -101,20 +109,10 @@ export default function QRShare({ url, onClose }: Props) {
               border: "none", borderRadius: 12, padding: "12px",
               cursor: "pointer",
             }}>
-              Open ↗
+              Open <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: "inline", verticalAlign: "middle", marginLeft: 4 }}><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             </button>
           </a>
         </div>
-        <button
-          onClick={onClose}
-          style={{
-            width: "100%", fontFamily: F, fontSize: 13,
-            background: "none", color: "#aaa",
-            border: "none", padding: "8px", cursor: "pointer",
-          }}
-        >
-          Close
-        </button>
       </div>
     </div>
   );

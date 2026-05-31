@@ -7,6 +7,41 @@ import { compressImage } from "@/lib/compress";
 
 const F = "system-ui, -apple-system, sans-serif";
 
+const T = {
+  en: {
+    subtitle: "Choose songs, write a message and share the love!",
+    details: "Details", to: "From", from: "To", toPlaceholder: "your name", fromPlaceholder: "their name",
+    message: "Message", messagePlaceholder: "write your message...",
+    bgColour: "Background colour", bgVibe: "Background vibe",
+    hearts: "Hearts", stars: "Stars", music: "Music", none: "None",
+    coverPhoto: "Cover photo", coverDesc: "This photo will appear on your cd cover",
+    uploadPhoto: "Upload photo", changePhoto: "Change photo", remove: "Remove",
+    addSongs: "Add songs", searchPlaceholder: "Search for a song or artist...",
+    searching: "Searching...", yourSongs: "Your songs",
+    generate: "Generate Link & QR Code",
+    addName: "Add a name to continue", addSong: "Add at least one song to continue",
+    alertName: "Please enter who this is for!", alertSong: "Add at least one song!",
+    alertError: "Could not generate link. Please try again.",
+    madeWith: "made with ♥ by",
+  },
+  pt: {
+    subtitle: "Escolha músicas, escreva uma mensagem e compartilhe o amor!",
+    details: "Detalhes", to: "De", from: "Para", toPlaceholder: "seu nome", fromPlaceholder: "quem vai receber",
+    message: "Mensagem", messagePlaceholder: "escreva sua mensagem...",
+    bgColour: "Cor de fundo", bgVibe: "Vibe do fundo",
+    hearts: "Corações", stars: "Estrelas", music: "Música", none: "Nenhum",
+    coverPhoto: "Foto da capa", coverDesc: "Esta foto vai aparecer na capa do CD",
+    uploadPhoto: "Enviar foto", changePhoto: "Trocar foto", remove: "Remover",
+    addSongs: "Adicionar músicas", searchPlaceholder: "Busque por uma música ou artista...",
+    searching: "Buscando...", yourSongs: "Suas músicas",
+    generate: "Gerar Link & QR Code",
+    addName: "Adicione um nome para continuar", addSong: "Adicione pelo menos uma música para continuar",
+    alertName: "Por favor, insira para quem é a playlist!", alertSong: "Adicione pelo menos uma música!",
+    alertError: "Não foi possível gerar o link. Tente novamente.",
+    madeWith: "feito com ♥ por",
+  },
+};
+
 const card: React.CSSProperties = {
   background: "white",
   borderRadius: 16,
@@ -56,21 +91,24 @@ export default function Home() {
   const [searchResults, setSearchResults] = useState<{ id: string; title: string; artist: string; albumArt: string; previewUrl?: string | null }[]>([]);
   const [searching, setSearching] = useState(false);
 
-  const [bgColor, setBgColor] = useState("#FFE4E8");
+  const [lang, setLang] = useState<"en" | "pt">("pt");
+  const [langOpen, setLangOpen] = useState(false);
+  const t = T[lang];
+  const [bgColor, setBgColor] = useState("#C8102E");
   const [particles, setParticles] = useState<"hearts" | "stars" | "notes" | "none">("hearts");
   const [coverImage, setCoverImage] = useState<string | null>(null);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
 
   const PASTEL_COLOURS = [
-    { hex: "#FFE4E8", name: "Rose" },
-    { hex: "#F3E4FF", name: "Lavender" },
-    { hex: "#E4F0FF", name: "Sky" },
-    { hex: "#E4FFF4", name: "Mint" },
-    { hex: "#FFFBE4", name: "Butter" },
-    { hex: "#FFE8D6", name: "Peach" },
-    { hex: "#FFD6F0", name: "Pink" },
+    { hex: "#C8102E", name: "Romantic Red" },
+    { hex: "#FFB3C6", name: "Pastel Pink" },
+    { hex: "#FFCBA4", name: "Peach" },
+    { hex: "#FFF0A0", name: "Butter" },
+    { hex: "#B5EAD7", name: "Mint" },
+    { hex: "#AEE6F8", name: "Sky" },
+    { hex: "#C7B8EA", name: "Lavender" },
     { hex: "#F0F0F0", name: "Light Gray" },
-    { hex: "#2C2C2C", name: "Dark Gray" },
+    { hex: "#111111", name: "Black" },
   ];
 
   const handleSearch = async (q: string) => {
@@ -101,8 +139,8 @@ export default function Home() {
   };
 
   const handleGenerate = async () => {
-    if (!to.trim()) { alert("Please enter who this is for!"); return; }
-    if (songs.length === 0) { alert("Add at least one song!"); return; }
+    if (!to.trim()) { alert(t.alertName); return; }
+    if (songs.length === 0) { alert(t.alertSong); return; }
     try {
       const res = await fetch("/api/playlist", {
         method: "POST",
@@ -112,22 +150,55 @@ export default function Home() {
       const { id } = await res.json();
       setShareUrl(`${window.location.origin}/s/${id}`);
     } catch {
-      alert("Could not generate link. Please try again.");
+      alert(t.alertError);
     }
   };
 
   return (
     <div style={{ minHeight: "100vh", background: "#f5f5f7" }}>
-      {/* Header */}
-      <div style={{
-        background: "white",
-        borderBottom: "1px solid #eee",
-        padding: "16px 20px",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        position: "sticky", top: 0, zIndex: 20,
-        backdropFilter: "blur(8px)",
-      }}>
-        <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 24, color: "#111", margin: 0 }}>songs4u</p>
+      {/* Language dropdown */}
+      <div style={{ position: "fixed", top: 16, right: 16, zIndex: 50 }}>
+        <button
+          onClick={() => setLangOpen(o => !o)}
+          style={{
+            fontFamily: "'Raleway', sans-serif", fontSize: 13, fontWeight: 600,
+            background: "white", border: "1px solid #e0e0e0", borderRadius: 99,
+            padding: "7px 14px", cursor: "pointer", color: "#444",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+            display: "flex", alignItems: "center", gap: 6,
+          }}
+        >
+          {lang === "en" ? "🇺🇸" : "🇧🇷"} {lang === "en" ? "EN" : "PT"} <span style={{ fontSize: 10, color: "#aaa" }}>▾</span>
+        </button>
+        {langOpen && (
+          <div style={{
+            position: "absolute", top: "calc(100% + 6px)", right: 0,
+            background: "white", border: "1px solid #e0e0e0", borderRadius: 12,
+            boxShadow: "0 4px 20px rgba(0,0,0,0.12)",
+            overflow: "hidden", minWidth: 130,
+          }}>
+            {([
+              { code: "pt", flag: "🇧🇷", label: "Português" },
+              { code: "en", flag: "🇺🇸", label: "English" },
+            ] as const).map(({ code, flag, label }) => (
+              <button
+                key={code}
+                onClick={() => { setLang(code); setLangOpen(false); }}
+                style={{
+                  width: "100%", display: "flex", alignItems: "center", gap: 10,
+                  padding: "10px 14px", border: "none", cursor: "pointer",
+                  fontFamily: "'Raleway', sans-serif", fontSize: 13, fontWeight: 500,
+                  background: lang === code ? "#f5f5f7" : "white",
+                  color: "#333",
+                  borderBottom: code === "pt" ? "1px solid #f0f0f0" : "none",
+                }}
+              >
+                <span style={{ fontSize: 18 }}>{flag}</span> {label}
+                {lang === code && <span style={{ marginLeft: "auto", color: "#111", fontSize: 11 }}>✓</span>}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Content */}
@@ -136,60 +207,42 @@ export default function Home() {
         {/* Intro */}
         <div style={{
           textAlign: "center",
-          padding: "36px 16px 28px",
+          padding: "48px 16px 28px",
           marginBottom: 12,
         }}>
           <p style={{
-            fontFamily: "'OrdinaryLetter', cursive",
-            fontSize: 42,
-            color: "#111",
-            margin: 0,
-            lineHeight: 1.15,
+            fontFamily: "'BitcountGrid', monospace",
+            fontSize: 38, fontWeight: 700, color: "#111",
+            margin: "0 0 12px", lineHeight: 1.2,
           }}>
-            make a playlist
+            songs4u &lt;3
           </p>
           <p style={{
-            fontFamily: "'OrdinaryLetter', cursive",
-            fontSize: 42,
-            color: "#111",
-            margin: "0 0 20px",
-            lineHeight: 1.15,
+            fontFamily: "'Raleway', sans-serif",
+            fontSize: 13, fontWeight: 400, color: "#888",
+            margin: 0, lineHeight: 1.6,
           }}>
-            for <span style={{ color: "#e03050" }}>someone special</span>
+            {t.subtitle}
           </p>
-          <div style={{
-            display: "inline-flex", alignItems: "center", gap: 10,
-            background: "#f5f5f7",
-            border: "1px solid #ebebed",
-            borderRadius: 99,
-            padding: "7px 18px",
-          }}>
-            {["choose songs", "write a message", "share the love"].map((step, i) => (
-              <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
-                <span style={{ fontFamily: F, fontSize: 12, color: "#888", letterSpacing: 0.2 }}>{step}</span>
-                {i < 2 && <span style={{ color: "#ddd", fontSize: 10 }}>·</span>}
-              </span>
-            ))}
-          </div>
         </div>
 
         {/* Details */}
         <div style={card}>
-          <p style={sectionTitle}>Details</p>
+          <p style={sectionTitle}>{t.details}</p>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
             <div>
-              <span style={label}>To</span>
-              <input style={input} placeholder="their name" value={to} onChange={e => setTo(e.target.value)} />
+              <span style={label}>{t.to}</span>
+              <input style={input} placeholder={t.toPlaceholder} value={to} onChange={e => setTo(e.target.value)} />
             </div>
             <div>
-              <span style={label}>From</span>
-              <input style={input} placeholder="your name" value={from} onChange={e => setFrom(e.target.value)} />
+              <span style={label}>{t.from}</span>
+              <input style={input} placeholder={t.fromPlaceholder} value={from} onChange={e => setFrom(e.target.value)} />
             </div>
           </div>
-          <span style={label}>Message</span>
+          <span style={label}>{t.message}</span>
           <textarea
             style={{ ...input, resize: "none" as const, lineHeight: 1.6 }}
-            placeholder="write your message..."
+            placeholder={t.messagePlaceholder}
             value={message}
             onChange={e => setMessage(e.target.value)}
             rows={3}
@@ -202,7 +255,7 @@ export default function Home() {
 
         {/* Background colour */}
         <div style={card}>
-          <p style={sectionTitle}>Background colour</p>
+          <p style={sectionTitle}>{t.bgColour}</p>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             {PASTEL_COLOURS.map(c => (
               <button key={c.hex} title={c.name} onClick={() => setBgColor(c.hex)} style={{
@@ -216,13 +269,13 @@ export default function Home() {
 
         {/* Background particles */}
         <div style={card}>
-          <p style={sectionTitle}>Background vibe</p>
+          <p style={sectionTitle}>{t.bgVibe}</p>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             {([
-              { key: "hearts", label: "Hearts", emoji: "♥" },
-              { key: "stars",  label: "Stars",  emoji: "✦" },
-              { key: "notes",  label: "Music",  emoji: "♪" },
-              { key: "none",   label: "None",   emoji: "○" },
+              { key: "hearts", label: t.hearts, emoji: "♥" },
+              { key: "stars",  label: t.stars,  emoji: "✦" },
+              { key: "notes",  label: t.music,  emoji: "♪" },
+              { key: "none",   label: t.none,   emoji: "○" },
             ] as const).map(({ key, label, emoji }) => (
               <button
                 key={key}
@@ -247,9 +300,9 @@ export default function Home() {
 
         {/* Cover photo */}
         <div style={card}>
-          <p style={sectionTitle}>Cover photo</p>
+          <p style={sectionTitle}>{t.coverPhoto}</p>
           <p style={{ fontFamily: F, fontSize: 12, color: "#999", marginBottom: 14, lineHeight: 1.5 }}>
-            This photo will appear on your cd cover
+            {t.coverDesc}
           </p>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             {coverImage ? (
@@ -270,7 +323,7 @@ export default function Home() {
                   background: "#f0f0f2", borderRadius: 10, padding: "10px 16px",
                   cursor: "pointer", textAlign: "center",
                 }}>
-                  {coverImage ? "Change photo" : "Upload photo"}
+                  {coverImage ? t.changePhoto : t.uploadPhoto}
                 </div>
                 <input type="file" accept="image/*" style={{ display: "none" }} onChange={handleCoverUpload} />
               </label>
@@ -278,7 +331,7 @@ export default function Home() {
                 <button onClick={() => setCoverImage(null)} style={{
                   fontFamily: F, fontSize: 12, color: "#aaa", background: "none",
                   border: "none", cursor: "pointer", marginTop: 6, display: "block", width: "100%",
-                }}>Remove</button>
+                }}>{t.remove}</button>
               )}
             </div>
           </div>
@@ -286,14 +339,14 @@ export default function Home() {
 
         {/* Search songs */}
         <div style={card}>
-          <p style={sectionTitle}>Add songs</p>
+          <p style={sectionTitle}>{t.addSongs}</p>
           <input
             style={input}
-            placeholder="Search for a song or artist..."
+            placeholder={t.searchPlaceholder}
             value={searchQuery}
             onChange={e => handleSearch(e.target.value)}
           />
-          {searching && <p style={{ fontFamily: F, fontSize: 12, color: "#999", marginTop: 8 }}>Searching...</p>}
+          {searching && <p style={{ fontFamily: F, fontSize: 12, color: "#999", marginTop: 8 }}>{t.searching}</p>}
           {searchResults.length > 0 && (
             <div style={{ marginTop: 10, borderRadius: 10, overflow: "hidden", border: "1px solid #eee" }}>
               {searchResults.map(track => (
@@ -324,7 +377,7 @@ export default function Home() {
         {/* Song list */}
         {songs.length > 0 && (
           <div style={card}>
-            <p style={sectionTitle}>Your songs ({songs.length})</p>
+            <p style={sectionTitle}>{t.yourSongs} ({songs.length})</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
               {songs.map((song, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: i < songs.length - 1 ? "1px solid #f0f0f0" : "none" }}>
@@ -357,11 +410,11 @@ export default function Home() {
             cursor: songs.length > 0 && to.trim() ? "pointer" : "not-allowed",
           }}
         >
-          Generate Link & QR Code
+          {t.generate}
         </button>
         {(songs.length === 0 || !to.trim()) && (
           <p style={{ fontFamily: F, fontSize: 12, color: "#bbb", textAlign: "center", marginTop: 8 }}>
-            {!to.trim() ? "Add a name to continue" : "Add at least one song to continue"}
+            {!to.trim() ? t.addName : t.addSong}
           </p>
         )}
       </div>
@@ -373,7 +426,7 @@ export default function Home() {
         fontFamily: F, fontSize: 11, color: "#555",
         textAlign: "center", padding: "16px 0 32px",
       }}>
-        made with ♥ by{" "}
+        {t.madeWith}{" "}
         <a href="https://www.instagram.com/caahmills/" target="_blank" rel="noopener noreferrer"
           style={{ color: "#444", textDecoration: "none", borderBottom: "1px solid #aaa" }}>
           caahmills

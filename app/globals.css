@@ -1,6 +1,20 @@
 @import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Dancing+Script:wght@400;600;700&family=Lora:ital,wght@1,400;1,500&display=swap");
 
 @font-face {
+  font-family: "Raleway";
+  src: url("/fonts/Raleway-VariableFont_wght.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "BitcountGrid";
+  src: url("/fonts/BitcountGridSingle-VariableFont_CRSV,ELSH,ELXP,slnt,wght.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
   font-family: "Breathing";
   src: url("/fonts/Breathing Personal Use Only.ttf") format("truetype");
   font-weight: normal;

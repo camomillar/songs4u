@@ -195,7 +195,7 @@ export default function JewelCase({
           display: "flex", flexDirection: "column", alignItems: "center", gap: 20,
         }}>
           {/* Shadow wrapper — kept separate so filter doesn't flatten preserve-3d */}
-          <div className="case-closed-wrapper" style={{ filter: "drop-shadow(12px 20px 24px rgba(0,0,0,0.4)) drop-shadow(4px 6px 8px rgba(0,0,0,0.25))" }}>
+          <div className="case-closed-wrapper" style={{ filter: "drop-shadow(16px 24px 32px rgba(0,0,0,0.45)) drop-shadow(4px 6px 10px rgba(0,0,0,0.3)) drop-shadow(0px 2px 4px rgba(0,0,0,0.2))" }}>
           {/* The case — draggable in 3D */}
           <div
             ref={caseRef}
@@ -264,39 +264,62 @@ export default function JewelCase({
             {/* ── FRONT FACE — clear plastic / cover photo ── */}
             <div style={{
               position: "absolute", inset: 0,
-              background: "#e2e2e4",
+              background: "#dcdcde",
               backfaceVisibility: "hidden",
               overflow: "hidden",
-              border: "1px solid rgba(0,0,0,0.1)",
+              border: "1.5px solid rgba(255,255,255,0.6)",
+              borderBottom: "1.5px solid rgba(0,0,0,0.15)",
+              borderRight: "1.5px solid rgba(0,0,0,0.1)",
             }}>
               {/* Cover photo (if uploaded) */}
               {coverImage && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={coverImage} alt="cover" style={{ position: "absolute", left: 18, top: 0, right: 0, bottom: 0, width: "calc(100% - 18px)", height: "100%", objectFit: "cover", imageRendering: "auto" }} />
               )}
+
               {/* Spine strip on front face */}
               <div style={{
                 position: "absolute", left: 0, top: 0, bottom: 0, width: 18,
-                background: "linear-gradient(to right, #1a1a1a, #333 50%, #1a1a1a)",
+                background: "linear-gradient(to right, #111, #2a2a2a 40%, #111)",
+                zIndex: 2,
               }} />
-              {/* Clear plastic sheen — only when no cover photo */}
-              {!coverImage && (
-                <div style={{ position: "absolute", left: 18, top: 0, right: 0, bottom: 0 }}>
+
+              {/* Clear plastic sheen — always on top of cover */}
+              <div style={{ position: "absolute", left: 18, top: 0, right: 0, bottom: 0, zIndex: 3, pointerEvents: "none" }}>
+                {/* Main plastic tint */}
+                {!coverImage && (
                   <div style={{
                     position: "absolute", inset: 0,
-                    background: "linear-gradient(135deg, rgba(255,255,255,0.85) 0%, rgba(240,240,242,0.3) 55%, rgba(210,210,215,0.5) 100%)",
+                    background: "linear-gradient(160deg, rgba(255,255,255,0.92) 0%, rgba(238,238,242,0.4) 50%, rgba(200,200,210,0.55) 100%)",
                   }} />
-                  <div style={{
-                    position: "absolute", top: 0, right: 0, width: "55%", height: "50%",
-                    background: "radial-gradient(ellipse at top right, rgba(255,255,255,0.9) 0%, transparent 70%)",
-                  }} />
-                  <div style={{
-                    position: "absolute", inset: 6,
-                    border: "1px solid rgba(0,0,0,0.05)",
-                  }} />
-                </div>
-              )}
+                )}
+                {/* Diagonal glare streak — the classic plastic reflection */}
+                <div style={{
+                  position: "absolute",
+                  top: "-10%", left: "-5%",
+                  width: "60%", height: "130%",
+                  background: "linear-gradient(105deg, rgba(255,255,255,0.0) 0%, rgba(255,255,255,0.18) 45%, rgba(255,255,255,0.0) 50%)",
+                  transform: "skewX(-10deg)",
+                  pointerEvents: "none",
+                }} />
+                {/* Top-left bright corner glare */}
+                <div style={{
+                  position: "absolute", top: 0, left: 0, width: "70%", height: "45%",
+                  background: "radial-gradient(ellipse at 15% 10%, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.0) 65%)",
+                }} />
+                {/* Bottom-right subtle reflection */}
+                <div style={{
+                  position: "absolute", bottom: 0, right: 0, width: "50%", height: "35%",
+                  background: "radial-gradient(ellipse at 85% 90%, rgba(255,255,255,0.2) 0%, transparent 70%)",
+                }} />
+                {/* Thin inner border — plastic edge detail */}
+                <div style={{
+                  position: "absolute", inset: 0,
+                  boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.35), inset 0 0 0 2px rgba(0,0,0,0.04)",
+                }} />
+              </div>
             </div>
+
 
           </div>
           </div>{/* end shadow wrapper */}
@@ -730,12 +753,13 @@ export default function JewelCase({
               bgColor={bgColor}
               coverImage={coverImage}
               capturedImage={capturedImage ?? undefined}
+              particles={particles}
               onClose={() => { setShowStory(false); setCapturedImage(null); }}
             />
           )}
 
           <p style={{
-            fontFamily: "system-ui", fontSize: 11, color: isDark ? "#888" : "#555",
+            fontFamily: "'Raleway', system-ui", fontSize: 11, color: isDark ? "#888" : "#555",
             position: "fixed", bottom: 20, left: "50%", transform: "translateX(-50%)",
             whiteSpace: "nowrap", zIndex: 10,
           }}>
