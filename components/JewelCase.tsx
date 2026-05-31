@@ -154,7 +154,24 @@ export default function JewelCase({
       gap: 16,
       padding: "16px",
       transition: "background 0.4s ease",
+      position: "relative",
     }}>
+      {/* songs4u logo — top left, desktop only */}
+      <p style={{
+        position: "fixed", top: 24, left: 28,
+        fontFamily: "'BitcountGrid', monospace",
+        fontSize: 22,
+        color: "#ffffff",
+        margin: 0,
+        zIndex: 20,
+      }} className="desktop-only-logo">
+        songs4u &lt;3
+      </p>
+      <style>{`
+        .desktop-only-logo { display: block; }
+        @media (max-width: 600px) { .desktop-only-logo { display: none; } }
+      `}</style>
+
       <style>{`
         @keyframes caseFoldOut {
           from { transform: perspective(900px) rotateY(0deg); opacity: 1; }
@@ -352,6 +369,22 @@ export default function JewelCase({
       {(phase === "open" || phase === "closing") && (
         <>
           {phase === "open" && <HeartParticles color={bgColor ? darkenHex(bgColor) : undefined} type={particles} />}
+
+          {/* songs4u logo — mobile only, top of screen */}
+          {phase === "open" && (
+            <p className="mobile-only-logo" style={{
+              fontFamily: "'BitcountGrid', monospace",
+              fontSize: 28,
+              color: "#ffffff",
+              margin: "0 0 8px",
+              animation: "fadeUp 0.4s ease 0.1s both",
+              alignSelf: "center",
+            }}>
+              songs4u &lt;3
+            </p>
+          )}
+          <style>{`.mobile-only-logo { display: none; } @media (max-width: 600px) { .mobile-only-logo { display: block; } }`}</style>
+
           <div style={{
             perspective: "1200px",
             animation: phase === "closing"
@@ -617,13 +650,14 @@ export default function JewelCase({
                 </div>
               </div>
             </div>
-          </div>
+          </div>{/* end animation wrapper */}
 
           {/* Player — aligned with CD tray width, less rounded */}
+
           <div
             onClick={e => e.stopPropagation()}
             style={{
-            width: "100%", maxWidth: W,
+            width: "95vw", maxWidth: W,
             background: "white", borderRadius: 6,
             padding: "12px 16px",
             display: "flex", alignItems: "center", gap: 12,
@@ -754,7 +788,7 @@ export default function JewelCase({
                 fontFamily: "system-ui", fontSize: 13, fontWeight: 600,
                 cursor: "pointer",
                 animation: "fadeUp 0.4s ease 0.45s both",
-                marginTop: 24,
+                marginTop: 64,
               }}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill={isDark ? "white" : "#111"}>

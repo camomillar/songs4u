@@ -91,7 +91,7 @@ export default function SharePageContent({ playlist, playlistId }: { playlist: V
   return (
     <>
       {/* Language toggle */}
-      <div style={{ position: "fixed", top: 16, right: 16, zIndex: 50 }}>
+      <div style={{ position: "fixed", top: 24, right: 28, zIndex: 50 }}>
         <button
           onClick={() => setLangOpen(o => !o)}
           style={{

@@ -257,12 +257,12 @@ export default function Home() {
         {/* Background colour */}
         <div style={card}>
           <p style={sectionTitle}>{t.bgColour}</p>
-          <div style={{ display: "flex", gap: 8, flexWrap: "nowrap", justifyContent: "space-between" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(9, 1fr)", gap: 8 }}>
             {PASTEL_COLOURS.map(c => (
               <button key={c.hex} title={c.name} onClick={() => setBgColor(c.hex)} style={{
-                width: 36, height: 36, minWidth: 36, borderRadius: "50%", background: c.hex, border: "none",
+                width: "100%", aspectRatio: "1", borderRadius: "50%", background: c.hex, border: "none",
                 outline: bgColor === c.hex ? "3px solid #111" : "3px solid transparent",
-                outlineOffset: 2, cursor: "pointer", flexShrink: 0,
+                outlineOffset: 2, cursor: "pointer",
               }} />
             ))}
           </div>
@@ -331,9 +331,12 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Search songs */}
+        {/* Search + Song list — unified card */}
         <div style={card}>
-          <p style={sectionTitle}>{t.addSongs}</p>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+            <p style={{ ...sectionTitle, margin: 0 }}>{t.addSongs}</p>
+            {songs.length > 0 && <p style={{ fontFamily: F, fontSize: 11, color: "#aaa", margin: 0 }}>{songs.length}/10</p>}
+          </div>
           <input
             style={input}
             placeholder={t.searchPlaceholder}
@@ -347,8 +350,7 @@ export default function Home() {
                 <div key={track.id} onClick={() => handleAddSong(track)} style={{
                   display: "flex", alignItems: "center", gap: 10,
                   padding: "10px 14px", cursor: "pointer", background: "white",
-                  borderBottom: "1px solid #f0f0f0",
-                  transition: "background 0.1s",
+                  borderBottom: "1px solid #f0f0f0", transition: "background 0.1s",
                 }}
                   onMouseEnter={e => (e.currentTarget.style.background = "#f7f7f8")}
                   onMouseLeave={e => (e.currentTarget.style.background = "white")}
@@ -366,13 +368,9 @@ export default function Home() {
               ))}
             </div>
           )}
-        </div>
 
-        {/* Song list */}
-        {songs.length > 0 && (
-          <div style={card}>
-            <p style={sectionTitle}>{t.yourSongs} ({songs.length}/10)</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          {songs.length > 0 && (
+            <div style={{ marginTop: 16, borderTop: "1px solid #f0f0f0", paddingTop: 14, display: "flex", flexDirection: "column", gap: 2 }}>
               {songs.map((song, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: i < songs.length - 1 ? "1px solid #f0f0f0" : "none" }}>
                   {song.albumArt && (
@@ -389,8 +387,8 @@ export default function Home() {
                 </div>
               ))}
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Generate */}
         <button
