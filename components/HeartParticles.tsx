@@ -30,7 +30,7 @@ export function darkenHex(hex: string, amount = 60): string {
 
 interface Props {
   color?: string;
-  type?: "hearts" | "stars" | "notes" | "none";
+  type?: "hearts" | "stars" | "notes" | "flowers" | "kisses" | "bows" | "none";
 }
 
 export default function HeartParticles({ color, type = "hearts" }: Props) {
