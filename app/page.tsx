@@ -13,7 +13,7 @@ const T = {
     details: "Details", to: "From", from: "To", toPlaceholder: "your name", fromPlaceholder: "their name",
     message: "Message", messagePlaceholder: "write your message...",
     bgColour: "Background colour", bgVibe: "Background vibe",
-    hearts: "Hearts", stars: "Stars", music: "Music", none: "None",
+    hearts: "Hearts", stars: "Stars", music: "Music", flowers: "Flowers", kisses: "Kisses", none: "None",
     coverPhoto: "Cover photo", coverDesc: "This photo will appear on your cd cover",
     uploadPhoto: "Upload photo", changePhoto: "Change photo", remove: "Remove",
     addSongs: "Add songs", searchPlaceholder: "Search for a song or artist...",
@@ -25,11 +25,11 @@ const T = {
     madeWith: "made with ♥ by",
   },
   pt: {
-    subtitle: "Escolha músicas, escreva uma mensagem e compartilhe o amor!",
+    subtitle: "Escolha músicas, escreva uma mensagem\ne compartilhe o amor!",
     details: "Detalhes", to: "De", from: "Para", toPlaceholder: "seu nome", fromPlaceholder: "quem vai receber",
     message: "Mensagem", messagePlaceholder: "escreva sua mensagem...",
     bgColour: "Cor de fundo", bgVibe: "Vibe do fundo",
-    hearts: "Corações", stars: "Estrelas", music: "Música", none: "Nenhum",
+    hearts: "Corações", stars: "Estrelas", music: "Música", flowers: "Flores", kisses: "Beijos", none: "Nenhum",
     coverPhoto: "Foto da capa", coverDesc: "Esta foto vai aparecer na capa do CD",
     uploadPhoto: "Enviar foto", changePhoto: "Trocar foto", remove: "Remover",
     addSongs: "Adicionar músicas", searchPlaceholder: "Busque por uma música ou artista...",
@@ -94,21 +94,20 @@ export default function Home() {
   const [lang, setLang] = useState<"en" | "pt">("pt");
   const [langOpen, setLangOpen] = useState(false);
   const t = T[lang];
-  const [bgColor, setBgColor] = useState("#C8102E");
-  const [particles, setParticles] = useState<"hearts" | "stars" | "notes" | "none">("hearts");
+  const [bgColor, setBgColor] = useState("#FFB3C6");
+  const [particles, setParticles] = useState<"hearts" | "stars" | "notes" | "flowers" | "kisses" | "none">("hearts");
   const [coverImage, setCoverImage] = useState<string | null>(null);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
 
   const PASTEL_COLOURS = [
     { hex: "#C8102E", name: "Romantic Red" },
-    { hex: "#FFB3C6", name: "Pastel Pink" },
+    { hex: "#FFB3C6", name: "Baby Pink" },
     { hex: "#FFCBA4", name: "Peach" },
-    { hex: "#FFF0A0", name: "Butter" },
-    { hex: "#B5EAD7", name: "Mint" },
-    { hex: "#AEE6F8", name: "Sky" },
-    { hex: "#C7B8EA", name: "Lavender" },
+    { hex: "#FFF176", name: "Yellow" },
+    { hex: "#59FEB1", name: "Green" },
+    { hex: "#0151C7", name: "Blue" },
+    { hex: "#7B2FBE", name: "Purple" },
     { hex: "#F0F0F0", name: "Light Gray" },
-    { hex: "#111111", name: "Black" },
   ];
 
   const handleSearch = async (q: string) => {
@@ -125,6 +124,7 @@ export default function Home() {
 
   const handleAddSong = (track: { id: string; title: string; artist: string; albumArt: string; previewUrl?: string | null }) => {
     if (songs.find(s => s.id === track.id)) return;
+    if (songs.length >= 11) return;
     setSongs(prev => [...prev, { ...track, previewUrl: track.previewUrl ?? undefined }]);
     setSearchQuery("");
     setSearchResults([]);
@@ -220,7 +220,7 @@ export default function Home() {
           <p style={{
             fontFamily: "'Raleway', sans-serif",
             fontSize: 13, fontWeight: 400, color: "#888",
-            margin: 0, lineHeight: 1.6,
+            margin: 0, lineHeight: 1.6, whiteSpace: "pre-line",
           }}>
             {t.subtitle}
           </p>
@@ -256,12 +256,12 @@ export default function Home() {
         {/* Background colour */}
         <div style={card}>
           <p style={sectionTitle}>{t.bgColour}</p>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 8, flexWrap: "nowrap", justifyContent: "space-between" }}>
             {PASTEL_COLOURS.map(c => (
               <button key={c.hex} title={c.name} onClick={() => setBgColor(c.hex)} style={{
-                width: 36, height: 36, borderRadius: "50%", background: c.hex, border: "none",
+                width: 36, height: 36, minWidth: 36, borderRadius: "50%", background: c.hex, border: "none",
                 outline: bgColor === c.hex ? "3px solid #111" : "3px solid transparent",
-                outlineOffset: 2, cursor: "pointer",
+                outlineOffset: 2, cursor: "pointer", flexShrink: 0,
               }} />
             ))}
           </div>
@@ -270,12 +270,12 @@ export default function Home() {
         {/* Background particles */}
         <div style={card}>
           <p style={sectionTitle}>{t.bgVibe}</p>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10 }}>
             {([
               { key: "hearts", label: t.hearts, emoji: "♥" },
               { key: "stars",  label: t.stars,  emoji: "✦" },
               { key: "notes",  label: t.music,  emoji: "♪" },
-              { key: "none",   label: t.none,   emoji: "○" },
+              { key: "flowers", label: t.flowers, emoji: "✿" },
             ] as const).map(({ key, label, emoji }) => (
               <button
                 key={key}
@@ -305,16 +305,9 @@ export default function Home() {
             {t.coverDesc}
           </p>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            {coverImage ? (
+            {coverImage && (
               <Image src={coverImage} alt="Cover" width={64} height={64}
                 style={{ borderRadius: 10, objectFit: "cover", flexShrink: 0, border: "1px solid #eee" }} />
-            ) : (
-              <div style={{
-                width: 64, height: 64, borderRadius: 10, background: "#f0f0f2",
-                border: "1.5px dashed #ccc", flexShrink: 0,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 22, color: "#ccc",
-              }}>📷</div>
             )}
             <div style={{ flex: 1 }}>
               <label style={{ display: "block" }}>
@@ -377,7 +370,7 @@ export default function Home() {
         {/* Song list */}
         {songs.length > 0 && (
           <div style={card}>
-            <p style={sectionTitle}>{t.yourSongs} ({songs.length})</p>
+            <p style={sectionTitle}>{t.yourSongs} ({songs.length}/11)</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
               {songs.map((song, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: i < songs.length - 1 ? "1px solid #f0f0f0" : "none" }}>

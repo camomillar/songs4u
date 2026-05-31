@@ -183,8 +183,10 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
   const PARTICLE_CHARS: Record<string, string[]> = {
     hearts: ["♥", "♡", "♥", "✦", "♥"],
     stars:  ["✦", "✧", "★", "✩", "✦"],
-    notes:  ["♪", "♫", "♩", "♬", "♪"],
-    none:   [],
+    notes:   ["♪", "♫", "♩", "♬", "♪"],
+    flowers: ["✿", "❀", "✾", "✿", "❁"],
+    kisses: ["✕", "♡", "✕", "✦", "✕"],
+    none:    [],
   };
   const particleSet = PARTICLE_CHARS[particles] || [];
   if (particleSet.length > 0) {
@@ -219,8 +221,8 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
   ctx.font = `700 64px BitcountGrid, "Courier New", monospace`;
   ctx.fillStyle = fg;
   ctx.textAlign = "left";
-  ctx.fillText("songs4u <3", panelX, 220);
-  const panelY = 320;
+  ctx.fillText("songs4u <3", panelX, 320);
+  const panelY = 420;
   const spineW = 22;
   const cdCx = panelX + panelSize + cdRadius * 0.4;
   const cdCy = panelY + panelSize / 2 + 10;
@@ -238,7 +240,7 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
         const discCySrc = srcH * 0.5;
         const drawSize = cdRadius * 2;
 
-        // Drop shadow — fill with bgColor so shadow renders but fill is invisible
+        // Shadow
         ctx.save();
         ctx.shadowColor = "rgba(0,0,0,0.25)";
         ctx.shadowBlur = 70;
@@ -262,6 +264,13 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
           cdCx - cdRadius, cdCy - cdRadius, drawSize, drawSize
         );
         ctx.restore();
+
+        // Paint hole with bgColor
+        ctx.beginPath();
+        ctx.arc(cdCx, cdCy, cdRadius * 0.16, 0, Math.PI * 2);
+        ctx.fillStyle = bgColor;
+        ctx.fill();
+
         resolve();
       };
       img.onerror = () => resolve();
@@ -269,12 +278,20 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
     });
   } else {
     ctx.save();
-    ctx.shadowColor = "rgba(0,0,0,0.35)";
-    ctx.shadowBlur = 28;
-    ctx.shadowOffsetX = 8;
-    ctx.shadowOffsetY = 12;
-    drawCD(ctx, cdCx, cdCy, cdRadius, to, from, message);
+    ctx.shadowColor = "rgba(0,0,0,0.25)";
+    ctx.shadowBlur = 70;
+    ctx.shadowOffsetX = 12;
+    ctx.shadowOffsetY = 16;
+    ctx.beginPath();
+    ctx.arc(cdCx, cdCy, cdRadius, 0, Math.PI * 2);
+    ctx.fillStyle = bgColor;
+    ctx.fill();
     ctx.restore();
+    drawCD(ctx, cdCx, cdCy, cdRadius, to, from, message);
+    ctx.beginPath();
+    ctx.arc(cdCx, cdCy, cdRadius * 0.16, 0, Math.PI * 2);
+    ctx.fillStyle = bgColor;
+    ctx.fill();
   }
 
   // ── 2. Cover panel drawn ON TOP of CD ──
@@ -342,7 +359,7 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
 
   // ── Song list ──
   const listY = panelY + panelSize + 90;
-  const maxSongs = Math.min(songs.length, 10);
+  const maxSongs = Math.min(songs.length, 7);
   ctx.textAlign = "left";
 
   for (let i = 0; i < maxSongs; i++) {
@@ -350,7 +367,7 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
     const y = listY + i * 68;
     const line = `${i + 1}. ${s.title} — ${s.artist}`;
     ctx.font = `500 36px Raleway, system-ui`;
-    ctx.fillStyle = fg;
+    ctx.fillStyle = dark ? "rgba(255,255,255,0.92)" : "rgba(15,15,35,0.85)";
     let text = line;
     while (ctx.measureText(text).width > W - 140 && text.length > 4) text = text.slice(0, -1);
     if (text !== line) text += "...";
@@ -359,17 +376,19 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
 
   if (songs.length > maxSongs) {
     ctx.font = `italic 32px Raleway, system-ui`;
-    ctx.fillStyle = fgSub;
+    ctx.fillStyle = dark ? "rgba(255,255,255,0.55)" : "rgba(15,15,35,0.45)";
     ctx.fillText(`+ ${songs.length - maxSongs} more songs`, 72, listY + maxSongs * 68 + 10);
   }
 
   // ── Bottom CTA ──
   ctx.textAlign = "center";
+  const ctaSub = dark ? "rgba(255,255,255,0.80)" : "rgba(15,15,35,0.40)";
+  const ctaMain = dark ? "#ffffff" : "rgba(15,15,35,0.88)";
   ctx.font = `400 30px Raleway, system-ui`;
-  ctx.fillStyle = fgSub;
+  ctx.fillStyle = ctaSub;
   ctx.fillText("Create your playlist", W / 2, H - 160);
   ctx.font = `700 38px Raleway, system-ui`;
-  ctx.fillStyle = fg;
+  ctx.fillStyle = ctaMain;
   ctx.fillText("songs4u.online", W / 2, H - 110);
 }
 

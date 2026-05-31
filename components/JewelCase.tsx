@@ -20,7 +20,8 @@ interface Props {
   total: number;
   onBack: () => void;
   playlistId?: string;
-  particles?: "hearts" | "stars" | "notes" | "none";
+  particles?: "hearts" | "stars" | "notes" | "flowers" | "kisses" | "none";
+  i18n?: { clickToOpen: string; shareToStory: string; noPreview: string; madeWith: string; createOwn: string };
 }
 
 const W = 700;
@@ -32,7 +33,7 @@ type Phase = "closed" | "opening" | "open" | "closing";
 export default function JewelCase({
   to, from, message, bgColor,
   isPlaying, ready, onTogglePlay, onNext, onPrev,
-  song, songs, coverImage, total, onBack, playlistId, particles = "hearts",
+  song, songs, coverImage, total, onBack, playlistId, particles = "hearts", i18n,
 }: Props) {
   const [phase, setPhase] = useState<Phase>("closed");
   const [spinState, setSpinState] = useState<"playing" | "stopping" | "stopped">("stopped");
@@ -114,6 +115,8 @@ export default function JewelCase({
     const b = parseInt(hex.slice(4, 6), 16);
     return (r * 299 + g * 587 + b * 114) / 1000 < 128;
   })();
+
+  const t = i18n ?? { clickToOpen: "Click to open", shareToStory: "Share to Story", noPreview: "no preview available", madeWith: "made with ♥ by", createOwn: "create your own playlist" };
 
   const handleOpen = () => {
     if (phase !== "closed") return;
@@ -330,14 +333,14 @@ export default function JewelCase({
               onClick={handleOpen}
               style={{
                 fontFamily: "'Lora', serif", fontStyle: "italic",
-                fontSize: 15, color: isDark ? "#aaa" : "#555", cursor: "pointer",
-                letterSpacing: 0.3, borderBottom: `1px solid ${isDark ? "#666" : "#999"}`, paddingBottom: 2,
+                fontSize: 15, color: isDark ? "#fff" : "#555", cursor: "pointer",
+                letterSpacing: 0.3, borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.5)" : "#999"}`, paddingBottom: 2,
                 marginTop: 40,
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = isDark ? "#ddd" : "#333")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = isDark ? "#aaa" : "#555")}
+              onMouseEnter={(e) => (e.currentTarget.style.color = isDark ? "#fff" : "#333")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = isDark ? "#fff" : "#555")}
             >
-              click to open
+              {t.clickToOpen}
             </p>
           )}
         </div>
@@ -531,8 +534,8 @@ export default function JewelCase({
                     {/* Center hole */}
                     <div style={{
                       width: "48%", height: "48%", borderRadius: "50%",
-                      background: "radial-gradient(circle, #f5f5f6 0%, #e8e8ea 100%)",
-                      boxShadow: "inset 0 1px 3px rgba(0,0,0,0.2), 0 0 0 1px rgba(150,155,170,0.5)",
+                      background: "#272729",
+                      boxShadow: "inset 0 2px 5px rgba(0,0,0,0.6)",
                     }} />
                   </div>
 
@@ -717,6 +720,13 @@ export default function JewelCase({
                     const dataUrl = await toPng(openCaseRef.current, {
                       pixelRatio: 3,
                       skipFonts: false,
+                      onclone: (clonedDoc) => {
+                        // Reset CD spin animation so it's captured at default 0deg position
+                        clonedDoc.querySelectorAll<HTMLElement>("[style*='cd-spin']").forEach(el => {
+                          el.style.animation = "none";
+                          el.style.transform = "rotate(0deg)";
+                        });
+                      },
                     });
                     setCapturedImage(dataUrl);
                   } catch {
@@ -728,18 +738,20 @@ export default function JewelCase({
               style={{
                 display: "inline-flex", alignItems: "center", gap: 8,
                 padding: "9px 18px",
-                background: "linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)",
-                color: "#fff", border: "none", borderRadius: 24,
+                background: "transparent",
+                color: isDark ? "#fff" : "#111",
+                border: `1.5px solid ${isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.25)"}`,
+                borderRadius: 24,
                 fontFamily: "system-ui", fontSize: 13, fontWeight: 600,
                 cursor: "pointer",
-                boxShadow: "0 2px 8px rgba(220,39,67,0.35)",
                 animation: "fadeUp 0.4s ease 0.45s both",
+                marginTop: 24,
               }}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill={isDark ? "white" : "#111"}>
                 <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
               </svg>
-              Share to Story
+              {t.shareToStory}
             </button>
           )}
 
@@ -759,17 +771,17 @@ export default function JewelCase({
           )}
 
           <p style={{
-            fontFamily: "'Raleway', system-ui", fontSize: 11, color: isDark ? "#888" : "#555",
+            fontFamily: "'Raleway', system-ui", fontSize: 11, color: isDark ? "rgba(255,255,255,0.75)" : "#555",
             position: "fixed", bottom: 20, left: "50%", transform: "translateX(-50%)",
             whiteSpace: "nowrap", zIndex: 10,
           }}>
-            made with ♥ by{" "}
+            {t.madeWith}{" "}
             <a href="https://www.instagram.com/caahmills/" target="_blank" rel="noopener noreferrer"
-              style={{ color: isDark ? "#aaa" : "#444", textDecoration: "none", borderBottom: `1px solid ${isDark ? "#666" : "#aaa"}` }}>
+              style={{ color: isDark ? "rgba(255,255,255,0.9)" : "#444", textDecoration: "none", borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.4)" : "#aaa"}` }}>
               caahmills
             </a>
             {" "}·{" "}
-            <a href="/" style={{ color: isDark ? "#888" : "#555", textDecoration: "none" }}>create your own playlist</a>
+            <a href="/" style={{ color: isDark ? "rgba(255,255,255,0.75)" : "#555", textDecoration: "none" }}>{t.createOwn}</a>
           </p>
         </>
       )}
