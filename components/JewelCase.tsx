@@ -716,18 +716,26 @@ export default function JewelCase({
                 e.stopPropagation();
                 if (openCaseRef.current) {
                   try {
+                    // Pause CD spin for capture
+                    const spinningEls = openCaseRef.current.querySelectorAll<HTMLElement>("[style*='cd-spin']");
+                    const savedAnimations: string[] = [];
+                    spinningEls.forEach(el => {
+                      savedAnimations.push(el.style.animation);
+                      el.style.animation = "none";
+                      el.style.transform = "rotate(0deg)";
+                    });
+
                     const { toPng } = await import("html-to-image");
                     const dataUrl = await toPng(openCaseRef.current, {
                       pixelRatio: 3,
                       skipFonts: false,
-                      onclone: (clonedDoc) => {
-                        // Reset CD spin animation so it's captured at default 0deg position
-                        clonedDoc.querySelectorAll<HTMLElement>("[style*='cd-spin']").forEach(el => {
-                          el.style.animation = "none";
-                          el.style.transform = "rotate(0deg)";
-                        });
-                      },
                     });
+
+                    // Restore animations
+                    spinningEls.forEach((el, i) => {
+                      el.style.animation = savedAnimations[i];
+                    });
+
                     setCapturedImage(dataUrl);
                   } catch {
                     setCapturedImage(null);
