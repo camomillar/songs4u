@@ -7,6 +7,7 @@ interface Props {
   songs: Song[]; bgColor?: string; coverImage?: string;
   capturedImage?: string;
   particles?: "hearts" | "stars" | "notes" | "flowers" | "none";
+  lang?: "en" | "pt";
   onClose: () => void;
 }
 
@@ -149,7 +150,9 @@ function drawCD(
 }
 
 async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onClose">) {
-  const { to, from, message, songs, bgColor = "#c8b4e8", coverImage, capturedImage, particles = "hearts" } = props;
+  const { to, from, message, songs, bgColor = "#c8b4e8", coverImage, capturedImage, particles = "hearts", lang = "pt" } = props;
+  const ctaLine1 = lang === "pt" ? "Crie sua playlist" : "Create your playlist";
+  const ctaLine2 = "songs4u.online";
   const W = 1080, H = 1920;
   canvas.width = W;
   canvas.height = H;
@@ -157,13 +160,29 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
   const dark = isDark(bgColor);
   const fg = dark ? "rgba(255,255,255,0.92)" : "rgba(15,15,35,0.88)";
   const fgSub = dark ? "rgba(255,255,255,0.45)" : "rgba(15,15,35,0.40)";
-  const starColor = dark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)";
+  // Darken bgColor for particles (same as darkenHex in HeartParticles)
+  const darkenColor = (hex: string, amount = 80): string => {
+    const h = (hex || "#ffffff").replace("#", "");
+    const r = Math.max(0, parseInt(h.slice(0, 2), 16) - amount);
+    const g = Math.max(0, parseInt(h.slice(2, 4), 16) - amount);
+    const b = Math.max(0, parseInt(h.slice(4, 6), 16) - amount);
+    return `rgba(${r},${g},${b},0.30)`;
+  };
+  const isVeryDark = (() => {
+    const h = (bgColor || "#fff").replace("#", "");
+    const r = parseInt(h.slice(0, 2), 16);
+    const g = parseInt(h.slice(2, 4), 16);
+    const b = parseInt(h.slice(4, 6), 16);
+    return (r * 299 + g * 587 + b * 114) / 1000 < 40;
+  })();
+  const starColor = isVeryDark ? "rgba(80,80,80,0.20)" : darkenColor(bgColor);
 
   // Load fonts
   try {
     const font = new FontFace("Raleway", "url(/fonts/Raleway-VariableFont_wght.ttf)");
-    await font.load();
-    document.fonts.add(font);
+    const loaded = await font.load();
+    document.fonts.add(loaded);
+    await document.fonts.ready;
   } catch { /* fallback */ }
   try {
     const font = new FontFace("BitcountGrid", "url(/fonts/BitcountGridSingle-VariableFont_CRSV,ELSH,ELXP,slnt,wght.ttf)");
@@ -212,7 +231,7 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
   }
 
   // Layout constants
-  const panelSize = 540;
+  const panelSize = 460;
   const cdRadius = panelSize / 2;
   const totalWidth = panelSize + cdRadius * 0.4 + cdRadius;
   const panelX = (W - totalWidth) / 2;
@@ -221,7 +240,7 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
   ctx.font = `700 64px BitcountGrid, "Courier New", monospace`;
   ctx.fillStyle = fg;
   ctx.textAlign = "left";
-  ctx.fillText("songs4u <3", panelX, 320);
+  ctx.fillText("songs4u <3", panelX, 270);
   const panelY = 420;
   const spineW = 22;
   const cdCx = panelX + panelSize + cdRadius * 0.4;
@@ -265,9 +284,9 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
         );
         ctx.restore();
 
-        // Paint hole with bgColor
+        // Paint just the center hole with bgColor (small, realistic)
         ctx.beginPath();
-        ctx.arc(cdCx, cdCy, cdRadius * 0.16, 0, Math.PI * 2);
+        ctx.arc(cdCx, cdCy, cdRadius * 0.075, 0, Math.PI * 2);
         ctx.fillStyle = bgColor;
         ctx.fill();
 
@@ -341,8 +360,8 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
   ctx.fillRect(panelX + spineW, panelY, panelSize - spineW, panelSize);
   ctx.restore();
 
-  ctx.strokeStyle = "rgba(0,0,0,0.15)";
-  ctx.lineWidth = 2;
+  ctx.strokeStyle = dark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.2)";
+  ctx.lineWidth = 2.5;
   ctx.strokeRect(panelX, panelY, panelSize, panelSize);
 
   // ── Headphones PNG — drawn last so it's on top ──
@@ -358,38 +377,56 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
   });
 
   // ── Song list ──
-  const listY = panelY + panelSize + 90;
-  const maxSongs = Math.min(songs.length, 7);
+  const listY = panelY + panelSize + 100;
+  const listX = panelX + 20;
+  const maxSongs = Math.min(songs.length, 10);
+  const lineH = 62;
   ctx.textAlign = "left";
 
   for (let i = 0; i < maxSongs; i++) {
     const s = songs[i];
-    const y = listY + i * 68;
-    const line = `${i + 1}. ${s.title} — ${s.artist}`;
-    ctx.font = `500 36px Raleway, system-ui`;
+    const y = listY + i * lineH;
     ctx.fillStyle = dark ? "rgba(255,255,255,0.92)" : "rgba(15,15,35,0.85)";
-    let text = line;
-    while (ctx.measureText(text).width > W - 140 && text.length > 4) text = text.slice(0, -1);
-    if (text !== line) text += "...";
-    ctx.fillText(text, 72, y);
+    const maxWidth = W - listX - 180;
+
+    // Draw number + artist in bold
+    const boldPrefix = `${i + 1}. ${s.artist} — `;
+    ctx.font = `700 36px Raleway, system-ui`;
+    const prefixWidth = ctx.measureText(boldPrefix).width;
+    ctx.fillText(boldPrefix, listX, y);
+
+    // Draw song title in regular weight, truncated if needed
+    ctx.font = `400 36px Raleway, system-ui`;
+    let title = s.title;
+    while (ctx.measureText(title).width > maxWidth - prefixWidth && title.length > 2) {
+      title = title.slice(0, -1);
+    }
+    if (title !== s.title) title += "...";
+    ctx.fillText(title, listX + prefixWidth, y);
   }
 
-  if (songs.length > maxSongs) {
-    ctx.font = `italic 32px Raleway, system-ui`;
-    ctx.fillStyle = dark ? "rgba(255,255,255,0.55)" : "rgba(15,15,35,0.45)";
-    ctx.fillText(`+ ${songs.length - maxSongs} more songs`, 72, listY + maxSongs * 68 + 10);
-  }
+  // ── Wire PNG at bottom ──
+  await new Promise<void>((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const size = 420;
+      ctx.drawImage(img, -40, H - size + 160, size, size);
+      resolve();
+    };
+    img.onerror = () => resolve();
+    img.src = "/wire.png";
+  });
 
   // ── Bottom CTA ──
-  ctx.textAlign = "center";
+  ctx.textAlign = "left";
   const ctaSub = dark ? "rgba(255,255,255,0.80)" : "rgba(15,15,35,0.40)";
   const ctaMain = dark ? "#ffffff" : "rgba(15,15,35,0.88)";
   ctx.font = `400 30px Raleway, system-ui`;
   ctx.fillStyle = ctaSub;
-  ctx.fillText("Create your playlist", W / 2, H - 160);
+  ctx.fillText(ctaLine1, W * 0.55, H - 220);
   ctx.font = `700 38px Raleway, system-ui`;
   ctx.fillStyle = ctaMain;
-  ctx.fillText("songs4u.online", W / 2, H - 110);
+  ctx.fillText(ctaLine2, W * 0.55, H - 170);
 }
 
 export default function StoryCard(props: Props) {
@@ -440,7 +477,7 @@ export default function StoryCard(props: Props) {
           background: "linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)",
           color: "white", border: "none", borderRadius: 24,
           fontFamily: "system-ui", fontSize: 14, fontWeight: 700, cursor: "pointer",
-        }}>⬇ Save Image</button>
+        }}>Save Image</button>
         <button onClick={onClose} style={{
           padding: "12px 20px", background: "rgba(255,255,255,0.15)",
           color: "white", border: "none", borderRadius: 24,

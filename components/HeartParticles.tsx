@@ -21,12 +21,15 @@ const PARTICLE_SETS: Record<string, string[]> = {
 };
 
 /** Darkens a hex colour by `amount` (0–255) */
-export function darkenHex(hex: string, amount = 60): string {
+export function darkenHex(hex: string, amount = 100): string {
   const clean = hex.replace("#", "");
-  const r = Math.max(0, parseInt(clean.slice(0, 2), 16) - amount);
-  const g = Math.max(0, parseInt(clean.slice(2, 4), 16) - amount);
-  const b = Math.max(0, parseInt(clean.slice(4, 6), 16) - amount);
-  return `rgb(${r},${g},${b})`;
+  const r = parseInt(clean.slice(0, 2), 16);
+  const g = parseInt(clean.slice(2, 4), 16);
+  const b = parseInt(clean.slice(4, 6), 16);
+  const luminance = (r * 299 + g * 587 + b * 114) / 1000;
+  // Very dark background — use semi-transparent white instead
+  if (luminance < 40) return `rgba(255,255,255,0.18)`;
+  return `rgb(${Math.max(0, r - amount)},${Math.max(0, g - amount)},${Math.max(0, b - amount)})`;
 }
 
 interface Props {

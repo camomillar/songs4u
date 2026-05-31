@@ -22,7 +22,7 @@ const T = {
     addName: "Add a name to continue", addSong: "Add at least one song to continue",
     alertName: "Please enter who this is for!", alertSong: "Add at least one song!",
     alertError: "Could not generate link. Please try again.",
-    madeWith: "made with ♥ by",
+    madeWith: "Made with ♥ by",
   },
   pt: {
     subtitle: "Escolha músicas, escreva uma mensagem\ne compartilhe o amor!",
@@ -38,7 +38,7 @@ const T = {
     addName: "Adicione um nome para continuar", addSong: "Adicione pelo menos uma música para continuar",
     alertName: "Por favor, insira para quem é a playlist!", alertSong: "Adicione pelo menos uma música!",
     alertError: "Não foi possível gerar o link. Tente novamente.",
-    madeWith: "feito com ♥ por",
+    madeWith: "Feito com ♥ por",
   },
 };
 
@@ -103,10 +103,11 @@ export default function Home() {
     { hex: "#C8102E", name: "Romantic Red" },
     { hex: "#FFB3C6", name: "Baby Pink" },
     { hex: "#FFCBA4", name: "Peach" },
-    { hex: "#FFF176", name: "Yellow" },
-    { hex: "#59FEB1", name: "Green" },
+    { hex: "#FFC65B", name: "Yellow" },
+    { hex: "#53FF9B", name: "Green" },
     { hex: "#0151C7", name: "Blue" },
     { hex: "#7B2FBE", name: "Purple" },
+    { hex: "#111111", name: "Black" },
     { hex: "#F0F0F0", name: "Light Gray" },
   ];
 
@@ -124,7 +125,7 @@ export default function Home() {
 
   const handleAddSong = (track: { id: string; title: string; artist: string; albumArt: string; previewUrl?: string | null }) => {
     if (songs.find(s => s.id === track.id)) return;
-    if (songs.length >= 11) return;
+    if (songs.length >= 10) return;
     setSongs(prev => [...prev, { ...track, previewUrl: track.previewUrl ?? undefined }]);
     setSearchQuery("");
     setSearchResults([]);
@@ -370,7 +371,7 @@ export default function Home() {
         {/* Song list */}
         {songs.length > 0 && (
           <div style={card}>
-            <p style={sectionTitle}>{t.yourSongs} ({songs.length}/11)</p>
+            <p style={sectionTitle}>{t.yourSongs} ({songs.length}/10)</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
               {songs.map((song, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: i < songs.length - 1 ? "1px solid #f0f0f0" : "none" }}>

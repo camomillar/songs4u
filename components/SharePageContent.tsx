@@ -9,15 +9,15 @@ const T = {
     clickToOpen: "Click to open",
     shareToStory: "Share to Story",
     noPreview: "no preview available",
-    madeWith: "made with ♥ by",
-    createOwn: "create your own playlist",
+    madeWith: "Made with ♥ by",
+    createOwn: "Create your playlist here",
   },
   pt: {
     clickToOpen: "Clique para abrir",
     shareToStory: "Compartilhar no Story",
     noPreview: "prévia não disponível",
-    madeWith: "feito com ♥ por",
-    createOwn: "crie sua própria playlist",
+    madeWith: "Feito com ♥ por",
+    createOwn: "Crie sua playlist aqui",
   },
 };
 
@@ -62,6 +62,7 @@ function JewelCaseWrapper({ playlist, playlistId, lang }: { playlist: Valentines
       playlistId={playlistId}
       particles={playlist.particles}
       i18n={t}
+      lang={lang}
     />
   );
 }

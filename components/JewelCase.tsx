@@ -22,6 +22,7 @@ interface Props {
   playlistId?: string;
   particles?: "hearts" | "stars" | "notes" | "flowers" | "none";
   i18n?: { clickToOpen: string; shareToStory: string; noPreview: string; madeWith: string; createOwn: string };
+  lang?: "en" | "pt";
 }
 
 const W = 700;
@@ -33,7 +34,7 @@ type Phase = "closed" | "opening" | "open" | "closing";
 export default function JewelCase({
   to, from, message, bgColor,
   isPlaying, ready, onTogglePlay, onNext, onPrev,
-  song, songs, coverImage, total, onBack, playlistId, particles = "hearts", i18n,
+  song, songs, coverImage, total, onBack, playlistId, particles = "hearts", i18n, lang = "pt",
 }: Props) {
   const [phase, setPhase] = useState<Phase>("closed");
   const [spinState, setSpinState] = useState<"playing" | "stopping" | "stopped">("stopped");
@@ -774,6 +775,7 @@ export default function JewelCase({
               coverImage={coverImage}
               capturedImage={capturedImage ?? undefined}
               particles={particles}
+              lang={lang}
               onClose={() => { setShowStory(false); setCapturedImage(null); }}
             />
           )}
