@@ -20,6 +20,7 @@ interface Props {
   total: number;
   onBack: () => void;
   playlistId?: string;
+  particles?: "hearts" | "stars" | "notes" | "none";
 }
 
 const W = 700;
@@ -31,7 +32,7 @@ type Phase = "closed" | "opening" | "open" | "closing";
 export default function JewelCase({
   to, from, message, bgColor,
   isPlaying, ready, onTogglePlay, onNext, onPrev,
-  song, songs, coverImage, total, onBack, playlistId,
+  song, songs, coverImage, total, onBack, playlistId, particles = "hearts",
 }: Props) {
   const [phase, setPhase] = useState<Phase>("closed");
   const [spinState, setSpinState] = useState<"playing" | "stopping" | "stopped">("stopped");
@@ -188,7 +189,7 @@ export default function JewelCase({
       {/* ── CLOSED: CSS mockup of a jewel case ── */}
       {(phase === "closed" || phase === "opening") && (
         <>
-        <HeartParticles color={bgColor ? darkenHex(bgColor) : undefined} />
+        <HeartParticles color={bgColor ? darkenHex(bgColor) : undefined} type={particles} />
         <div style={{
           animation: phase === "opening" ? "caseFoldOut 0.42s ease-in forwards" : undefined,
           display: "flex", flexDirection: "column", alignItems: "center", gap: 20,
@@ -323,7 +324,7 @@ export default function JewelCase({
       {/* ── OPEN: two-panel layout ── */}
       {(phase === "open" || phase === "closing") && (
         <>
-          {phase === "open" && <HeartParticles color={bgColor ? darkenHex(bgColor) : undefined} />}
+          {phase === "open" && <HeartParticles color={bgColor ? darkenHex(bgColor) : undefined} type={particles} />}
           <div style={{
             perspective: "1200px",
             animation: phase === "closing"

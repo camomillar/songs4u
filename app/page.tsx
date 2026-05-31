@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import HeartParticles from "@/components/HeartParticles";
 import QRShare from "@/components/QRShare";
 import { encodePlaylist, type Song } from "@/lib/encode";
 import { compressImage } from "@/lib/compress";
@@ -58,6 +57,7 @@ export default function Home() {
   const [searching, setSearching] = useState(false);
 
   const [bgColor, setBgColor] = useState("#FFE4E8");
+  const [particles, setParticles] = useState<"hearts" | "stars" | "notes" | "none">("hearts");
   const [coverImage, setCoverImage] = useState<string | null>(null);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
 
@@ -107,7 +107,7 @@ export default function Home() {
       const res = await fetch("/api/playlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ to: to.trim(), from: from.trim(), message: message.trim(), songs, bgColor, ...(coverImage ? { coverImage } : {}) }),
+        body: JSON.stringify({ to: to.trim(), from: from.trim(), message: message.trim(), songs, bgColor, particles, ...(coverImage ? { coverImage } : {}) }),
       });
       const { id } = await res.json();
       setShareUrl(`${window.location.origin}/s/${id}`);
@@ -118,8 +118,6 @@ export default function Home() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#f5f5f7" }}>
-      <HeartParticles />
-
       {/* Header */}
       <div style={{
         background: "white",
@@ -138,18 +136,41 @@ export default function Home() {
         {/* Intro */}
         <div style={{
           textAlign: "center",
-          padding: "28px 16px 20px",
-          marginBottom: 8,
+          padding: "36px 16px 28px",
+          marginBottom: 12,
         }}>
-          <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 34, color: "#111", margin: 0, lineHeight: 1.25 }}>
+          <p style={{
+            fontFamily: "'OrdinaryLetter', cursive",
+            fontSize: 42,
+            color: "#111",
+            margin: 0,
+            lineHeight: 1.15,
+          }}>
             make a playlist
           </p>
-          <p style={{ fontFamily: "'OrdinaryLetter', cursive", fontSize: 34, color: "#e03050", margin: "0 0 10px", lineHeight: 1.25 }}>
-            for someone special
+          <p style={{
+            fontFamily: "'OrdinaryLetter', cursive",
+            fontSize: 42,
+            color: "#111",
+            margin: "0 0 20px",
+            lineHeight: 1.15,
+          }}>
+            for <span style={{ color: "#e03050" }}>someone special</span>
           </p>
-          <p style={{ fontFamily: F, fontSize: 13, color: "#aaa", margin: 0, letterSpacing: 0.3 }}>
-            choose songs · write a message · share the love
-          </p>
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: 10,
+            background: "#f5f5f7",
+            border: "1px solid #ebebed",
+            borderRadius: 99,
+            padding: "7px 18px",
+          }}>
+            {["choose songs", "write a message", "share the love"].map((step, i) => (
+              <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+                <span style={{ fontFamily: F, fontSize: 12, color: "#888", letterSpacing: 0.2 }}>{step}</span>
+                {i < 2 && <span style={{ color: "#ddd", fontSize: 10 }}>·</span>}
+              </span>
+            ))}
+          </div>
         </div>
 
         {/* Details */}
@@ -189,6 +210,37 @@ export default function Home() {
                 outline: bgColor === c.hex ? "3px solid #111" : "3px solid transparent",
                 outlineOffset: 2, cursor: "pointer",
               }} />
+            ))}
+          </div>
+        </div>
+
+        {/* Background particles */}
+        <div style={card}>
+          <p style={sectionTitle}>Background vibe</p>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            {([
+              { key: "hearts", label: "Hearts", emoji: "♥" },
+              { key: "stars",  label: "Stars",  emoji: "✦" },
+              { key: "notes",  label: "Music",  emoji: "♪" },
+              { key: "none",   label: "None",   emoji: "○" },
+            ] as const).map(({ key, label, emoji }) => (
+              <button
+                key={key}
+                onClick={() => setParticles(key)}
+                style={{
+                  display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+                  padding: "10px 14px",
+                  borderRadius: 12,
+                  border: particles === key ? "2px solid #111" : "2px solid #eee",
+                  background: particles === key ? "#f5f5f7" : "white",
+                  cursor: "pointer",
+                  fontFamily: F,
+                  transition: "border 0.15s",
+                }}
+              >
+                <span style={{ fontSize: 20 }}>{emoji}</span>
+                <span style={{ fontSize: 11, color: "#666" }}>{label}</span>
+              </button>
             ))}
           </div>
         </div>

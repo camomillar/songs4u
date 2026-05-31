@@ -10,7 +10,12 @@ interface Heart {
   emoji: string;
 }
 
-const EMOJIS = ["♥", "♥", "♥", "✦", "♡", "✦", "✧"];
+const PARTICLE_SETS = {
+  hearts: ["♥", "♥", "♥", "✦", "♡", "✦", "✧"],
+  stars:  ["✦", "✧", "★", "✦", "✩", "✧", "★"],
+  notes:  ["♪", "♫", "♩", "♬", "♪", "♫", "♩"],
+  none:   [],
+};
 
 /** Darkens a hex colour by `amount` (0–255) */
 export function darkenHex(hex: string, amount = 60): string {
@@ -22,10 +27,13 @@ export function darkenHex(hex: string, amount = 60): string {
 }
 
 interface Props {
-  color?: string; // CSS colour string — defaults to CSS variable
+  color?: string;
+  type?: "hearts" | "stars" | "notes" | "none";
 }
 
-export default function HeartParticles({ color }: Props) {
+export default function HeartParticles({ color, type = "hearts" }: Props) {
+  if (type === "none") return null;
+  const EMOJIS = PARTICLE_SETS[type];
   const [hearts, setHearts] = useState<Heart[]>([]);
 
   useEffect(() => {

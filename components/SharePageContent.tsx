@@ -4,7 +4,7 @@ import { ValentinesPlaylist } from "@/lib/encode";
 import { useAudioPlayer } from "@/hooks/useAudioPlayer";
 import JewelCase from "@/components/JewelCase";
 
-function JewelCaseWrapper({ playlist, playlistId }: { playlist: ValentinesPlaylist; playlistId?: string }) {
+function JewelCaseWrapper({ playlist, playlistId }: { playlist: ValentinesPlaylist; playlistId?: string; }) {
   const songs = playlist.songs;
   const [currentIndex, setCurrentIndex] = useState(0);
   const currentIndexRef = useRef(currentIndex);
@@ -42,6 +42,7 @@ function JewelCaseWrapper({ playlist, playlistId }: { playlist: ValentinesPlayli
       total={songs.length}
       onBack={() => window.history.back()}
       playlistId={playlistId}
+      particles={playlist.particles}
     />
   );
 }
