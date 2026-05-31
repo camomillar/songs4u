@@ -95,7 +95,7 @@ export default function Home() {
   const [langOpen, setLangOpen] = useState(false);
   const t = T[lang];
   const [bgColor, setBgColor] = useState("#FFB3C6");
-  const [particles, setParticles] = useState<"hearts" | "stars" | "notes" | "flowers" | "kisses" | "none">("hearts");
+  const [particles, setParticles] = useState<"hearts" | "stars" | "notes" | "flowers" | "none">("hearts");
   const [coverImage, setCoverImage] = useState<string | null>(null);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
 

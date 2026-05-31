@@ -6,7 +6,7 @@ interface Props {
   to: string; from: string; message?: string;
   songs: Song[]; bgColor?: string; coverImage?: string;
   capturedImage?: string;
-  particles?: "hearts" | "stars" | "notes" | "none";
+  particles?: "hearts" | "stars" | "notes" | "flowers" | "none";
   onClose: () => void;
 }
 

@@ -15,7 +15,7 @@ export interface ValentinesPlaylist {
   songs: Song[];
   coverImage?: string;
   bgColor?: string;
-  particles?: "hearts" | "stars" | "notes" | "flowers" | "kisses" | "none";
+  particles?: "hearts" | "stars" | "notes" | "flowers" | "none";
 }
 
 export function encodePlaylist(playlist: ValentinesPlaylist): string {

@@ -20,7 +20,7 @@ interface Props {
   total: number;
   onBack: () => void;
   playlistId?: string;
-  particles?: "hearts" | "stars" | "notes" | "flowers" | "kisses" | "none";
+  particles?: "hearts" | "stars" | "notes" | "flowers" | "none";
   i18n?: { clickToOpen: string; shareToStory: string; noPreview: string; madeWith: string; createOwn: string };
 }
 
