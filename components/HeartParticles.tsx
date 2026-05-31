@@ -10,13 +10,14 @@ interface Heart {
   emoji: string;
 }
 
-const PARTICLE_SETS = {
-  hearts: ["♥", "♥", "♥", "✦", "♡", "✦", "✧"],
-  stars:  ["✦", "✧", "★", "✦", "✩", "✧", "★"],
-  notes:  ["♪", "♫", "♩", "♬", "♪", "♫", "♩"],
+const PARTICLE_SETS: Record<string, string[]> = {
+  hearts:  ["♥", "♥", "♥", "✦", "♡", "✦", "✧"],
+  stars:   ["✦", "✧", "★", "✦", "✩", "✧", "★"],
+  notes:   ["♪", "♫", "♩", "♬", "♪", "♫", "♩"],
   flowers: ["✿", "❀", "✾", "✿", "❁"],
-  kisses: ["✕", "♡", "✕", "✦", "✕"],
-  none:   [],
+  kisses:  ["✕", "♡", "✕", "✦", "✕"],
+  bows:    ["⋈", "⋈", "✦", "⋈", "⋈"],
+  none:    [],
 };
 
 /** Darkens a hex colour by `amount` (0–255) */
