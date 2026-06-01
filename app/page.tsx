@@ -101,11 +101,11 @@ export default function Home() {
 
   const PASTEL_COLOURS = [
     { hex: "#C8102E", name: "Romantic Red" },
-    { hex: "#FFB3C6", name: "Baby Pink" },
-    { hex: "#FFCBA4", name: "Peach" },
-    { hex: "#FFC65B", name: "Yellow" },
-    { hex: "#53FF9B", name: "Green" },
     { hex: "#0151C7", name: "Blue" },
+    { hex: "#FFC65B", name: "Yellow" },
+    { hex: "#00897B", name: "Teal" },
+    { hex: "#FFB3C6", name: "Baby Pink" },
+    { hex: "#C8A9FA", name: "Light Purple" },
     { hex: "#7B2FBE", name: "Purple" },
     { hex: "#111111", name: "Black" },
     { hex: "#F0F0F0", name: "Light Gray" },
@@ -132,6 +132,24 @@ export default function Home() {
   };
 
   const handleRemoveSong = (i: number) => setSongs(prev => prev.filter((_, idx) => idx !== i));
+
+  const [dragIdx, setDragIdx] = useState<number | null>(null);
+  const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
+
+  const handleDragStart = (i: number) => setDragIdx(i);
+  const handleDragOver = (e: React.DragEvent, i: number) => { e.preventDefault(); setDragOverIdx(i); };
+  const handleDrop = (i: number) => {
+    if (dragIdx === null || dragIdx === i) return;
+    setSongs(prev => {
+      const next = [...prev];
+      const [moved] = next.splice(dragIdx, 1);
+      next.splice(i, 0, moved);
+      return next;
+    });
+    setDragIdx(null);
+    setDragOverIdx(null);
+  };
+  const handleDragEnd = () => { setDragIdx(null); setDragOverIdx(null); };
 
   const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -216,7 +234,7 @@ export default function Home() {
             fontSize: 38, fontWeight: 700, color: "#111",
             margin: "0 0 12px", lineHeight: 1.2,
           }}>
-            songs4u &lt;3
+            songs 4u &lt;3
           </p>
           <p style={{
             fontFamily: "'Raleway', sans-serif",
@@ -247,10 +265,10 @@ export default function Home() {
             value={message}
             onChange={e => setMessage(e.target.value)}
             rows={3}
-            maxLength={60}
+            maxLength={40}
           />
-          <p style={{ fontFamily: F, fontSize: 11, color: message.length > 50 ? "#e03050" : "#bbb", textAlign: "right", marginTop: 4 }}>
-            {message.length}/60
+          <p style={{ fontFamily: F, fontSize: 11, color: message.length > 32 ? "#e03050" : "#bbb", textAlign: "right", marginTop: 4 }}>
+            {message.length}/40
           </p>
         </div>
 
@@ -372,7 +390,24 @@ export default function Home() {
           {songs.length > 0 && (
             <div style={{ marginTop: 16, borderTop: "1px solid #f0f0f0", paddingTop: 14, display: "flex", flexDirection: "column", gap: 2 }}>
               {songs.map((song, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: i < songs.length - 1 ? "1px solid #f0f0f0" : "none" }}>
+                <div
+                  key={song.id}
+                  draggable
+                  onDragStart={() => handleDragStart(i)}
+                  onDragOver={e => handleDragOver(e, i)}
+                  onDrop={() => handleDrop(i)}
+                  onDragEnd={handleDragEnd}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 10, padding: "8px 0",
+                    borderBottom: i < songs.length - 1 ? "1px solid #f0f0f0" : "none",
+                    borderRadius: 8,
+                    background: dragOverIdx === i && dragIdx !== i ? "#f0f0f8" : "transparent",
+                    opacity: dragIdx === i ? 0.4 : 1,
+                    transition: "background 0.15s, opacity 0.15s",
+                    cursor: "grab",
+                  }}
+                >
+                  <span style={{ color: "#ccc", fontSize: 16, flexShrink: 0, cursor: "grab", paddingLeft: 2 }}>⠿</span>
                   {song.albumArt && (
                     <Image src={song.albumArt} alt="" width={36} height={36} unoptimized
                       style={{ borderRadius: 6, objectFit: "cover", flexShrink: 0 }} />
@@ -422,6 +457,10 @@ export default function Home() {
         <a href="https://www.instagram.com/caahmills/" target="_blank" rel="noopener noreferrer"
           style={{ color: "#444", textDecoration: "none", borderBottom: "1px solid #aaa" }}>
           caahmills
+        </a>
+        <span style={{ margin: "0 10px", opacity: 0.4 }}>·</span>
+        <a href="https://www.deezer.com" target="_blank" rel="noopener noreferrer" style={{ color: "#555", textDecoration: "none" }}>
+          Powered by <span style={{ textDecoration: "underline" }}>Deezer</span>
         </a>
       </p>
     </div>

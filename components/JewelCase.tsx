@@ -70,8 +70,8 @@ export default function JewelCase({
 
     const tick = () => {
       if (!isDragging.current) {
-        idleAngle.current += 0.3;
-        rot.current.y = -16 + Math.sin((idleAngle.current * Math.PI) / 180) * 10;
+        idleAngle.current += 0.6;
+        rot.current.y = -16 + Math.sin((idleAngle.current * Math.PI) / 180) * 14;
       }
       if (caseRef.current) {
         caseRef.current.style.transform = `perspective(700px) rotateY(${rot.current.y}deg) rotateX(${rot.current.x}deg)`;
@@ -161,11 +161,11 @@ export default function JewelCase({
         position: "fixed", top: 24, left: 28,
         fontFamily: "'BitcountGrid', monospace",
         fontSize: 22,
-        color: "#ffffff",
+        color: isDark ? "#ffffff" : "#111111",
         margin: 0,
         zIndex: 20,
       }} className="desktop-only-logo">
-        songs4u &lt;3
+        songs 4u &lt;3
       </p>
       <style>{`
         .desktop-only-logo { display: block; }
@@ -375,7 +375,7 @@ export default function JewelCase({
             <p className="mobile-only-logo" style={{
               fontFamily: "'BitcountGrid', monospace",
               fontSize: 28,
-              color: "#ffffff",
+              color: isDark ? "#ffffff" : "#111111",
               margin: "0 0 8px",
               animation: "fadeUp 0.4s ease 0.1s both",
               alignSelf: "center",
@@ -517,35 +517,16 @@ export default function JewelCase({
                     ? "cd-spin-slow 2.5s ease-out forwards"
                     : undefined,
                   flexShrink: 0,
-                  boxShadow: "0 2px 14px rgba(0,0,0,0.45), 0 0 0 1px rgba(180,180,190,0.4)",
-                  // Mirror silver + vivid iridescent + radial streaks
+                  boxShadow: "0 2px 18px rgba(0,0,0,0.35), 0 0 0 2px rgba(100,100,120,0.55)",
+                  // CD-R style: white top to gray bottom gradient
                   background: `
-                    radial-gradient(ellipse at 65% 30%, rgba(255,255,255,0.95) 0%, transparent 45%),
-                    conic-gradient(
-                      from 20deg at 60% 35%,
-                      rgba(150,200,255,0.55) 0deg,
-                      rgba(150,255,180,0.4) 45deg,
-                      rgba(255,150,200,0.5) 90deg,
-                      rgba(200,150,255,0.45) 135deg,
-                      rgba(150,240,255,0.5) 180deg,
-                      rgba(255,230,120,0.4) 225deg,
-                      rgba(255,160,130,0.45) 270deg,
-                      rgba(150,200,255,0.5) 315deg,
-                      rgba(150,200,255,0.55) 360deg
-                    ),
-                    repeating-conic-gradient(
-                      from 0deg,
-                      rgba(255,255,255,0.06) 0deg,
-                      rgba(180,185,200,0.12) 1.5deg,
-                      rgba(255,255,255,0.06) 3deg
-                    ),
-                    radial-gradient(circle, #f8f8fa 0%, #ececf0 25%, #d8d8e0 55%, #c8c8d4 80%, #b8b8c8 100%)
+                    linear-gradient(to bottom, #ffffff 0%, #c8c8d4 100%)
                   `,
                 }}>
                   {/* Outer rim */}
                   <div style={{
                     position: "absolute", inset: 0, borderRadius: "50%",
-                    boxShadow: "inset 0 0 0 3px rgba(180,180,195,0.5), inset 0 0 14px rgba(0,0,0,0.1)",
+                    boxShadow: "inset 0 0 0 4px rgba(80,80,110,0.45), inset 0 0 18px rgba(0,0,0,0.08)",
                     pointerEvents: "none",
                   }} />
                   {/* Hot specular highlight — top-left bright streak */}
@@ -580,73 +561,62 @@ export default function JewelCase({
                   >
                     <defs>
                       {/* Message arcs — 270° spans, inner + outer for 2-line support */}
-                      <path id="cdArcMsg1" d="M 34,66 A 24,24 0 1 1 66,66" />
-                      <path id="cdArcMsg2" d="M 25,76 A 35,35 0 1 1 75,76" />
+                      {/* 270° arcs on top half — line1 outer (higher), line2 inner (lower) */}
+                      <path id="cdArcMsg1" d="M 29,73 A 29,29 0 1 1 71,73" />
+                      <path id="cdArcMsg2" d="M 22,81 A 40,40 0 1 1 78,81" />
                       {/* Bottom arcs */}
                       <path id="cdArcBot1" d="M 21,50 A 29,29 0 0 0 79,50" />
-                      <path id="cdArcBot2" d="M 13,50 A 37,37 0 0 0 87,50" />
+                      <path id="cdArcBot2" d="M 10,50 A 40,40 0 0 0 90,50" />
                     </defs>
+
+                    {/* CD-R label */}
+                    <text x="11" y="53" fontFamily="'Raleway', sans-serif" fontSize="6" fontWeight="700" fill="#f06292" letterSpacing="0.3" opacity="0.5" dominantBaseline="middle">CD-R</text>
+                    {/* songs 4u <3 logo — right side */}
+                    <text x="93" y="53" fontFamily="'BitcountGrid', monospace" fontSize="3" fontWeight="700" fill="rgba(130,130,140,0.70)" textAnchor="end" letterSpacing="0.2" dominantBaseline="middle">songs 4u &lt;3</text>
 
                     {/* Message — 1 or 2 lines over the top */}
                     {message && (() => {
-                      // Split at word boundary nearest the middle
+                      // Always split into two lines at nearest word boundary to midpoint
                       const words = message.split(" ");
-                      if (words.length <= 1 || message.length <= 14) {
-                        // Single line
-                        return (
-                          <text fontFamily="'OrdinaryLetter', cursive" fontSize="11" fill="rgba(15,20,50,0.72)" textAnchor="middle">
-                            <textPath href="#cdArcMsg1" startOffset="50%">{message}</textPath>
-                          </text>
-                        );
-                      }
-                      // Two lines — split at closest word to midpoint
                       const mid = message.length / 2;
-                      let splitIdx = 0, best = Infinity;
+                      let splitIdx = 1, best = Infinity;
                       let pos = 0;
                       words.forEach((w, i) => {
                         pos += (i > 0 ? 1 : 0) + w.length;
                         const dist = Math.abs(pos - mid);
-                        if (dist < best) { best = dist; splitIdx = i + 1; }
+                        if (dist < best && i < words.length - 1) { best = dist; splitIdx = i + 1; }
                       });
                       const line1 = words.slice(0, splitIdx).join(" ");
-                      const line2 = words.slice(splitIdx).join(" ");
+                      const line2 = words.slice(splitIdx).join(" ") || "";
                       return (
                         <>
-                          <text fontFamily="'OrdinaryLetter', cursive" fontSize="11" fill="rgba(15,20,50,0.72)" textAnchor="middle">
+                          <text fontFamily="'OrdinaryLetter', cursive" fontSize="10.5" fill="rgba(15,20,50,0.72)" textAnchor="middle">
                             <textPath href="#cdArcMsg2" startOffset="50%">{line1}</textPath>
                           </text>
-                          <text fontFamily="'OrdinaryLetter', cursive" fontSize="11" fill="rgba(15,20,50,0.65)" textAnchor="middle">
-                            <textPath href="#cdArcMsg1" startOffset="50%">{line2}</textPath>
-                          </text>
+                          {line2 && (
+                            <text fontFamily="'OrdinaryLetter', cursive" fontSize="10.5" fill="rgba(15,20,50,0.65)" textAnchor="middle">
+                              <textPath href="#cdArcMsg1" startOffset="50%">{line2}</textPath>
+                            </text>
+                          )}
                         </>
                       );
                     })()}
 
 
-                    {/* To — bottom inner */}
-                    <text fontFamily="'OrdinaryLetter', cursive" fontSize="12" fill="rgba(15,20,50,0.78)" textAnchor="middle">
-                      <textPath href="#cdArcBot1" startOffset="50%">to: {to}</textPath>
+                    {/* From — bottom inner */}
+                    <text fontFamily="'OrdinaryLetter', cursive" fontSize="9.5" fill="rgba(15,20,50,0.78)" textAnchor="middle">
+                      <textPath href="#cdArcBot1" startOffset="50%">{lang === "pt" ? "de:" : "from:"} {to}</textPath>
                     </text>
 
-                    {/* From — bottom outer */}
+                    {/* To — bottom outer */}
                     {from && (
-                      <text fontFamily="'OrdinaryLetter', cursive" fontSize="11.5" fill="rgba(15,20,50,0.65)" textAnchor="middle">
-                        <textPath href="#cdArcBot2" startOffset="50%">from: {from}</textPath>
+                      <text fontFamily="'OrdinaryLetter', cursive" fontSize="9" fill="rgba(15,20,50,0.65)" textAnchor="middle">
+                        <textPath href="#cdArcBot2" startOffset="50%">{lang === "pt" ? "para:" : "to:"} {from}</textPath>
                       </text>
                     )}
 
                   </svg>
 
-                  {/* Groove rings */}
-                  {[36, 50, 64, 78].map(r => (
-                    <div key={r} style={{
-                      position: "absolute", top: "50%", left: "50%",
-                      transform: "translate(-50%,-50%)",
-                      width: `${r}%`, height: `${r}%`,
-                      borderRadius: "50%",
-                      border: "0.5px solid rgba(150,150,165,0.12)",
-                    }} />
-                  ))}
                 </div>
               </div>
             </div>
@@ -788,7 +758,7 @@ export default function JewelCase({
                 fontFamily: "system-ui", fontSize: 13, fontWeight: 600,
                 cursor: "pointer",
                 animation: "fadeUp 0.4s ease 0.45s both",
-                marginTop: 64,
+                marginTop: 32,
               }}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill={isDark ? "white" : "#111"}>
@@ -824,8 +794,12 @@ export default function JewelCase({
               style={{ color: isDark ? "rgba(255,255,255,0.9)" : "#444", textDecoration: "none", borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.4)" : "#aaa"}` }}>
               caahmills
             </a>
-            {" "}·{" "}
-            <a href="/" style={{ color: isDark ? "rgba(255,255,255,0.75)" : "#555", textDecoration: "none" }}>{t.createOwn}</a>
+            <span style={{ margin: "0 10px", opacity: 0.4 }}>·</span>
+            <a href="/" style={{ color: isDark ? "rgba(255,255,255,0.75)" : "#555", textDecoration: "none" }}>
+              {lang === "pt" ? <>Crie sua playlist <span style={{ textDecoration: "underline" }}>aqui</span></> : <>Create your playlist <span style={{ textDecoration: "underline" }}>here</span></>}
+            </a>
+            <span style={{ margin: "0 10px", opacity: 0.4 }}>·</span>
+            <a href="https://www.deezer.com" target="_blank" rel="noopener noreferrer" style={{ color: isDark ? "rgba(255,255,255,0.75)" : "#555", textDecoration: "none" }}>Powered by <span style={{ textDecoration: "underline" }}>Deezer</span></a>
           </p>
         </>
       )}

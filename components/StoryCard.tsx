@@ -55,97 +55,113 @@ function drawArcText(
 function drawCD(
   ctx: CanvasRenderingContext2D,
   cx: number, cy: number, radius: number,
-  to: string, from: string, message?: string
+  to: string, from: string, message?: string,
+  lang: "en" | "pt" = "pt"
 ) {
+  // ── Iridescent disc surface (matches JewelCase CSS exactly) ──
   ctx.save();
   ctx.beginPath();
   ctx.arc(cx, cy, radius, 0, Math.PI * 2);
   ctx.clip();
 
-  const base = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
-  base.addColorStop(0, "#f8f8fa");
-  base.addColorStop(0.25, "#ececf0");
-  base.addColorStop(0.55, "#d8d8e0");
-  base.addColorStop(0.8, "#c8c8d4");
-  base.addColorStop(1, "#b8b8c8");
+  // White top to gray bottom gradient
+  const base = ctx.createLinearGradient(cx, cy - radius, cx, cy + radius);
+  base.addColorStop(0, "#ffffff");
+  base.addColorStop(1, "#c8c8d4");
   ctx.fillStyle = base;
-  ctx.fillRect(cx - radius, cy - radius, radius * 2, radius * 2);
-
-  const conic = ctx.createConicGradient((20 * Math.PI) / 180, cx, cy);
-  conic.addColorStop(0, "rgba(150,200,255,0.55)");
-  conic.addColorStop(45 / 360, "rgba(150,255,180,0.40)");
-  conic.addColorStop(90 / 360, "rgba(255,150,200,0.50)");
-  conic.addColorStop(135 / 360, "rgba(200,150,255,0.45)");
-  conic.addColorStop(180 / 360, "rgba(150,240,255,0.50)");
-  conic.addColorStop(225 / 360, "rgba(255,230,120,0.40)");
-  conic.addColorStop(270 / 360, "rgba(255,160,130,0.45)");
-  conic.addColorStop(1, "rgba(150,200,255,0.55)");
-  ctx.fillStyle = conic;
-  ctx.fillRect(cx - radius, cy - radius, radius * 2, radius * 2);
-
-  const hl = ctx.createRadialGradient(cx - radius * 0.3, cy - radius * 0.35, 0, cx, cy, radius);
-  hl.addColorStop(0, "rgba(255,255,255,0.70)");
-  hl.addColorStop(0.4, "rgba(255,255,255,0.00)");
-  ctx.fillStyle = hl;
   ctx.fillRect(cx - radius, cy - radius, radius * 2, radius * 2);
 
   ctx.restore();
 
-  for (const pct of [0.36, 0.50, 0.64, 0.78]) {
-    ctx.beginPath();
-    ctx.arc(cx, cy, radius * pct, 0, Math.PI * 2);
-    ctx.strokeStyle = "rgba(150,150,165,0.12)";
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-  }
-
+  // ── Outer rim — stronger stroke like CD-R ──
   ctx.beginPath();
-  ctx.arc(cx, cy, radius - 1.5, 0, Math.PI * 2);
-  ctx.strokeStyle = "rgba(180,180,195,0.5)";
-  ctx.lineWidth = 3;
+  ctx.arc(cx, cy, radius - 2, 0, Math.PI * 2);
+  ctx.strokeStyle = "rgba(80,80,110,0.50)";
+  ctx.lineWidth = 4;
   ctx.stroke();
 
+  // ── Stacking ring (blue-gray hub area, 30% of disc) ──
   ctx.beginPath();
   ctx.arc(cx, cy, radius * 0.15, 0, Math.PI * 2);
-  ctx.fillStyle = "rgba(200,215,230,0.90)";
+  const stackGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius * 0.15);
+  stackGrad.addColorStop(0,   "rgba(200,215,230,0.90)");
+  stackGrad.addColorStop(0.6, "rgba(180,195,215,0.85)");
+  stackGrad.addColorStop(1,   "rgba(160,175,200,0.80)");
+  ctx.fillStyle = stackGrad;
   ctx.fill();
   ctx.strokeStyle = "rgba(150,165,190,0.6)";
   ctx.lineWidth = 2;
   ctx.stroke();
 
+  // ── Center hole — dark (#272729 matches real CD / JewelCase) ──
   ctx.beginPath();
   ctx.arc(cx, cy, radius * 0.074, 0, Math.PI * 2);
-  ctx.fillStyle = "#f5f5f6";
+  ctx.fillStyle = "#272729";
   ctx.fill();
 
-  ctx.font = `italic ${Math.round(radius * 0.115)}px Georgia, serif`;
-  ctx.fillStyle = "rgba(15,20,50,0.78)";
-  drawArcText(ctx, `to: ${to}`, cx, cy, radius * 0.58, Math.PI / 2, false);
+  // ── CD-R label (pink, left side, 50% opacity) ──
+  ctx.save();
+  ctx.font = `700 ${Math.round(radius * 0.14)}px "Raleway", sans-serif`;
+  ctx.fillStyle = "#f06292";
+  ctx.globalAlpha = 0.5;
+  ctx.textAlign = "left";
+  ctx.textBaseline = "middle";
+  ctx.fillText("CD-R", cx - radius * 0.76, cy + radius * 0.06);
+  ctx.restore();
 
-  if (from) {
-    ctx.font = `italic ${Math.round(radius * 0.10)}px Georgia, serif`;
-    ctx.fillStyle = "rgba(15,20,50,0.65)";
-    drawArcText(ctx, `from: ${from}`, cx, cy, radius * 0.74, Math.PI / 2, false);
-  }
+  // ── songs 4u <3 logo — right side ──
+  ctx.save();
+  ctx.font = `700 ${Math.round(radius * 0.07)}px "BitcountGrid", monospace`;
+  ctx.fillStyle = "rgba(130,130,140,0.70)";
+  ctx.textAlign = "right";
+  ctx.textBaseline = "middle";
+  ctx.fillText("songs 4u <3", cx + radius * 0.86, cy + radius * 0.06);
+  ctx.restore();
 
-  if (message) {
-    const words = message.split(" ");
+  // ── Text arcs — OrdinaryLetter font, same as JewelCase SVG ──
+  // Proportions derived from JewelCase viewBox 0 0 100 100, CD radius=50:
+  //   fontSize / 50 * canvas_radius
+  //   arc_radius / 50 * canvas_radius
+  const font = `"OrdinaryLetter", cursive`;
+  const toLabel   = lang === "pt" ? "para:" : "to:";
+  const fromLabel = lang === "pt" ? "de:"   : "from:";
+
+  // Message — top arcs (270° spans): line1 outer r=0.76R, line2 inner r=0.58R
+  // fontSize 7.5 → 7.5/50 = 0.15R
+  if (message && message.trim()) {
+    const words = message.trim().split(" ");
     const mid = message.length / 2;
-    let splitIdx = 0, best = Infinity, pos = 0;
+    let splitIdx = 1, best = Infinity, pos = 0;
     words.forEach((w, i) => {
       pos += (i > 0 ? 1 : 0) + w.length;
       const dist = Math.abs(pos - mid);
-      if (dist < best) { best = dist; splitIdx = i + 1; }
+      if (dist < best && i < words.length - 1) { best = dist; splitIdx = i + 1; }
     });
-    ctx.font = `italic ${Math.round(radius * 0.10)}px Georgia, serif`;
+    const line1 = words.slice(0, splitIdx).join(" ");
+    const line2 = words.slice(splitIdx).join(" ") || "";
+
+    ctx.font = `${Math.round(radius * 0.21)}px ${font}`;
     ctx.fillStyle = "rgba(15,20,50,0.72)";
-    if (words.length <= 1 || message.length <= 14) {
-      drawArcText(ctx, message, cx, cy, radius * 0.55, -Math.PI / 2, true);
-    } else {
-      drawArcText(ctx, words.slice(0, splitIdx).join(" "), cx, cy, radius * 0.70, -Math.PI / 2, true);
+    // line1 on outer arc (r=0.76R)
+    drawArcText(ctx, line1, cx, cy, radius * 0.80, -Math.PI / 2 + 0.06, true);
+    if (line2) {
       ctx.fillStyle = "rgba(15,20,50,0.65)";
-      drawArcText(ctx, words.slice(splitIdx).join(" "), cx, cy, radius * 0.52, -Math.PI / 2, true);
+      // line2 on inner arc (r=0.58R)
+      drawArcText(ctx, line2, cx, cy, radius * 0.58, -Math.PI / 2 + 0.06, true);
     }
+  }
+
+  // From (de:) — inner bottom arc, r=0.58R, fontSize 12/50 = 0.24R
+  // Note: in ValentinesPlaylist, `to` holds sender's name, `from` holds recipient's
+  ctx.font = `${Math.round(radius * 0.19)}px ${font}`;
+  ctx.fillStyle = "rgba(15,20,50,0.78)";
+  drawArcText(ctx, `${fromLabel} ${to}`, cx, cy, radius * 0.58, Math.PI / 2, false);
+
+  // To (para:) — outer bottom arc, r=0.80R, fontSize 11.5/50 = 0.23R
+  if (from) {
+    ctx.font = `${Math.round(radius * 0.18)}px ${font}`;
+    ctx.fillStyle = "rgba(15,20,50,0.65)";
+    drawArcText(ctx, `${toLabel} ${from}`, cx, cy, radius * 0.80, Math.PI / 2, false);
   }
 }
 
@@ -177,12 +193,14 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
   })();
   const starColor = isVeryDark ? "rgba(80,80,80,0.20)" : darkenColor(bgColor);
 
-  // Load fonts
+  // Load fonts — explicitly wait for each weight needed
   try {
-    const font = new FontFace("Raleway", "url(/fonts/Raleway-VariableFont_wght.ttf)");
-    const loaded = await font.load();
+    const fontRegular = new FontFace("Raleway", "url(/fonts/Raleway-VariableFont_wght.ttf)", { weight: "100 900" });
+    const loaded = await fontRegular.load();
     document.fonts.add(loaded);
     await document.fonts.ready;
+    await document.fonts.load("400 42px Raleway");
+    await document.fonts.load("700 42px Raleway");
   } catch { /* fallback */ }
   try {
     const font = new FontFace("BitcountGrid", "url(/fonts/BitcountGridSingle-VariableFont_CRSV,ELSH,ELXP,slnt,wght.ttf)");
@@ -192,6 +210,12 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
     const font = new FontFace("RosieBrown", "url(/fonts/Rosie Brown Serif Demo.otf)");
     await font.load();
     document.fonts.add(font);
+  } catch { /* fallback */ }
+  try {
+    const font = new FontFace("OrdinaryLetter", "url(/fonts/ordinary_letter/Ordinary Letter.otf)");
+    await font.load();
+    document.fonts.add(font);
+    await document.fonts.load(`16px OrdinaryLetter`);
   } catch { /* fallback */ }
 
   // ── Background ──
@@ -231,17 +255,17 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
   }
 
   // Layout constants
-  const panelSize = 460;
+  const panelSize = 520;
   const cdRadius = panelSize / 2;
   const totalWidth = panelSize + cdRadius * 0.4 + cdRadius;
   const panelX = (W - totalWidth) / 2;
 
-  // ── "songs4u <3" branding — aligned with cover case ──
+  // ── "songs 4u <3" branding ──
   ctx.font = `700 64px BitcountGrid, "Courier New", monospace`;
   ctx.fillStyle = fg;
   ctx.textAlign = "left";
-  ctx.fillText("songs4u <3", panelX, 270);
-  const panelY = 420;
+  ctx.fillText("songs 4u <3", panelX, 220);
+  const panelY = 360;
   const spineW = 22;
   const cdCx = panelX + panelSize + cdRadius * 0.4;
   const cdCy = panelY + panelSize / 2 + 10;
@@ -306,7 +330,7 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
     ctx.fillStyle = bgColor;
     ctx.fill();
     ctx.restore();
-    drawCD(ctx, cdCx, cdCy, cdRadius, to, from, message);
+    drawCD(ctx, cdCx, cdCy, cdRadius, to, from, message, lang);
     ctx.beginPath();
     ctx.arc(cdCx, cdCy, cdRadius * 0.16, 0, Math.PI * 2);
     ctx.fillStyle = bgColor;
@@ -369,7 +393,7 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
     const img = new Image();
     img.onload = () => {
       const size = 580;
-      ctx.drawImage(img, W - size + 120, 60, size, size);
+      ctx.drawImage(img, W - size + 120, H - size + 120, size, size);
       resolve();
     };
     img.onerror = () => resolve();
@@ -377,7 +401,7 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
   });
 
   // ── Song list ──
-  const listY = panelY + panelSize + 100;
+  const listY = panelY + panelSize + 105;
   const listX = panelX + 20;
   const maxSongs = Math.min(songs.length, 10);
   const lineH = 62;
@@ -391,12 +415,12 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
 
     // Draw number + artist in bold
     const boldPrefix = `${i + 1}. ${s.artist} — `;
-    ctx.font = `700 36px Raleway, system-ui`;
+    ctx.font = `700 42px Raleway, system-ui`;
     const prefixWidth = ctx.measureText(boldPrefix).width;
     ctx.fillText(boldPrefix, listX, y);
 
     // Draw song title in regular weight, truncated if needed
-    ctx.font = `400 36px Raleway, system-ui`;
+    ctx.font = `400 42px Raleway, system-ui`;
     let title = s.title;
     while (ctx.measureText(title).width > maxWidth - prefixWidth && title.length > 2) {
       title = title.slice(0, -1);
@@ -421,12 +445,11 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
   ctx.textAlign = "left";
   const ctaSub = dark ? "rgba(255,255,255,0.80)" : "rgba(15,15,35,0.40)";
   const ctaMain = dark ? "#ffffff" : "rgba(15,15,35,0.88)";
-  ctx.font = `400 30px Raleway, system-ui`;
-  ctx.fillStyle = ctaSub;
-  ctx.fillText(ctaLine1, W * 0.55, H - 220);
-  ctx.font = `700 38px Raleway, system-ui`;
+  ctx.font = `400 33px Raleway, system-ui`;
   ctx.fillStyle = ctaMain;
-  ctx.fillText(ctaLine2, W * 0.55, H - 170);
+  ctx.textAlign = "center";
+  ctx.fillText("songs4u.online", W / 2, H - 192);
+  ctx.textAlign = "left";
 }
 
 export default function StoryCard(props: Props) {
