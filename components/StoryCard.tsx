@@ -282,6 +282,11 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
   ctx.fill();
   ctx.restore();
   drawCD(ctx, cdCx, cdCy, cdRadius, to, from, message, lang);
+  // Center hole — show background colour through the disc
+  ctx.beginPath();
+  ctx.arc(cdCx, cdCy, cdRadius * 0.074, 0, Math.PI * 2);
+  ctx.fillStyle = bgColor;
+  ctx.fill();
 
   // ── 2. Cover panel drawn ON TOP of CD ──
   // Drop shadow — fill with bgColor so shadow renders but fill is invisible
