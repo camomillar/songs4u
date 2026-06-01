@@ -454,6 +454,7 @@ export default function Home() {
       <p style={{
         fontFamily: F, fontSize: 11, color: "#555",
         textAlign: "center", padding: "16px 0 32px",
+        whiteSpace: "nowrap",
       }}>
         {t.madeWith}{" "}
         <a href="https://www.instagram.com/caahmills/" target="_blank" rel="noopener noreferrer"
