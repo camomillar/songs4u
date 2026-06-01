@@ -90,7 +90,7 @@ export default function SharePageContent({ playlist, playlistId }: { playlist: V
   }, [playlist.bgColor]);
 
   useEffect(() => {
-    track("playlist_opened", { songs: playlist.songs.length, lang: playlist.lang ?? "pt" });
+    track("playlist_opened", { songs: playlist.songs.length });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
