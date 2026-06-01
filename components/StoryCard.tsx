@@ -284,7 +284,7 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
   drawCD(ctx, cdCx, cdCy, cdRadius, to, from, message, lang);
   // Center hole — show background colour through the disc
   ctx.beginPath();
-  ctx.arc(cdCx, cdCy, cdRadius * 0.10, 0, Math.PI * 2);
+  ctx.arc(cdCx, cdCy, cdRadius * 0.13, 0, Math.PI * 2);
   ctx.fillStyle = bgColor;
   ctx.fill();
 
