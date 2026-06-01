@@ -270,72 +270,18 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
   const cdCx = panelX + panelSize + cdRadius * 0.4;
   const cdCy = panelY + panelSize / 2 + 10;
 
-  // ── 1. CD disc drawn FIRST (behind cover) ──
-  if (capturedImage) {
-    await new Promise<void>((resolve) => {
-      const img = new Image();
-      img.onload = () => {
-        const srcX = Math.floor(img.width * 0.507);
-        const srcW = img.width - srcX;
-        const srcH = img.height;
-        const discRadiusSrc = srcH * 0.42;
-        const discCxSrc = srcX + srcW * 0.5;
-        const discCySrc = srcH * 0.5;
-        const drawSize = cdRadius * 2;
-
-        // Shadow
-        ctx.save();
-        ctx.shadowColor = "rgba(0,0,0,0.25)";
-        ctx.shadowBlur = 70;
-        ctx.shadowOffsetX = 12;
-        ctx.shadowOffsetY = 16;
-        ctx.beginPath();
-        ctx.arc(cdCx, cdCy, cdRadius, 0, Math.PI * 2);
-        ctx.fillStyle = bgColor;
-        ctx.fill();
-        ctx.restore();
-
-        // Clip circle and draw disc
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(cdCx, cdCy, cdRadius, 0, Math.PI * 2);
-        ctx.clip();
-        ctx.drawImage(
-          img,
-          discCxSrc - discRadiusSrc, discCySrc - discRadiusSrc,
-          discRadiusSrc * 2, discRadiusSrc * 2,
-          cdCx - cdRadius, cdCy - cdRadius, drawSize, drawSize
-        );
-        ctx.restore();
-
-        // Paint just the center hole with bgColor (small, realistic)
-        ctx.beginPath();
-        ctx.arc(cdCx, cdCy, cdRadius * 0.075, 0, Math.PI * 2);
-        ctx.fillStyle = bgColor;
-        ctx.fill();
-
-        resolve();
-      };
-      img.onerror = () => resolve();
-      img.src = capturedImage;
-    });
-  } else {
-    ctx.save();
-    ctx.shadowColor = "rgba(0,0,0,0.25)";
-    ctx.shadowBlur = 70;
-    ctx.shadowOffsetX = 12;
-    ctx.shadowOffsetY = 16;
-    ctx.beginPath();
-    ctx.arc(cdCx, cdCy, cdRadius, 0, Math.PI * 2);
-    ctx.fillStyle = bgColor;
-    ctx.fill();
-    ctx.restore();
-    drawCD(ctx, cdCx, cdCy, cdRadius, to, from, message, lang);
-    ctx.beginPath();
-    ctx.arc(cdCx, cdCy, cdRadius * 0.16, 0, Math.PI * 2);
-    ctx.fillStyle = bgColor;
-    ctx.fill();
-  }
+  // ── 1. CD disc drawn FIRST (behind cover) — always use canvas drawCD ──
+  ctx.save();
+  ctx.shadowColor = "rgba(0,0,0,0.25)";
+  ctx.shadowBlur = 70;
+  ctx.shadowOffsetX = 12;
+  ctx.shadowOffsetY = 16;
+  ctx.beginPath();
+  ctx.arc(cdCx, cdCy, cdRadius, 0, Math.PI * 2);
+  ctx.fillStyle = bgColor;
+  ctx.fill();
+  ctx.restore();
+  drawCD(ctx, cdCx, cdCy, cdRadius, to, from, message, lang);
 
   // ── 2. Cover panel drawn ON TOP of CD ──
   // Drop shadow — fill with bgColor so shadow renders but fill is invisible
