@@ -423,10 +423,30 @@ export default function StoryCard(props: Props) {
 
   const handleDownload = () => {
     if (!canvasRef.current) return;
-    const link = document.createElement("a");
-    link.download = `songs4u-${props.to.replace(/\s+/g, "-")}.png`;
-    link.href = canvasRef.current.toDataURL("image/png");
-    link.click();
+    const filename = `songs4u-${props.to.replace(/\s+/g, "-")}.png`;
+
+    canvasRef.current.toBlob(async (blob) => {
+      if (!blob) return;
+
+      // On mobile: use Web Share API so user can save directly to gallery
+      if (navigator.share) {
+        const file = new File([blob], filename, { type: "image/png" });
+        try {
+          await navigator.share({ files: [file], title: "songs4u" });
+          return;
+        } catch {
+          // user cancelled or share failed — fall through to download
+        }
+      }
+
+      // Desktop fallback: regular download
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.download = filename;
+      link.href = url;
+      link.click();
+      URL.revokeObjectURL(url);
+    }, "image/png");
   };
 
   return (
