@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import HeartParticles, { darkenHex } from "@/components/HeartParticles";
 import StoryCard from "@/components/StoryCard";
+import { track } from "@vercel/analytics";
 
 interface Props {
   to: string;
@@ -749,6 +750,7 @@ export default function JewelCase({
                   }
                 }
                 setShowStory(true);
+                track("story_shared", { lang });
               }}
               style={{
                 display: "inline-flex", alignItems: "center", gap: 8,

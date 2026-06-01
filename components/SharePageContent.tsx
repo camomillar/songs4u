@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { ValentinesPlaylist } from "@/lib/encode";
 import { useAudioPlayer } from "@/hooks/useAudioPlayer";
 import JewelCase from "@/components/JewelCase";
+import { track } from "@vercel/analytics";
 
 const T = {
   en: {
@@ -87,6 +88,11 @@ export default function SharePageContent({ playlist, playlistId }: { playlist: V
       document.body.style.background = "";
     };
   }, [playlist.bgColor]);
+
+  useEffect(() => {
+    track("playlist_opened", { songs: playlist.songs.length, lang: playlist.lang ?? "pt" });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>

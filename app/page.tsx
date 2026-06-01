@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import QRShare from "@/components/QRShare";
 import { encodePlaylist, type Song } from "@/lib/encode";
+import { track } from "@vercel/analytics";
 import { compressImage } from "@/lib/compress";
 
 const F = "system-ui, -apple-system, sans-serif";
@@ -168,6 +169,7 @@ export default function Home() {
       });
       const { id } = await res.json();
       setShareUrl(`${window.location.origin}/s/${id}`);
+      track("playlist_created", { songs: songs.length, lang, bgColor, hasMessage: !!message.trim(), hasCover: !!coverImage });
     } catch {
       alert(t.alertError);
     }
