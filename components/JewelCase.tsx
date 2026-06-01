@@ -365,25 +365,23 @@ export default function JewelCase({
         </>
       )}
 
+      {/* songs 4u <3 logo — mobile only, fixed top left, always visible */}
+      <p className="mobile-only-logo" style={{
+        position: "fixed", top: 24, left: 28,
+        fontFamily: "'BitcountGrid', monospace",
+        fontSize: 20,
+        color: isDark ? "#ffffff" : "#111111",
+        margin: 0,
+        zIndex: 20,
+      }}>
+        songs 4u &lt;3
+      </p>
+      <style>{`.mobile-only-logo { display: none; } @media (max-width: 600px) { .mobile-only-logo { display: block; } }`}</style>
+
       {/* ── OPEN: two-panel layout ── */}
       {(phase === "open" || phase === "closing") && (
         <>
           {phase === "open" && <HeartParticles color={bgColor ? darkenHex(bgColor) : undefined} type={particles} />}
-
-          {/* songs4u logo — mobile only, top of screen */}
-          {phase === "open" && (
-            <p className="mobile-only-logo" style={{
-              fontFamily: "'BitcountGrid', monospace",
-              fontSize: 28,
-              color: isDark ? "#ffffff" : "#111111",
-              margin: "0 0 8px",
-              animation: "fadeUp 0.4s ease 0.1s both",
-              alignSelf: "center",
-            }}>
-              songs4u &lt;3
-            </p>
-          )}
-          <style>{`.mobile-only-logo { display: none; } @media (max-width: 600px) { .mobile-only-logo { display: block; } }`}</style>
 
           <div style={{
             perspective: "1200px",
@@ -623,8 +621,10 @@ export default function JewelCase({
           </div>{/* end animation wrapper */}
 
           {/* Player — aligned with CD tray width, less rounded */}
+          <style>{`@media (max-width: 600px) { .player-bar { max-width: ${PW}px !important; } }`}</style>
 
           <div
+            className="player-bar"
             onClick={e => e.stopPropagation()}
             style={{
             width: "95vw", maxWidth: W,
@@ -644,9 +644,11 @@ export default function JewelCase({
               <p style={{ fontSize: 14, fontWeight: 700, color: "#111", fontFamily: "system-ui", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{song.title}</p>
               <p style={{ fontSize: 12, color: "#888", fontFamily: "system-ui", marginTop: 2 }}>{song.artist}</p>
             </div>
-            {/* Prev */}
+            {/* Prev — hidden on mobile */}
+            <style>{`@media (max-width: 600px) { .player-prev-btn { display: none !important; } }`}</style>
             {total > 1 && (
               <button
+                className="player-prev-btn"
                 onClick={onPrev}
                 style={{
                   width: 40, height: 40, borderRadius: "50%",
@@ -784,23 +786,29 @@ export default function JewelCase({
             />
           )}
 
-          <p style={{
+          <div style={{
             fontFamily: "'Raleway', system-ui", fontSize: 11, color: isDark ? "rgba(255,255,255,0.75)" : "#555",
-            position: "fixed", bottom: 20, left: "50%", transform: "translateX(-50%)",
-            whiteSpace: "nowrap", zIndex: 10,
+            position: "fixed", bottom: 16, left: 0, right: 0, zIndex: 10,
+            display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+            padding: "0 20px", boxSizing: "border-box",
           }}>
-            {t.madeWith}{" "}
-            <a href="https://www.instagram.com/caahmills/" target="_blank" rel="noopener noreferrer"
-              style={{ color: isDark ? "rgba(255,255,255,0.9)" : "#444", textDecoration: "none", borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.4)" : "#aaa"}` }}>
-              caahmills
-            </a>
-            <span style={{ margin: "0 10px", opacity: 0.4 }}>·</span>
-            <a href="/" style={{ color: isDark ? "rgba(255,255,255,0.75)" : "#555", textDecoration: "none" }}>
-              {lang === "pt" ? <>Crie sua playlist <span style={{ textDecoration: "underline" }}>aqui</span></> : <>Create your playlist <span style={{ textDecoration: "underline" }}>here</span></>}
-            </a>
-            <span style={{ margin: "0 10px", opacity: 0.4 }}>·</span>
-            <a href="https://www.deezer.com" target="_blank" rel="noopener noreferrer" style={{ color: isDark ? "rgba(255,255,255,0.75)" : "#555", textDecoration: "none" }}>Powered by <span style={{ textDecoration: "underline" }}>Deezer</span></a>
-          </p>
+            {/* Line 1: made with + caahmills */}
+            <span style={{ whiteSpace: "nowrap" }}>
+              {t.madeWith}{" "}
+              <a href="https://www.instagram.com/caahmills/" target="_blank" rel="noopener noreferrer"
+                style={{ color: isDark ? "rgba(255,255,255,0.9)" : "#444", textDecoration: "none", borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.4)" : "#aaa"}` }}>
+                caahmills
+              </a>
+            </span>
+            {/* Line 2: create playlist + Powered by Deezer */}
+            <span style={{ whiteSpace: "nowrap" }}>
+              <a href="/" style={{ color: isDark ? "rgba(255,255,255,0.75)" : "#555", textDecoration: "none" }}>
+                {lang === "pt" ? <>Crie sua playlist <span style={{ textDecoration: "underline" }}>aqui</span></> : <>Create your playlist <span style={{ textDecoration: "underline" }}>here</span></>}
+              </a>
+              <span style={{ margin: "0 8px", opacity: 0.4 }}>·</span>
+              <a href="https://www.deezer.com" target="_blank" rel="noopener noreferrer" style={{ color: isDark ? "rgba(255,255,255,0.75)" : "#555", textDecoration: "none" }}>Powered by <span style={{ textDecoration: "underline" }}>Deezer</span></a>
+            </span>
+          </div>
         </>
       )}
     </div>
