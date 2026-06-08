@@ -29,6 +29,13 @@
 }
 
 @font-face {
+  font-family: "PatrickHand";
+  src: url("/fonts/PatrickHand-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
   font-family: "BeautyDemo";
   src: url("/fonts/beauty_2/BeautyDemo.otf") format("opentype");
   font-weight: normal;

@@ -217,6 +217,11 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
     document.fonts.add(font);
     await document.fonts.load(`16px OrdinaryLetter`);
   } catch { /* fallback */ }
+  try {
+    const font = new FontFace("OrdinaryLetter2", "url(/fonts/ordinary_letter/Ordinary Letter.otf)");
+    await font.load();
+    document.fonts.add(font);
+  } catch { /* fallback */ }
 
   // ── Background ──
   ctx.fillStyle = bgColor;
