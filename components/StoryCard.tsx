@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 
 interface Song { title: string; artist: string; }
 interface Props {
-  to: string; from: string; message?: string;
+  to: string; from: string; title?: string; message?: string;
   songs: Song[]; bgColor?: string; coverImage?: string;
   capturedImage?: string;
   particles?: "hearts" | "stars" | "notes" | "flowers" | "none";
@@ -166,7 +166,7 @@ function drawCD(
 }
 
 async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onClose">) {
-  const { to, from, message, songs, bgColor = "#c8b4e8", coverImage, capturedImage, particles = "hearts", lang = "pt" } = props;
+  const { to, from, title, message, songs, bgColor = "#c8b4e8", coverImage, capturedImage, particles = "hearts", lang = "pt" } = props;
   const ctaLine1 = lang === "pt" ? "Crie sua playlist" : "Create your playlist";
   const ctaLine2 = "songs4u.online";
   const W = 1080, H = 1920;
@@ -281,7 +281,7 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
   ctx.fillStyle = bgColor;
   ctx.fill();
   ctx.restore();
-  drawCD(ctx, cdCx, cdCy, cdRadius, to, from, message, lang);
+  drawCD(ctx, cdCx, cdCy, cdRadius, to, from, title, lang);
   // Center hole — show background colour through the disc
   ctx.beginPath();
   ctx.arc(cdCx, cdCy, cdRadius * 0.13, 0, Math.PI * 2);

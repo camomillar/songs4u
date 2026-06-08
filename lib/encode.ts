@@ -11,6 +11,7 @@ export interface Song {
 export interface ValentinesPlaylist {
   to: string;
   from: string;
+  title?: string;
   message: string;
   songs: Song[];
   coverImage?: string;

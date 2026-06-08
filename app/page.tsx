@@ -12,6 +12,7 @@ const T = {
   en: {
     subtitle: "Choose songs, write a message and share the love!",
     details: "Details", to: "From", from: "To", toPlaceholder: "your name", fromPlaceholder: "their name",
+    title: "Title", titlePlaceholder: "playlist title...",
     message: "Message", messagePlaceholder: "write your message...",
     bgColour: "Background colour", bgVibe: "Background vibe",
     hearts: "Hearts", stars: "Stars", music: "Music", flowers: "Flowers", kisses: "Kisses", none: "None",
@@ -28,6 +29,7 @@ const T = {
   pt: {
     subtitle: "Escolha músicas, escreva uma mensagem\ne compartilhe o amor!",
     details: "Detalhes", to: "De", from: "Para", toPlaceholder: "seu nome", fromPlaceholder: "quem vai receber",
+    title: "Título", titlePlaceholder: "título da playlist...",
     message: "Mensagem", messagePlaceholder: "escreva sua mensagem...",
     bgColour: "Cor de fundo", bgVibe: "Vibe do fundo",
     hearts: "Corações", stars: "Estrelas", music: "Música", flowers: "Flores", kisses: "Beijos", none: "Nenhum",
@@ -85,6 +87,7 @@ const sectionTitle: React.CSSProperties = {
 export default function Home() {
   const [to, setTo] = useState("");
   const [from, setFrom] = useState("");
+  const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [songs, setSongs] = useState<Song[]>([]);
 
@@ -165,7 +168,7 @@ export default function Home() {
       const res = await fetch("/api/playlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ to: to.trim(), from: from.trim(), message: message.trim(), songs, bgColor, particles, ...(coverImage ? { coverImage } : {}) }),
+        body: JSON.stringify({ to: to.trim(), from: from.trim(), title: title.trim(), message: message.trim(), songs, bgColor, particles, ...(coverImage ? { coverImage } : {}) }),
       });
       const { id } = await res.json();
       setShareUrl(`${window.location.origin}/s/${id}`);
@@ -260,6 +263,8 @@ export default function Home() {
               <input style={input} placeholder={t.fromPlaceholder} value={from} onChange={e => setFrom(e.target.value)} />
             </div>
           </div>
+          <span style={label}>{t.title}</span>
+          <input style={{ ...input, marginBottom: 14 }} placeholder={t.titlePlaceholder} value={title} onChange={e => setTitle(e.target.value)} maxLength={40} />
           <span style={label}>{t.message}</span>
           <textarea
             style={{ ...input, resize: "none" as const, lineHeight: 1.6 }}

@@ -48,6 +48,7 @@ function JewelCaseWrapper({ playlist, playlistId, lang }: { playlist: Valentines
     <JewelCase
       to={playlist.to}
       from={playlist.from}
+      title={playlist.title}
       message={playlist.message}
       bgColor={playlist.bgColor}
       coverImage={playlist.coverImage}

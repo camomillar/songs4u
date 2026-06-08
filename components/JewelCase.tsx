@@ -8,6 +8,7 @@ import { track } from "@vercel/analytics";
 interface Props {
   to: string;
   from: string;
+  title?: string;
   message: string;
   bgColor?: string;
   isPlaying: boolean;
@@ -33,7 +34,7 @@ const PW = W / 2;
 type Phase = "closed" | "opening" | "open" | "closing";
 
 export default function JewelCase({
-  to, from, message, bgColor,
+  to, from, title, message, bgColor,
   isPlaying, ready, onTogglePlay, onNext, onPrev,
   song, songs, coverImage, total, onBack, playlistId, particles = "hearts", i18n, lang = "pt",
 }: Props) {
@@ -427,28 +428,24 @@ export default function JewelCase({
                   }} />
                 ))}
 
-                {/* Song list */}
+                {/* Message */}
                 <div style={{
                   position: "absolute", inset: 0,
-                  padding: "16px 18px",
-                  display: "flex", flexDirection: "column", justifyContent: "flex-start",
-                  gap: 6,
+                  padding: "20px 22px",
+                  display: "flex", alignItems: "center", justifyContent: "center",
                   overflow: "hidden",
                 }}>
-
-                  {songs.map((s, i) => (
-                    <p key={i} style={{
-                      fontFamily: "'OrdinaryLetter', cursive",
-                      fontSize: 20,
-                      color: "rgba(20,20,50,0.72)",
-                      margin: 0,
-                      overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                      lineHeight: 1.4,
-                    }}>
-                      {i + 1}. {s.artist && `${s.artist} - `}{s.title}
-                    </p>
-                  ))}
-
+                  <p style={{
+                    fontFamily: "'OrdinaryLetter', cursive",
+                    fontSize: 22,
+                    color: "rgba(20,20,50,0.75)",
+                    margin: 0,
+                    lineHeight: 1.6,
+                    textAlign: "center",
+                    wordBreak: "break-word",
+                  }}>
+                    {message}
+                  </p>
                 </div>
               </div>
 
@@ -573,11 +570,11 @@ export default function JewelCase({
                     {/* songs 4u <3 logo — right side */}
                     <text x="93" y="53" fontFamily="'BitcountGrid', monospace" fontSize="3" fontWeight="700" fill="rgba(130,130,140,0.70)" textAnchor="end" letterSpacing="0.2" dominantBaseline="middle">songs 4u &lt;3</text>
 
-                    {/* Message — 1 or 2 lines over the top */}
-                    {message && (() => {
+                    {/* Title — 1 or 2 lines over the top of the CD */}
+                    {title && (() => {
                       // Always split into two lines at nearest word boundary to midpoint
-                      const words = message.split(" ");
-                      const mid = message.length / 2;
+                      const words = title.split(" ");
+                      const mid = title.length / 2;
                       let splitIdx = 1, best = Infinity;
                       let pos = 0;
                       words.forEach((w, i) => {
@@ -777,6 +774,7 @@ export default function JewelCase({
             <StoryCard
               to={to}
               from={from}
+              title={title}
               message={message}
               songs={songs}
               bgColor={bgColor}
