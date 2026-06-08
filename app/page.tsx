@@ -14,6 +14,7 @@ const T = {
     details: "Details", to: "From", from: "To", toPlaceholder: "your name", fromPlaceholder: "their name",
     title: "Title", titlePlaceholder: "playlist title...",
     message: "Message", messagePlaceholder: "write your message...",
+    stickers: "Stickers", stickersHint: "choose your favourites",
     bgColour: "Background colour", bgVibe: "Background vibe",
     hearts: "Hearts", stars: "Stars", music: "Music", flowers: "Flowers", kisses: "Kisses", none: "None",
     coverPhoto: "Cover photo", coverDesc: "This photo will appear on your cd cover",
@@ -31,6 +32,7 @@ const T = {
     details: "Detalhes", to: "De", from: "Para", toPlaceholder: "seu nome", fromPlaceholder: "quem vai receber",
     title: "Título", titlePlaceholder: "título da playlist...",
     message: "Mensagem", messagePlaceholder: "escreva sua mensagem...",
+    stickers: "Stickers", stickersHint: "escolha os seus favoritos",
     bgColour: "Cor de fundo", bgVibe: "Vibe do fundo",
     hearts: "Corações", stars: "Estrelas", music: "Música", flowers: "Flores", kisses: "Beijos", none: "Nenhum",
     coverPhoto: "Foto da capa", coverDesc: "Esta foto vai aparecer na capa do CD",
@@ -89,6 +91,14 @@ export default function Home() {
   const [from, setFrom] = useState("");
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
+  const [stickers, setStickers] = useState<string[]>([]);
+
+  const STICKER_OPTIONS = ["/stickers/cat.png", "/stickers/coelhos.png", "/stickers/flor.png", "/stickers/girassol.png", "/stickers/hearts.png", "/stickers/kiss.png", "/stickers/camera.png"];
+  const toggleSticker = (s: string) => {
+    setStickers(prev =>
+      prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s]
+    );
+  };
   const [songs, setSongs] = useState<Song[]>([]);
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -168,7 +178,7 @@ export default function Home() {
       const res = await fetch("/api/playlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ to: to.trim(), from: from.trim(), title: title.trim(), message: message.trim(), songs, bgColor, particles, ...(coverImage ? { coverImage } : {}) }),
+        body: JSON.stringify({ to: to.trim(), from: from.trim(), title: title.trim(), message: message.trim(), songs, bgColor, particles, stickers, ...(coverImage ? { coverImage } : {}) }),
       });
       const { id } = await res.json();
       setShareUrl(`${window.location.origin}/s/${id}`);
@@ -272,11 +282,37 @@ export default function Home() {
             value={message}
             onChange={e => setMessage(e.target.value)}
             rows={3}
-            maxLength={40}
+            maxLength={120}
           />
-          <p style={{ fontFamily: F, fontSize: 11, color: message.length > 32 ? "#e03050" : "#bbb", textAlign: "right", marginTop: 4 }}>
-            {message.length}/40
+          <p style={{ fontFamily: F, fontSize: 11, color: message.length > 96 ? "#e03050" : "#bbb", textAlign: "right", marginTop: 4 }}>
+            {message.length}/120
           </p>
+
+          {/* Sticker picker */}
+          <div style={{ marginTop: 14 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+              <span style={label}>{t.stickers}</span>
+              <span style={{ fontFamily: F, fontSize: 11, color: "#bbb" }}>{t.stickersHint}</span>
+            </div>
+            <div style={{ display: "flex", gap: 10 }}>
+              {STICKER_OPTIONS.map(s => (
+                <button key={s} onClick={() => toggleSticker(s)} style={{
+                  fontSize: 26, background: stickers.includes(s) ? "#f0f0ff" : "#f8f8f8",
+                  border: stickers.includes(s) ? "2px solid #9b8ec4" : "2px solid transparent",
+                  borderRadius: 12, width: 48, height: 48,
+                  cursor: "pointer",
+                  opacity: 1,
+                  transition: "all 0.15s", flexShrink: 0,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  padding: 4,
+                }}>
+                  {s.startsWith("/") ? (
+                    <img src={s} alt="sticker" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                  ) : s}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Background colour */}

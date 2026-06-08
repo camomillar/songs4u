@@ -63,6 +63,7 @@ function JewelCaseWrapper({ playlist, playlistId, lang }: { playlist: Valentines
       onBack={() => window.history.back()}
       playlistId={playlistId}
       particles={playlist.particles}
+      stickers={playlist.stickers}
       i18n={t}
       lang={lang}
     />

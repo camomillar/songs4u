@@ -23,6 +23,7 @@ interface Props {
   onBack: () => void;
   playlistId?: string;
   particles?: "hearts" | "stars" | "notes" | "flowers" | "none";
+  stickers?: string[];
   i18n?: { clickToOpen: string; shareToStory: string; noPreview: string; madeWith: string; createOwn: string };
   lang?: "en" | "pt";
 }
@@ -34,7 +35,7 @@ const PW = W / 2;
 type Phase = "closed" | "opening" | "open" | "closing";
 
 export default function JewelCase({
-  to, from, title, message, bgColor,
+  to, from, title, message, bgColor, stickers = [],
   isPlaying, ready, onTogglePlay, onNext, onPrev,
   song, songs, coverImage, total, onBack, playlistId, particles = "hearts", i18n, lang = "pt",
 }: Props) {
@@ -428,23 +429,46 @@ export default function JewelCase({
                   }} />
                 ))}
 
-                {/* Message */}
+                {/* Message — letter style */}
                 <div style={{
                   position: "absolute", inset: 0,
-                  padding: "20px 22px",
-                  display: "flex", alignItems: "center", justifyContent: "center",
+                  padding: "58px 80px 72px 28px",
+                  display: "flex", alignItems: "center", justifyContent: "flex-start",
                   overflow: "hidden",
                 }}>
+                  {/* Stickers — fixed positions with slight rotation */}
+                  {[
+                    { bottom: "12%", right: "8%",  rotate: "12deg"  },
+                    { bottom: "8%",  left:  "8%",  rotate: "-10deg" },
+                    { top:    "8%",  right: "8%",  rotate: "-8deg"  },
+                    { top:    "8%",  left:  "8%",  rotate: "10deg"  },
+                    { top:   "42%",  right: "6%",  rotate: "15deg"  },
+                    { bottom: "4%",  left:  "42%", rotate: "-8deg"  },
+                    { top:    "4%",  left:  "42%", rotate: "6deg"   },
+                  ].map((pos, i) => stickers[i] ? (
+                    <span key={i} style={{
+                      position: "absolute",
+                      bottom: (pos as {bottom?: string}).bottom, top: (pos as {top?: string}).top,
+                      right: (pos as {right?: string}).right, left: (pos as {left?: string}).left,
+                      fontSize: 36, lineHeight: 1,
+                      pointerEvents: "none", userSelect: "none",
+                      opacity: 0.85, width: 44, height: 44,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      transform: `rotate(${pos.rotate})`,
+                    }}>
+                      {stickers[i].startsWith("/") ? (
+                        <img src={stickers[i]} alt="sticker" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                      ) : stickers[i]}
+                    </span>
+                  ) : null)}
                   <p style={{
                     fontFamily: "'OrdinaryLetter', cursive",
-                    fontSize: 22,
-                    color: "rgba(20,20,50,0.75)",
-                    margin: 0,
-                    lineHeight: 1.6,
-                    textAlign: "center",
+                    fontSize: 22, color: "rgba(20,20,50,0.82)",
+                    margin: 0, lineHeight: 1.5,
                     wordBreak: "break-word",
+                    textAlign: "left",
                   }}>
-                    {message}
+                    {message || <span style={{ opacity: 0.3 }}>...</span>}
                   </p>
                 </div>
               </div>
