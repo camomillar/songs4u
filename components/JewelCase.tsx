@@ -250,6 +250,8 @@ export default function JewelCase({
             width: 82vw !important;
             height: 82vw !important;
             scroll-snap-align: start;
+            overflow: hidden !important;
+            contain: layout paint;
           }
         }
       `}</style>
@@ -586,6 +588,7 @@ export default function JewelCase({
                     ? "cd-spin-slow 2.5s ease-out forwards"
                     : undefined,
                   flexShrink: 0,
+                  willChange: "transform",
                   boxShadow: "0 2px 18px rgba(0,0,0,0.35), 0 0 0 2px rgba(100,100,120,0.55)",
                   // CD-R style: white top to gray bottom gradient
                   background: `
@@ -626,7 +629,7 @@ export default function JewelCase({
                   {/* Message written ON the disc — SVG circular text */}
                   <svg
                     viewBox="0 0 100 100"
-                    style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 3, overflow: "visible" }}
+                    style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 3, overflow: "hidden" }}
                   >
                     <defs>
                       {/* Message arcs — 270° spans, inner + outer for 2-line support */}
