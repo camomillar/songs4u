@@ -45,6 +45,14 @@ export default function JewelCase({
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [showMessageDrawer, setShowMessageDrawer] = useState(false);
   const openCaseRef = useRef<HTMLDivElement>(null);
+  const caseScrollLeft = useRef(0);
+
+  // Preserve scroll position across re-renders (e.g. when spinState changes on mobile)
+  useEffect(() => {
+    if (openCaseRef.current && caseScrollLeft.current > 0) {
+      openCaseRef.current.scrollLeft = caseScrollLeft.current;
+    }
+  });
   const stopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Preload sticker images so they appear instantly when case opens
@@ -211,14 +219,16 @@ export default function JewelCase({
           from { transform: rotate(0deg); }
           to   { transform: rotate(360deg); }
         }
+        .open-case-container { overflow: hidden; }
+
         @media (max-width: 600px) {
           .case-hinge { display: none !important; }
           .case-closed-wrapper { filter: none !important; }
 
           /* Scroll-snap pager: liner (message) + CD tray */
           .open-case-container {
-            overflow-x: auto !important;
-            overflow-y: visible !important;
+            overflow-x: auto;
+            overflow-y: hidden;
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
@@ -432,6 +442,7 @@ export default function JewelCase({
             <div
               ref={openCaseRef}
               className="open-case-container"
+              onScroll={e => { caseScrollLeft.current = (e.currentTarget as HTMLDivElement).scrollLeft; }}
               onClick={() => { setPhase("closing"); setTimeout(() => setPhase("closed"), 420); }}
               title="Click to close"
               style={{
@@ -441,7 +452,6 @@ export default function JewelCase({
               borderRadius: 3,
               border: "1.5px solid rgba(180,180,190,0.45)",
               cursor: "pointer",
-              overflow: "hidden",
             }}>
 
               {/* ── LEFT: Liner notes panel (hidden on mobile) ── */}
