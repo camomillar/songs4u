@@ -43,6 +43,7 @@ export default function JewelCase({
   const [spinState, setSpinState] = useState<"playing" | "stopping" | "stopped">("stopped");
   const [showStory, setShowStory] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [showMessageDrawer, setShowMessageDrawer] = useState(false);
   const openCaseRef = useRef<HTMLDivElement>(null);
   const stopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -211,10 +212,34 @@ export default function JewelCase({
           to   { transform: rotate(360deg); }
         }
         @media (max-width: 600px) {
-          .case-liner-panel { display: none !important; }
           .case-hinge { display: none !important; }
-          .case-closed-wrapper {
-            filter: none !important;
+          .case-closed-wrapper { filter: none !important; }
+
+          /* Scroll-snap pager: liner (message) + CD tray */
+          .open-case-container {
+            overflow-x: auto !important;
+            overflow-y: visible !important;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            max-width: 100vw !important;
+            border-radius: 12px !important;
+          }
+          .open-case-container::-webkit-scrollbar { display: none; }
+
+          .case-liner-panel {
+            display: flex !important;
+            flex: 0 0 82vw !important;
+            width: 82vw !important;
+            height: 82vw !important;
+            scroll-snap-align: start;
+            border-right: none !important;
+          }
+          .cd-tray-panel {
+            flex: 0 0 82vw !important;
+            width: 82vw !important;
+            height: 82vw !important;
+            scroll-snap-align: start;
           }
         }
       `}</style>
@@ -396,6 +421,7 @@ export default function JewelCase({
         <>
           {phase === "open" && <HeartParticles color={bgColor ? darkenHex(bgColor) : undefined} type={particles} />}
 
+
           <div style={{
             perspective: "1200px",
             animation: phase === "closing"
@@ -405,6 +431,7 @@ export default function JewelCase({
             {/* ── OPEN CASE MOCKUP — click to close ── */}
             <div
               ref={openCaseRef}
+              className="open-case-container"
               onClick={() => { setPhase("closing"); setTimeout(() => setPhase("closed"), 420); }}
               title="Click to close"
               style={{
@@ -492,7 +519,7 @@ export default function JewelCase({
               }} />
 
               {/* ── RIGHT: CD tray ── */}
-              <div style={{
+              <div className="cd-tray-panel" style={{
                 width: PW, height: H,
                 background: "linear-gradient(160deg, #3a3a3c 0%, #252527 100%)",
                 position: "relative",
