@@ -46,6 +46,16 @@ export default function JewelCase({
   const openCaseRef = useRef<HTMLDivElement>(null);
   const stopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Preload sticker images so they appear instantly when case opens
+  useEffect(() => {
+    stickers.forEach(src => {
+      if (src.startsWith("/")) {
+        const img = new window.Image();
+        img.src = src;
+      }
+    });
+  }, [stickers]);
+
   useEffect(() => {
     if (isPlaying) {
       if (stopTimerRef.current) clearTimeout(stopTimerRef.current);

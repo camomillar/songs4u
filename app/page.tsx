@@ -93,10 +93,18 @@ export default function Home() {
   const [message, setMessage] = useState("");
   const [stickers, setStickers] = useState<string[]>([]);
 
-  const STICKER_OPTIONS = ["/stickers/cat.png", "/stickers/coelhos.png", "/stickers/flor.png", "/stickers/girassol.png", "/stickers/hearts.png", "/stickers/kiss.png", "/stickers/camera.png"];
+  const STICKER_OPTIONS = [
+    "/stickers/cat.png", "/stickers/coelhos.png",
+    "/stickers/bears.png", "/stickers/couple.png", "/stickers/angel.png",
+    "/stickers/hamster.png", "/stickers/habitt.png", "/stickers/butterfly.png", "/stickers/2hearts.png",
+    "/stickers/flor.png", "/stickers/flower2.png", "/stickers/flowers.png",
+    "/stickers/girassol.png", "/stickers/hearts.png", "/stickers/kiss.png",
+    "/stickers/letter.png", "/stickers/camera.png", "/stickers/star.png",
+    "/stickers/star2.png", "/stickers/star3.png", "/stickers/drinks.png",
+  ];
   const toggleSticker = (s: string) => {
     setStickers(prev =>
-      prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s]
+      prev.includes(s) ? prev.filter(x => x !== s) : prev.length < 7 ? [...prev, s] : prev
     );
   };
   const [songs, setSongs] = useState<Song[]>([]);
@@ -147,23 +155,6 @@ export default function Home() {
 
   const handleRemoveSong = (i: number) => setSongs(prev => prev.filter((_, idx) => idx !== i));
 
-  const [dragIdx, setDragIdx] = useState<number | null>(null);
-  const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
-
-  const handleDragStart = (i: number) => setDragIdx(i);
-  const handleDragOver = (e: React.DragEvent, i: number) => { e.preventDefault(); setDragOverIdx(i); };
-  const handleDrop = (i: number) => {
-    if (dragIdx === null || dragIdx === i) return;
-    setSongs(prev => {
-      const next = [...prev];
-      const [moved] = next.splice(dragIdx, 1);
-      next.splice(i, 0, moved);
-      return next;
-    });
-    setDragIdx(null);
-    setDragOverIdx(null);
-  };
-  const handleDragEnd = () => { setDragIdx(null); setDragOverIdx(null); };
 
   const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -294,14 +285,14 @@ export default function Home() {
               <span style={label}>{t.stickers}</span>
               <span style={{ fontFamily: F, fontSize: 11, color: "#bbb" }}>{t.stickersHint}</span>
             </div>
-            <div style={{ display: "flex", gap: 10 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(48px, 1fr))", gap: 10 }}>
               {STICKER_OPTIONS.map(s => (
                 <button key={s} onClick={() => toggleSticker(s)} style={{
                   fontSize: 26, background: stickers.includes(s) ? "#f0f0ff" : "#f8f8f8",
                   border: stickers.includes(s) ? "2px solid #9b8ec4" : "2px solid transparent",
                   borderRadius: 12, width: 48, height: 48,
-                  cursor: "pointer",
-                  opacity: 1,
+                  cursor: stickers.includes(s) || stickers.length < 7 ? "pointer" : "not-allowed",
+                  opacity: !stickers.includes(s) && stickers.length >= 7 ? 0.35 : 1,
                   transition: "all 0.15s", flexShrink: 0,
                   display: "flex", alignItems: "center", justifyContent: "center",
                   padding: 4,
@@ -435,22 +426,11 @@ export default function Home() {
               {songs.map((song, i) => (
                 <div
                   key={song.id}
-                  draggable
-                  onDragStart={() => handleDragStart(i)}
-                  onDragOver={e => handleDragOver(e, i)}
-                  onDrop={() => handleDrop(i)}
-                  onDragEnd={handleDragEnd}
                   style={{
                     display: "flex", alignItems: "center", gap: 10, padding: "8px 0",
                     borderBottom: i < songs.length - 1 ? "1px solid #f0f0f0" : "none",
-                    borderRadius: 8,
-                    background: dragOverIdx === i && dragIdx !== i ? "#f0f0f8" : "transparent",
-                    opacity: dragIdx === i ? 0.4 : 1,
-                    transition: "background 0.15s, opacity 0.15s",
-                    cursor: "grab",
                   }}
                 >
-                  <span style={{ color: "#ccc", fontSize: 16, flexShrink: 0, cursor: "grab", paddingLeft: 2 }}>⠿</span>
                   {song.albumArt && (
                     <Image src={song.albumArt} alt="" width={36} height={36} unoptimized
                       style={{ borderRadius: 6, objectFit: "cover", flexShrink: 0 }} />
