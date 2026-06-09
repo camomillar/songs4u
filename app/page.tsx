@@ -10,7 +10,7 @@ const F = "system-ui, -apple-system, sans-serif";
 
 const T = {
   en: {
-    subtitle: "Choose songs, write a message and share the love!",
+    subtitle: "Write a message, choose songs and share the love!",
     details: "Details", to: "From", from: "To", toPlaceholder: "your name", fromPlaceholder: "their name",
     title: "Title", titlePlaceholder: "playlist title",
     message: "Message", messagePlaceholder: "write your message",
@@ -28,7 +28,7 @@ const T = {
     madeWith: "Made with ♥ by",
   },
   pt: {
-    subtitle: "Escolha músicas, escreva uma mensagem\ne compartilhe o amor!",
+    subtitle: "Escreva uma mensagem, escolha suas músicas e compartilhe o amor!",
     details: "Detalhes", to: "De", from: "Para", toPlaceholder: "seu nome", fromPlaceholder: "quem vai receber",
     title: "Título", titlePlaceholder: "título da playlist",
     message: "Mensagem", messagePlaceholder: "escreva sua mensagem",
@@ -439,9 +439,8 @@ export default function Home() {
                     <p style={{ fontFamily: F, fontSize: 12, color: "#888", margin: 0 }}>{song.artist}</p>
                   </div>
                   <button onClick={() => handleRemoveSong(i)} style={{
-                    fontFamily: F, fontSize: 16, color: "#999", background: "#f0f0f2", border: "none", cursor: "pointer",
-                    width: 32, height: 32, borderRadius: "50%", flexShrink: 0,
-                    display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1,
+                    fontFamily: F, fontSize: 18, color: "#bbb", background: "none", border: "none", cursor: "pointer",
+                    padding: "4px 8px", flexShrink: 0, lineHeight: 1,
                   }}>✕</button>
                 </div>
               ))}

@@ -59,10 +59,8 @@ export default function QRShare({ url, onClose }: Props) {
           </p>
           <button onClick={onClose} style={{
             position: "absolute", right: 0,
-            background: "#f0f0f2", border: "none", borderRadius: "50%",
-            width: 32, height: 32, cursor: "pointer", fontSize: 14,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            color: "#888", flexShrink: 0, lineHeight: 1, padding: 0,
+            background: "none", border: "none", cursor: "pointer", fontSize: 18,
+            color: "#bbb", flexShrink: 0, lineHeight: 1, padding: "4px 8px",
           }}>✕</button>
         </div>
 
