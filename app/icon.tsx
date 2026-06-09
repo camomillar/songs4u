@@ -19,26 +19,11 @@ export default function Icon() {
           border: "1px solid rgba(255,255,255,0.5)",
           display: "flex", alignItems: "center", justifyContent: "center",
         }}>
-          {/* Heart made of two circles + rotated square */}
-          <div style={{ position: "relative", width: 10, height: 10, display: "flex" }}>
-            <div style={{
-              position: "absolute", width: 10, height: 10,
-              background: "#e05080",
-              transform: "rotate(45deg)",
-              borderRadius: "1px",
-              top: 2, left: 0,
-            }} />
-            <div style={{
-              position: "absolute", width: 7, height: 7,
-              background: "#e05080", borderRadius: "50%",
-              top: 0, left: 0,
-            }} />
-            <div style={{
-              position: "absolute", width: 7, height: 7,
-              background: "#e05080", borderRadius: "50%",
-              top: 0, left: 3,
-            }} />
-          </div>
+          {/* Center hole */}
+          <div style={{
+            width: 6, height: 6, borderRadius: "50%",
+            background: "#111",
+          }} />
         </div>
       </div>
     ),
