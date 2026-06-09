@@ -15,10 +15,10 @@ export default function Icon() {
           justifyContent: "center",
           background: "#fff",
           borderRadius: 8,
-          fontSize: 22,
+          fontSize: 24,
         }}
       >
-        ♥
+        💿
       </div>
     ),
     { ...size }
