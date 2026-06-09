@@ -264,9 +264,15 @@ export default function Home() {
               <input style={input} placeholder={t.fromPlaceholder} value={from} onChange={e => setFrom(e.target.value)} />
             </div>
           </div>
-          <span style={label}>{t.title}</span>
-          <input style={{ ...input, marginBottom: 14 }} placeholder={t.titlePlaceholder} value={title} onChange={e => setTitle(e.target.value)} maxLength={40} />
-          <span style={label}>{t.message}</span>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+            <span style={label}>{t.title}</span>
+            <span style={{ fontFamily: F, fontSize: 11, color: title.length >= 30 ? "#e05080" : "#bbb" }}>{title.length}/35</span>
+          </div>
+          <input style={{ ...input, marginBottom: 14 }} placeholder={t.titlePlaceholder} value={title} onChange={e => setTitle(e.target.value)} maxLength={35} />
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+            <span style={label}>{t.message}</span>
+            <span style={{ fontFamily: F, fontSize: 11, color: message.length >= 100 ? "#e05080" : "#bbb" }}>{message.length}/120</span>
+          </div>
           <textarea
             style={{ ...input, resize: "none" as const, lineHeight: 1.6 }}
             placeholder={t.messagePlaceholder}
@@ -275,9 +281,7 @@ export default function Home() {
             rows={3}
             maxLength={120}
           />
-          <p style={{ fontFamily: F, fontSize: 11, color: message.length > 96 ? "#e03050" : "#bbb", textAlign: "right", marginTop: 4 }}>
-            {message.length}/120
-          </p>
+
 
           {/* Sticker picker */}
           <div style={{ marginTop: 14 }}>
