@@ -324,10 +324,10 @@ export default function Home() {
           <p style={sectionTitle}>{t.bgVibe}</p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10 }}>
             {([
-              { key: "hearts", label: t.hearts, emoji: "♥" },
-              { key: "stars",  label: t.stars,  emoji: "✦" },
-              { key: "notes",  label: t.music,  emoji: "♪" },
-              { key: "flowers", label: t.flowers, emoji: "✿" },
+              { key: "hearts", label: t.hearts, emoji: "♥︎" },
+              { key: "stars",  label: t.stars,  emoji: "✦︎" },
+              { key: "notes",  label: t.music,  emoji: "♪︎" },
+              { key: "flowers", label: t.flowers, emoji: "✿︎" },
             ] as const).map(({ key, label, emoji }) => (
               <button
                 key={key}
@@ -439,7 +439,9 @@ export default function Home() {
                     <p style={{ fontFamily: F, fontSize: 12, color: "#888", margin: 0 }}>{song.artist}</p>
                   </div>
                   <button onClick={() => handleRemoveSong(i)} style={{
-                    fontFamily: F, fontSize: 12, color: "#bbb", background: "none", border: "none", cursor: "pointer", padding: "4px 8px", flexShrink: 0,
+                    fontFamily: F, fontSize: 16, color: "#999", background: "#f0f0f2", border: "none", cursor: "pointer",
+                    width: 32, height: 32, borderRadius: "50%", flexShrink: 0,
+                    display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1,
                   }}>✕</button>
                 </div>
               ))}
