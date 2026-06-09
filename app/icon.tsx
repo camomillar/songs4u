@@ -21,7 +21,7 @@ export default function Icon() {
         }}>
           {/* Center hole */}
           <div style={{
-            width: 6, height: 6, borderRadius: "50%",
+            width: 9, height: 9, borderRadius: "50%",
             background: "#111",
           }} />
         </div>
