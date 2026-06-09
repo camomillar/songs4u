@@ -144,7 +144,17 @@ export default function JewelCase({
   const handleOpen = () => {
     if (phase !== "closed") return;
     setPhase("opening");
-    setTimeout(() => setPhase("open"), 420);
+    caseScrollLeft.current = 0;
+    setTimeout(() => {
+      setPhase("open");
+      // On mobile, scroll to the CD panel (second panel) immediately
+      requestAnimationFrame(() => {
+        if (openCaseRef.current && window.innerWidth <= 600) {
+          const cdPanel = openCaseRef.current.querySelector<HTMLElement>(".cd-tray-panel");
+          if (cdPanel) openCaseRef.current.scrollLeft = cdPanel.offsetLeft - 36;
+        }
+      });
+    }, 420);
   };
 
   // Fix background + prevent scroll on mobile
@@ -223,7 +233,7 @@ export default function JewelCase({
 
         @media (max-width: 600px) {
           .case-hinge { display: none !important; }
-          .case-closed-wrapper { filter: none !important; }
+          .case-closed-wrapper { filter: drop-shadow(0px 12px 28px rgba(0,0,0,0.5)) drop-shadow(0px 4px 8px rgba(0,0,0,0.3)) !important; }
 
           /* Scroll-snap pager: liner (message) + CD tray */
           .open-case-container {
@@ -232,23 +242,29 @@ export default function JewelCase({
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
-            max-width: 100vw !important;
-            border-radius: 12px !important;
+            max-width: calc(100vw - 24px) !important;
+            margin: 0 12px !important;
+            border-radius: 3px !important;
+            scroll-padding-left: 36px;
           }
           .open-case-container::-webkit-scrollbar { display: none; }
 
           .case-liner-panel {
             display: flex !important;
-            flex: 0 0 82vw !important;
-            width: 82vw !important;
-            height: 82vw !important;
+            flex: 0 0 90vw !important;
+            width: 90vw !important;
+            max-width: 340px !important;
+            height: 90vw !important;
+            max-height: 340px !important;
             scroll-snap-align: start;
             border-right: none !important;
           }
           .cd-tray-panel {
-            flex: 0 0 82vw !important;
-            width: 82vw !important;
-            height: 82vw !important;
+            flex: 0 0 90vw !important;
+            width: 90vw !important;
+            max-width: 340px !important;
+            height: 90vw !important;
+            max-height: 340px !important;
             scroll-snap-align: start;
             overflow: hidden !important;
             contain: layout paint;
@@ -452,7 +468,7 @@ export default function JewelCase({
               maxWidth: "95vw",
               boxShadow: "0 16px 48px rgba(0,0,0,0.28), 0 4px 12px rgba(0,0,0,0.15)",
               borderRadius: 3,
-              border: "1.5px solid rgba(180,180,190,0.45)",
+              border: "1.5px solid #c8c8ca",
               cursor: "pointer",
             }}>
 
@@ -513,11 +529,10 @@ export default function JewelCase({
                   ) : null)}
                   <p style={{
                     fontFamily: "'OrdinaryLetter', cursive",
-                    fontSize: 23, color: "rgba(20,20,50,0.82)",
-                    margin: 0, lineHeight: 1.5,
+                    fontSize: 26, color: "rgba(20,20,50,0.82)",
+                    margin: 0, lineHeight: 1.2,
                     wordBreak: "break-word",
                     textAlign: "left",
-                    WebkitTextStroke: "0.6px rgba(255,255,255,0.55)",
                   }}>
                     {message || <span style={{ opacity: 0.3 }}>...</span>}
                   </p>

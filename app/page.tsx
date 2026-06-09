@@ -12,8 +12,8 @@ const T = {
   en: {
     subtitle: "Choose songs, write a message and share the love!",
     details: "Details", to: "From", from: "To", toPlaceholder: "your name", fromPlaceholder: "their name",
-    title: "Title", titlePlaceholder: "playlist title...",
-    message: "Message", messagePlaceholder: "write your message...",
+    title: "Title", titlePlaceholder: "playlist title",
+    message: "Message", messagePlaceholder: "write your message",
     stickers: "Stickers", stickersHint: "choose your favourites",
     bgColour: "Background colour", bgVibe: "Background vibe",
     hearts: "Hearts", stars: "Stars", music: "Music", flowers: "Flowers", kisses: "Kisses", none: "None",
@@ -21,7 +21,7 @@ const T = {
     uploadPhoto: "Upload photo", changePhoto: "Change photo", remove: "Remove",
     addSongs: "Add songs", searchPlaceholder: "Search for a song or artist...",
     searching: "Searching...", yourSongs: "Your songs",
-    generate: "Generate Link & QR Code",
+    generate: "Generate link & QR code",
     addName: "Add a name to continue", addSong: "Add at least one song to continue",
     alertName: "Please enter who this is for!", alertSong: "Add at least one song!",
     alertError: "Could not generate link. Please try again.",
@@ -30,16 +30,16 @@ const T = {
   pt: {
     subtitle: "Escolha músicas, escreva uma mensagem\ne compartilhe o amor!",
     details: "Detalhes", to: "De", from: "Para", toPlaceholder: "seu nome", fromPlaceholder: "quem vai receber",
-    title: "Título", titlePlaceholder: "título da playlist...",
-    message: "Mensagem", messagePlaceholder: "escreva sua mensagem...",
-    stickers: "Stickers", stickersHint: "escolha os seus favoritos",
+    title: "Título", titlePlaceholder: "título da playlist",
+    message: "Mensagem", messagePlaceholder: "escreva sua mensagem",
+    stickers: "Adesivos", stickersHint: "escolha os seus favoritos",
     bgColour: "Cor de fundo", bgVibe: "Vibe do fundo",
     hearts: "Corações", stars: "Estrelas", music: "Música", flowers: "Flores", kisses: "Beijos", none: "Nenhum",
-    coverPhoto: "Foto da capa", coverDesc: "Esta foto vai aparecer na capa do CD",
+    coverPhoto: "Foto da capa", coverDesc: "Esta imagem aparecerá na capa do seu cd",
     uploadPhoto: "Enviar foto", changePhoto: "Trocar foto", remove: "Remover",
     addSongs: "Adicionar músicas", searchPlaceholder: "Busque por uma música ou artista...",
     searching: "Buscando...", yourSongs: "Suas músicas",
-    generate: "Gerar Link & QR Code",
+    generate: "Gerar link & QR code",
     addName: "Adicione um nome para continuar", addSong: "Adicione pelo menos uma música para continuar",
     alertName: "Por favor, insira para quem é a playlist!", alertSong: "Adicione pelo menos uma música!",
     alertError: "Não foi possível gerar o link. Tente novamente.",
@@ -283,7 +283,6 @@ export default function Home() {
           <div style={{ marginTop: 14 }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
               <span style={label}>{t.stickers}</span>
-              <span style={{ fontFamily: F, fontSize: 11, color: "#bbb" }}>{t.stickersHint}</span>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(48px, 1fr))", gap: 10 }}>
               {STICKER_OPTIONS.map(s => (

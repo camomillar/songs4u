@@ -8,14 +8,14 @@ import { track } from "@vercel/analytics";
 const T = {
   en: {
     clickToOpen: "Click to open",
-    shareToStory: "Share to Story",
+    shareToStory: "Share",
     noPreview: "no preview available",
     madeWith: "Made with ♥ by",
     createOwn: "Create your playlist here",
   },
   pt: {
     clickToOpen: "Clique para abrir",
-    shareToStory: "Compartilhar no Story",
+    shareToStory: "Compartilhar",
     noPreview: "prévia não disponível",
     madeWith: "Feito com ♥ por",
     createOwn: "Crie sua playlist aqui",

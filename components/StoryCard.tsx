@@ -476,15 +476,15 @@ export default function StoryCard(props: Props) {
           background: "linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)",
           color: "white", border: "none", borderRadius: 24,
           fontFamily: "system-ui", fontSize: 14, fontWeight: 700, cursor: "pointer",
-        }}>Save Image</button>
+        }}>{props.lang === "pt" ? "Salvar imagem" : "Save Image"}</button>
         <button onClick={onClose} style={{
           padding: "12px 20px", background: "rgba(255,255,255,0.15)",
           color: "white", border: "none", borderRadius: 24,
           fontFamily: "system-ui", fontSize: 14, cursor: "pointer",
-        }}>Close</button>
+        }}>{props.lang === "pt" ? "Fechar" : "Close"}</button>
       </div>
       <p style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, fontFamily: "system-ui" }}>
-        Save and upload to your Instagram Story
+        {props.lang === "pt" ? "Salve e publique no seu Story do Instagram" : "Save and upload to your Instagram Story"}
       </p>
     </div>
   );

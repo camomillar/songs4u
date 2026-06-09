@@ -53,11 +53,12 @@ export default function QRShare({ url, onClose }: Props) {
         }}
       >
         {/* Header */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: 26, color: "#111", margin: 0 }}>
-            Share your playlist ♥
+        <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 20 }}>
+          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: 26, color: "#111", margin: 0, textAlign: "center" }}>
+            Share your playlist
           </p>
           <button onClick={onClose} style={{
+            position: "absolute", right: 0,
             background: "#f0f0f2", border: "none", borderRadius: "50%",
             width: 32, height: 32, cursor: "pointer", fontSize: 16,
             display: "flex", alignItems: "center", justifyContent: "center",
