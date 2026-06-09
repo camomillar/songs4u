@@ -6,28 +6,40 @@ export const contentType = "image/png";
 export default function Icon() {
   return new ImageResponse(
     (
-      <div style={{ width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <radialGradient id="cd" cx="40%" cy="35%" r="65%">
-              <stop offset="0%" stopColor="#f0f0f8" />
-              <stop offset="30%" stopColor="#c8d8f0" />
-              <stop offset="55%" stopColor="#e0c8f0" />
-              <stop offset="75%" stopColor="#f0e0b0" />
-              <stop offset="100%" stopColor="#b0c8e0" />
-            </radialGradient>
-          </defs>
-          {/* CD outer disc */}
-          <circle cx="16" cy="16" r="15" fill="url(#cd)" stroke="#b0b0c0" strokeWidth="0.5" />
-          {/* CD rings */}
-          <circle cx="16" cy="16" r="11" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.5" />
-          <circle cx="16" cy="16" r="7" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="0.5" />
-          {/* Heart path in center */}
-          <path
-            d="M16 20.5 C16 20.5 10.5 16.5 10.5 13 C10.5 10.8 12.3 9.5 14 9.5 C15 9.5 15.7 10 16 10.5 C16.3 10 17 9.5 18 9.5 C19.7 9.5 21.5 10.8 21.5 13 C21.5 16.5 16 20.5 16 20.5Z"
-            fill="#e05080"
-          />
-        </svg>
+      <div style={{
+        width: 32, height: 32, borderRadius: "50%",
+        background: "linear-gradient(135deg, #d0e4f8 0%, #e8d0f4 40%, #f4e8c0 70%, #c0d8ec 100%)",
+        border: "1px solid #b0b0c0",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        position: "relative",
+      }}>
+        {/* CD ring */}
+        <div style={{
+          width: 22, height: 22, borderRadius: "50%",
+          border: "1px solid rgba(255,255,255,0.5)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          {/* Heart made of two circles + rotated square */}
+          <div style={{ position: "relative", width: 10, height: 10, display: "flex" }}>
+            <div style={{
+              position: "absolute", width: 10, height: 10,
+              background: "#e05080",
+              transform: "rotate(45deg)",
+              borderRadius: "1px",
+              top: 2, left: 0,
+            }} />
+            <div style={{
+              position: "absolute", width: 7, height: 7,
+              background: "#e05080", borderRadius: "50%",
+              top: 0, left: 0,
+            }} />
+            <div style={{
+              position: "absolute", width: 7, height: 7,
+              background: "#e05080", borderRadius: "50%",
+              top: 0, left: 3,
+            }} />
+          </div>
+        </div>
       </div>
     ),
     { ...size }
