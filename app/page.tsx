@@ -28,7 +28,7 @@ const T = {
     madeWith: "Made with ♥ by",
   },
   pt: {
-    subtitle: "Escreva uma mensagem, escolha suas músicas e compartilhe o amor!",
+    subtitle: "Escreva uma mensagem, escolha suas músicas\ne compartilhe o amor!",
     details: "Detalhes", to: "De", from: "Para", toPlaceholder: "seu nome", fromPlaceholder: "quem vai receber",
     title: "Título", titlePlaceholder: "título da playlist",
     message: "Mensagem", messagePlaceholder: "escreva sua mensagem",
