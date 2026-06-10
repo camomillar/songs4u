@@ -10,12 +10,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const data = await redis.get(`pl:${id}`);
     if (data) {
       const playlist = typeof data === "string" ? JSON.parse(data) : data;
-      from = playlist.from ?? "";
+      from = playlist.to ?? "";
     }
   } catch {}
 
   const title = from
-    ? `${from} made you a playlist ♥`
+    ? `A playlist from ${from} ♥`
     : "Someone made you a playlist ♥";
   const description = "Open to discover your playlist 🎵";
 
