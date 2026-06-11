@@ -107,7 +107,6 @@ export default function SharePageContent({ playlist, playlistId }: { playlist: V
   }, [playlist.bgColor]);
 
   useEffect(() => {
-    track("playlist_opened", { songs: playlist.songs.length });
     posthog.capture("playlist_opened", { songs_count: playlist.songs.length, has_cover: !!playlist.coverImage, has_message: !!playlist.message, bg_color: playlist.bgColor });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
