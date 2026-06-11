@@ -37,10 +37,11 @@ function drawArcText(
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   const dir = clockwise ? 1 : -1;
-  const totalAngle = [...text].reduce((acc, ch) => acc + ctx.measureText(ch).width / radius, 0);
+  const spacing = 0.04;
+  const totalAngle = [...text].reduce((acc, ch) => acc + ctx.measureText(ch).width / radius + spacing, 0);
   let angle = centerAngle - (totalAngle / 2) * dir;
   for (const ch of text) {
-    const charAngle = ctx.measureText(ch).width / radius;
+    const charAngle = ctx.measureText(ch).width / radius + spacing;
     angle += (charAngle / 2) * dir;
     ctx.save();
     ctx.translate(cx + radius * Math.cos(angle), cy + radius * Math.sin(angle));
@@ -95,7 +96,7 @@ function drawCD(
 
   // ── Center hole — dark (#272729 matches real CD / JewelCase) ──
   ctx.beginPath();
-  ctx.arc(cx, cy, radius * 0.074, 0, Math.PI * 2);
+  ctx.arc(cx, cy, radius * 0.11, 0, Math.PI * 2);
   ctx.fillStyle = "#272729";
   ctx.fill();
 
@@ -126,8 +127,11 @@ function drawCD(
   const toLabel   = lang === "pt" ? "para:" : "to:";
   const fromLabel = lang === "pt" ? "de:"   : "from:";
 
-  // Message — top arcs (270° spans): line1 outer r=0.76R, line2 inner r=0.58R
-  // fontSize 7.5 → 7.5/50 = 0.15R
+  const fontSize = Math.round(radius * 0.18);
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
+  // Title — horizontal lines near top of CD
   if (message && message.trim()) {
     const words = message.trim().split(" ");
     const mid = message.length / 2;
@@ -140,28 +144,22 @@ function drawCD(
     const line1 = words.slice(0, splitIdx).join(" ");
     const line2 = words.slice(splitIdx).join(" ") || "";
 
-    ctx.font = `${Math.round(radius * 0.21)}px ${font}`;
+    ctx.font = `${fontSize}px ${font}`;
     ctx.fillStyle = "rgba(15,20,50,0.72)";
-    // line1 on outer arc (r=0.76R)
-    drawArcText(ctx, line1, cx, cy, radius * 0.80, -Math.PI / 2 + 0.06, true);
+    ctx.fillText(line1, cx, cy - radius * 0.55);
     if (line2) {
       ctx.fillStyle = "rgba(15,20,50,0.65)";
-      // line2 on inner arc (r=0.58R)
-      drawArcText(ctx, line2, cx, cy, radius * 0.58, -Math.PI / 2 + 0.06, true);
+      ctx.fillText(line2, cx, cy - radius * 0.55 + fontSize * 1.3);
     }
   }
 
-  // From (de:) — inner bottom arc, r=0.58R, fontSize 12/50 = 0.24R
-  // Note: in ValentinesPlaylist, `to` holds sender's name, `from` holds recipient's
-  ctx.font = `${Math.round(radius * 0.19)}px ${font}`;
+  // From (de:) and To (para:) — horizontal lines near bottom of CD
+  ctx.font = `${Math.round(radius * 0.17)}px ${font}`;
   ctx.fillStyle = "rgba(15,20,50,0.78)";
-  drawArcText(ctx, `${fromLabel} ${to}`, cx, cy, radius * 0.58, Math.PI / 2, false);
-
-  // To (para:) — outer bottom arc, r=0.80R, fontSize 11.5/50 = 0.23R
+  ctx.fillText(`${fromLabel} ${to}`, cx, cy + radius * 0.45);
   if (from) {
-    ctx.font = `${Math.round(radius * 0.18)}px ${font}`;
     ctx.fillStyle = "rgba(15,20,50,0.65)";
-    drawArcText(ctx, `${toLabel} ${from}`, cx, cy, radius * 0.80, Math.PI / 2, false);
+    ctx.fillText(`${toLabel} ${from}`, cx, cy + radius * 0.45 + Math.round(radius * 0.17) * 1.3);
   }
 }
 
@@ -350,7 +348,7 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
     const img = new Image();
     img.onload = () => {
       const size = 580;
-      ctx.drawImage(img, W - size + 120, H - size + 120, size, size);
+      ctx.drawImage(img, W - size + 120, H - size + 160, size, size);
       resolve();
     };
     img.onerror = () => resolve();
@@ -372,12 +370,12 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
 
     // Draw number + artist in bold
     const boldPrefix = `${i + 1}. ${s.artist} — `;
-    ctx.font = `700 42px DKLemonYellowSun, system-ui`;
+    ctx.font = `700 42px PatrickHand, system-ui`;
     const prefixWidth = ctx.measureText(boldPrefix).width;
     ctx.fillText(boldPrefix, listX, y);
 
     // Draw song title in regular weight, truncated if needed
-    ctx.font = `400 42px DKLemonYellowSun, system-ui`;
+    ctx.font = `400 42px PatrickHand, system-ui`;
     let title = s.title;
     while (ctx.measureText(title).width > maxWidth - prefixWidth && title.length > 2) {
       title = title.slice(0, -1);

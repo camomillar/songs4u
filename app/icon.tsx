@@ -7,24 +7,17 @@ export default function Icon() {
   return new ImageResponse(
     (
       <div style={{
-        width: 32, height: 32, borderRadius: "50%",
-        background: "linear-gradient(135deg, #d0e4f8 0%, #e8d0f4 40%, #f4e8c0 70%, #c0d8ec 100%)",
-        border: "1px solid #b0b0c0",
+        width: 32, height: 32,
+        background: "white",
+        borderRadius: 6,
         display: "flex", alignItems: "center", justifyContent: "center",
-        position: "relative",
       }}>
-        {/* CD ring */}
-        <div style={{
-          width: 22, height: 22, borderRadius: "50%",
-          border: "1px solid rgba(255,255,255,0.5)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-        }}>
-          {/* Center hole */}
-          <div style={{
-            width: 9, height: 9, borderRadius: "50%",
-            background: "#111",
-          }} />
-        </div>
+        <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M10 18 C10 18 1 12 1 6.5 C1 3.9 3.2 2 5.5 2 C7.1 2 8.4 2.8 9.2 4 C9.6 2.8 10.9 2 12.5 2 C14.8 2 17 3.9 17 6.5 C17 12 10 18 10 18 Z"
+            fill="#e05080"
+          />
+        </svg>
       </div>
     ),
     { ...size }
