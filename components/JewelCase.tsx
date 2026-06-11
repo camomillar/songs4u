@@ -528,7 +528,7 @@ export default function JewelCase({
                     </span>
                   ) : null)}
                   <p style={{
-                    fontFamily: "'DKLemonYellowSun', cursive",
+                    fontFamily: "'PatrickHand', cursive",
                     fontSize: 26, color: "rgba(20,20,50,0.82)",
                     margin: 0, lineHeight: 1.2,
                     wordBreak: "break-word",
@@ -677,11 +677,11 @@ export default function JewelCase({
                       const line2 = words.slice(splitIdx).join(" ") || "";
                       return (
                         <>
-                          <text fontFamily="'DKLemonYellowSun', cursive" fontSize="9" fill="rgba(15,20,50,0.72)" textAnchor="middle">
+                          <text fontFamily="'PatrickHand', cursive" fontSize="9" fill="rgba(15,20,50,0.72)" textAnchor="middle">
                             <textPath href="#cdArcMsg2" startOffset="50%">{line1}</textPath>
                           </text>
                           {line2 && (
-                            <text fontFamily="'DKLemonYellowSun', cursive" fontSize="9" fill="rgba(15,20,50,0.65)" textAnchor="middle">
+                            <text fontFamily="'PatrickHand', cursive" fontSize="9" fill="rgba(15,20,50,0.65)" textAnchor="middle">
                               <textPath href="#cdArcMsg1" startOffset="50%">{line2}</textPath>
                             </text>
                           )}
@@ -691,13 +691,13 @@ export default function JewelCase({
 
 
                     {/* From — bottom inner */}
-                    <text fontFamily="'DKLemonYellowSun', cursive" fontSize="9.5" fill="rgba(15,20,50,0.78)" textAnchor="middle">
+                    <text fontFamily="'PatrickHand', cursive" fontSize="9.5" fill="rgba(15,20,50,0.78)" textAnchor="middle">
                       <textPath href="#cdArcBot1" startOffset="50%">{lang === "pt" ? "de:" : "from:"} {to}</textPath>
                     </text>
 
                     {/* To — bottom outer */}
                     {from && (
-                      <text fontFamily="'DKLemonYellowSun', cursive" fontSize="9" fill="rgba(15,20,50,0.65)" textAnchor="middle">
+                      <text fontFamily="'PatrickHand', cursive" fontSize="9" fill="rgba(15,20,50,0.65)" textAnchor="middle">
                         <textPath href="#cdArcBot2" startOffset="50%">{lang === "pt" ? "para:" : "to:"} {from}</textPath>
                       </text>
                     )}
