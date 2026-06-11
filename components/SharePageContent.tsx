@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { ValentinesPlaylist } from "@/lib/encode";
 import { useAudioPlayer } from "@/hooks/useAudioPlayer";
 import JewelCase from "@/components/JewelCase";
-import { track } from "@vercel/analytics";
+import posthog from "posthog-js";
 
 const T = {
   en: {
@@ -32,21 +32,21 @@ function JewelCaseWrapper({ playlist, playlistId, lang }: { playlist: Valentines
     const ni = (currentIndexRef.current + 1) % songs.length;
     setCurrentIndex(ni);
     loadTrack(songs[ni].previewUrl);
-    track("song_skipped", { direction: "next", from: currentIndexRef.current, to: ni, total: songs.length });
+    posthog.capture("song_skipped", { direction: "next", from: currentIndexRef.current, to: ni, total_songs: songs.length });
   };
 
   const prev = () => {
     const pi = (currentIndexRef.current - 1 + songs.length) % songs.length;
     setCurrentIndex(pi);
     loadTrack(songs[pi].previewUrl);
-    track("song_skipped", { direction: "prev", from: currentIndexRef.current, to: pi, total: songs.length });
+    posthog.capture("song_skipped", { direction: "prev", from: currentIndexRef.current, to: pi, total_songs: songs.length });
   };
 
   const { isPlaying, ready, loadTrack, togglePlay } = useAudioPlayer(songs[0].previewUrl, next);
 
   const handleTogglePlay = () => {
     if (!isPlaying) {
-      track("song_played", { index: currentIndexRef.current, total: songs.length });
+      posthog.capture("song_played", { song_index: currentIndexRef.current, song_title: songs[currentIndexRef.current]?.title, song_artist: songs[currentIndexRef.current]?.artist, total_songs: songs.length });
     }
     togglePlay();
   };
@@ -108,6 +108,7 @@ export default function SharePageContent({ playlist, playlistId }: { playlist: V
 
   useEffect(() => {
     track("playlist_opened", { songs: playlist.songs.length });
+    posthog.capture("playlist_opened", { songs_count: playlist.songs.length, has_cover: !!playlist.coverImage, has_message: !!playlist.message, bg_color: playlist.bgColor });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import QRCode from "qrcode";
+import posthog from "posthog-js";
 
 const F = "system-ui, -apple-system, sans-serif";
 
@@ -28,6 +29,7 @@ export default function QRShare({ url, onClose }: Props) {
   const handleCopy = async () => {
     await navigator.clipboard.writeText(url);
     setCopied(true);
+    posthog.capture("link_copied");
     setTimeout(() => setCopied(false), 2000);
   };
 

@@ -17,6 +17,8 @@
     "html2canvas": "^1.4.1",
     "lz-string": "^1.5.0",
     "next": "^16.2.6",
+    "posthog-js": "^1.386.6",
+    "posthog-node": "^5.21.2",
     "qrcode": "^1.5.4",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",

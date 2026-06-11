@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import HeartParticles, { darkenHex } from "@/components/HeartParticles";
 import StoryCard from "@/components/StoryCard";
-import { track } from "@vercel/analytics";
+import posthog from "posthog-js";
 
 interface Props {
   to: string;
@@ -143,7 +143,7 @@ export default function JewelCase({
 
   const handleOpen = () => {
     if (phase !== "closed") return;
-    track("case_opened", { lang });
+    posthog.capture("case_opened", { lang });
     setPhase("opening");
     caseScrollLeft.current = 0;
     setTimeout(() => {
@@ -831,7 +831,7 @@ export default function JewelCase({
                   }
                 }
                 setShowStory(true);
-                track("story_shared", { lang });
+                posthog.capture("story_shared", { lang });
               }}
               style={{
                 display: "inline-flex", alignItems: "center", gap: 8,

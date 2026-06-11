@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import QRShare from "@/components/QRShare";
 import { encodePlaylist, type Song } from "@/lib/encode";
-import { track } from "@vercel/analytics";
 import { compressImage } from "@/lib/compress";
+import posthog from "posthog-js";
 
 const F = "system-ui, -apple-system, sans-serif";
 
@@ -145,21 +145,26 @@ export default function Home() {
     finally { setSearching(false); }
   };
 
-  const handleAddSong = (track: { id: string; title: string; artist: string; albumArt: string; previewUrl?: string | null }) => {
-    if (songs.find(s => s.id === track.id)) return;
+  const handleAddSong = (t: { id: string; title: string; artist: string; albumArt: string; previewUrl?: string | null }) => {
+    if (songs.find(s => s.id === t.id)) return;
     if (songs.length >= 10) return;
-    setSongs(prev => [...prev, { ...track, previewUrl: track.previewUrl ?? undefined }]);
+    setSongs(prev => [...prev, { ...t, previewUrl: t.previewUrl ?? undefined }]);
+    posthog.capture("song_added", { song_title: t.title, song_artist: t.artist, playlist_size: songs.length + 1, lang });
     setSearchQuery("");
     setSearchResults([]);
   };
 
-  const handleRemoveSong = (i: number) => setSongs(prev => prev.filter((_, idx) => idx !== i));
-
+  const handleRemoveSong = (i: number) => {
+    const removed = songs[i];
+    setSongs(prev => prev.filter((_, idx) => idx !== i));
+    posthog.capture("song_removed", { song_title: removed?.title, song_artist: removed?.artist, playlist_size: songs.length - 1, lang });
+  };
 
   const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setCoverImage(await compressImage(file));
+    posthog.capture("cover_photo_uploaded", { lang });
   };
 
   const handleGenerate = async () => {
@@ -173,8 +178,8 @@ export default function Home() {
       });
       const { id } = await res.json();
       setShareUrl(`${window.location.origin}/s/${id}`);
-      track("playlist_created", { songs: songs.length, lang, bgColor, hasMessage: !!message.trim(), hasCover: !!coverImage });
-      track("qr_code_viewed", { songs: songs.length, lang });
+      posthog.capture("playlist_created", { songs: songs.length, lang, bg_color: bgColor, has_message: !!message.trim(), has_cover: !!coverImage, stickers_count: stickers.length });
+      posthog.capture("qr_code_viewed", { songs: songs.length, lang });
     } catch {
       alert(t.alertError);
     }
