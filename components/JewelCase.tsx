@@ -143,6 +143,7 @@ export default function JewelCase({
 
   const handleOpen = () => {
     if (phase !== "closed") return;
+    track("case_opened", { lang });
     setPhase("opening");
     caseScrollLeft.current = 0;
     setTimeout(() => {

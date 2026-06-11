@@ -174,6 +174,7 @@ export default function Home() {
       const { id } = await res.json();
       setShareUrl(`${window.location.origin}/s/${id}`);
       track("playlist_created", { songs: songs.length, lang, bgColor, hasMessage: !!message.trim(), hasCover: !!coverImage });
+      track("qr_code_viewed", { songs: songs.length, lang });
     } catch {
       alert(t.alertError);
     }

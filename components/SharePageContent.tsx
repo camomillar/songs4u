@@ -32,15 +32,24 @@ function JewelCaseWrapper({ playlist, playlistId, lang }: { playlist: Valentines
     const ni = (currentIndexRef.current + 1) % songs.length;
     setCurrentIndex(ni);
     loadTrack(songs[ni].previewUrl);
+    track("song_skipped", { direction: "next", from: currentIndexRef.current, to: ni, total: songs.length });
   };
 
   const prev = () => {
     const pi = (currentIndexRef.current - 1 + songs.length) % songs.length;
     setCurrentIndex(pi);
     loadTrack(songs[pi].previewUrl);
+    track("song_skipped", { direction: "prev", from: currentIndexRef.current, to: pi, total: songs.length });
   };
 
   const { isPlaying, ready, loadTrack, togglePlay } = useAudioPlayer(songs[0].previewUrl, next);
+
+  const handleTogglePlay = () => {
+    if (!isPlaying) {
+      track("song_played", { index: currentIndexRef.current, total: songs.length });
+    }
+    togglePlay();
+  };
   const song = songs[currentIndex];
   const isTouch = typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
   const t = {
@@ -60,7 +69,7 @@ function JewelCaseWrapper({ playlist, playlistId, lang }: { playlist: Valentines
       coverImage={playlist.coverImage}
       isPlaying={isPlaying}
       ready={ready}
-      onTogglePlay={togglePlay}
+      onTogglePlay={handleTogglePlay}
       onNext={next}
       onPrev={prev}
       song={song}

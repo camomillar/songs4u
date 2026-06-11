@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
+import { track } from "@vercel/analytics";
 
 interface Song { title: string; artist: string; }
 interface Props {
@@ -457,6 +458,7 @@ export default function StoryCard(props: Props) {
         const file = new File([blob], filename, { type: "image/png" });
         try {
           await navigator.share({ files: [file], title: "songs4u" });
+          track("story_image_saved", { method: "share", lang: props.lang ?? "pt" });
         } catch {
           // user cancelled — do nothing, don't fall through to download
         }
@@ -464,6 +466,7 @@ export default function StoryCard(props: Props) {
       }
 
       // Desktop fallback: regular download
+      track("story_image_saved", { method: "download", lang: props.lang ?? "pt" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.download = filename;

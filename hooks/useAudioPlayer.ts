@@ -12,13 +12,15 @@ export function useAudioPlayer(initialTrackUrl: string | undefined, onSongEnd?: 
     const audio = new Audio();
     audioRef.current = audio;
 
-    audio.addEventListener("canplay", () => setReady(true));
-    audio.addEventListener("play", () => setIsPlaying(true));
-    audio.addEventListener("pause", () => setIsPlaying(false));
-    audio.addEventListener("ended", () => {
-      setIsPlaying(false);
-      onSongEndRef.current?.();
-    });
+    const onCanPlay = () => setReady(true);
+    const onPlay    = () => setIsPlaying(true);
+    const onPause   = () => setIsPlaying(false);
+    const onEnded   = () => { setIsPlaying(false); onSongEndRef.current?.(); };
+
+    audio.addEventListener("canplay", onCanPlay);
+    audio.addEventListener("play",    onPlay);
+    audio.addEventListener("pause",   onPause);
+    audio.addEventListener("ended",   onEnded);
 
     if (initialTrackUrl) {
       audio.src = initialTrackUrl;
@@ -26,6 +28,10 @@ export function useAudioPlayer(initialTrackUrl: string | undefined, onSongEnd?: 
     }
 
     return () => {
+      audio.removeEventListener("canplay", onCanPlay);
+      audio.removeEventListener("play",    onPlay);
+      audio.removeEventListener("pause",   onPause);
+      audio.removeEventListener("ended",   onEnded);
       audio.pause();
       audio.src = "";
     };
@@ -37,8 +43,12 @@ export function useAudioPlayer(initialTrackUrl: string | undefined, onSongEnd?: 
     if (!audio) return;
     audio.pause();
     setIsPlaying(false);
+    if (!trackUrl) {
+      // No preview available — mark ready so UI doesn't stay stuck
+      setReady(false);
+      return;
+    }
     setReady(false);
-    if (!trackUrl) return;
     audio.src = trackUrl;
     audio.load();
     audio.play().catch(() => {});
