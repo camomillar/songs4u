@@ -15,18 +15,20 @@ export async function POST(req: NextRequest) {
     const id = shortId();
     // Store for 1 year
     await redis.set(`pl:${id}`, JSON.stringify(playlist), { ex: 60 * 60 * 24 * 365 });
-    const posthog = getPostHogClient();
-    posthog.capture({
-      distinctId: playlist.from || "anonymous",
-      event: "playlist_saved",
-      properties: {
-        playlist_id: id,
-        songs_count: playlist.songs?.length ?? 0,
-        has_message: !!playlist.message,
-        has_cover: !!playlist.coverImage,
-        bg_color: playlist.bgColor,
-      },
-    });
+    try {
+      const posthog = getPostHogClient();
+      posthog.capture({
+        distinctId: playlist.from || "anonymous",
+        event: "playlist_saved",
+        properties: {
+          playlist_id: id,
+          songs_count: playlist.songs?.length ?? 0,
+          has_message: !!playlist.message,
+          has_cover: !!playlist.coverImage,
+          bg_color: playlist.bgColor,
+        },
+      });
+    } catch { /* analytics failure should never break playlist creation */ }
     return NextResponse.json({ id });
   } catch (e) {
     return NextResponse.json({ error: String(e) }, { status: 500 });
