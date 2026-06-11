@@ -51,7 +51,7 @@
 
 @font-face {
   font-family: "BiroScript";
-  src: url("/biro_script/Biro_Script_reduced.otf") format("opentype");
+  src: url("/fonts/biro_script/Biro_Script_reduced.otf") format("opentype");
   font-weight: normal;
   font-style: normal;
 }
