@@ -67,7 +67,7 @@ const label: React.CSSProperties = {
 };
 
 const input: React.CSSProperties = {
-  fontFamily: F,
+  fontFamily: "'Outfit', system-ui",
   fontSize: 14,
   color: "#111",
   background: "#f7f7f8",

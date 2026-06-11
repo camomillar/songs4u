@@ -43,6 +43,13 @@
 }
 
 @font-face {
+  font-family: "Outfit";
+  src: url("/fonts/Outfit/Outfit-VariableFont_wght.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+@font-face {
   font-family: "BiroScript";
   src: url("/fonts/biro_script/Biro_Script_reduced.otf") format("opentype");
   font-weight: normal;
