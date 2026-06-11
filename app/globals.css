@@ -29,13 +29,6 @@
 }
 
 @font-face {
-  font-family: "DKLemonYellowSun";
-  src: url("/dk_lemon_yellow_sun/DK Lemon Yellow Sun.otf") format("opentype");
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
   font-family: "OrdinaryLetter";
   src: url("/fonts/ordinary_letter/Ordinary Letter.otf") format("opentype");
   font-weight: normal;
@@ -52,13 +45,6 @@
 @font-face {
   font-family: "BiroScript";
   src: url("/fonts/biro_script/Biro_Script_reduced.otf") format("opentype");
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "BeautyDemo";
-  src: url("/fonts/beauty_2/BeautyDemo.otf") format("opentype");
   font-weight: normal;
   font-style: normal;
 }

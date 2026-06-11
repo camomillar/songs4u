@@ -209,21 +209,10 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
     await font.load(); document.fonts.add(font);
   } catch { /* fallback */ }
   try {
-    const font = new FontFace("RosieBrown", "url(/fonts/Rosie Brown Serif Demo.otf)");
-    await font.load();
-    document.fonts.add(font);
-  } catch { /* fallback */ }
-  try {
     const font = new FontFace("PatrickHand", "url(/fonts/PatrickHand-Regular.ttf)");
     await font.load();
     document.fonts.add(font);
     await document.fonts.load(`16px PatrickHand`);
-  } catch { /* fallback */ }
-  try {
-    const font = new FontFace("DKLemonYellowSun", "url(/dk_lemon_yellow_sun/DK Lemon Yellow Sun.otf)");
-    await font.load();
-    document.fonts.add(font);
-    await document.fonts.load(`16px DKLemonYellowSun`);
   } catch { /* fallback */ }
   try {
     const font = new FontFace("OrdinaryLetter", "url(/fonts/ordinary_letter/Ordinary Letter.otf)");
@@ -232,7 +221,7 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
     await document.fonts.load(`16px OrdinaryLetter`);
   } catch { /* fallback */ }
   try {
-    const font = new FontFace("Outfit", "url(/Amatic_SC,Caveat,Handlee,Outfit,Patrick_Hand/Outfit/Outfit-VariableFont_wght.ttf)", { weight: "100 900" });
+    const font = new FontFace("Outfit", "url(/fonts/Outfit/Outfit-VariableFont_wght.ttf)", { weight: "100 900" });
     await font.load();
     document.fonts.add(font);
     await document.fonts.load(`16px Outfit`);
