@@ -118,11 +118,11 @@ function drawCD(
   ctx.fillText("songs 4u <3", cx + radius * 0.86, cy + radius * 0.06);
   ctx.restore();
 
-  // ── Text arcs — OrdinaryLetter font, same as JewelCase SVG ──
+  // ── Text arcs — PatrickHand font, same as JewelCase SVG ──
   // Proportions derived from JewelCase viewBox 0 0 100 100, CD radius=50:
   //   fontSize / 50 * canvas_radius
   //   arc_radius / 50 * canvas_radius
-  const font = `"OrdinaryLetter", cursive`;
+  const font = `"PatrickHand", cursive`;
   const toLabel   = lang === "pt" ? "para:" : "to:";
   const fromLabel = lang === "pt" ? "de:"   : "from:";
 
@@ -212,15 +212,16 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
     document.fonts.add(font);
   } catch { /* fallback */ }
   try {
-    const font = new FontFace("OrdinaryLetter", "url(/fonts/ordinary_letter/Ordinary Letter.otf)");
+    const font = new FontFace("PatrickHand", "url(/fonts/PatrickHand-Regular.ttf)");
     await font.load();
     document.fonts.add(font);
-    await document.fonts.load(`16px OrdinaryLetter`);
+    await document.fonts.load(`16px PatrickHand`);
   } catch { /* fallback */ }
   try {
-    const font = new FontFace("OrdinaryLetter2", "url(/fonts/ordinary_letter/Ordinary Letter.otf)");
+    const font = new FontFace("DKLemonYellowSun", "url(/dk_lemon_yellow_sun/DK Lemon Yellow Sun.otf)");
     await font.load();
     document.fonts.add(font);
+    await document.fonts.load(`16px DKLemonYellowSun`);
   } catch { /* fallback */ }
 
   // ── Background ──
@@ -371,12 +372,12 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
 
     // Draw number + artist in bold
     const boldPrefix = `${i + 1}. ${s.artist} — `;
-    ctx.font = `700 42px Raleway, system-ui`;
+    ctx.font = `700 42px DKLemonYellowSun, system-ui`;
     const prefixWidth = ctx.measureText(boldPrefix).width;
     ctx.fillText(boldPrefix, listX, y);
 
     // Draw song title in regular weight, truncated if needed
-    ctx.font = `400 42px Raleway, system-ui`;
+    ctx.font = `400 42px DKLemonYellowSun, system-ui`;
     let title = s.title;
     while (ctx.measureText(title).width > maxWidth - prefixWidth && title.length > 2) {
       title = title.slice(0, -1);

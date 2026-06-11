@@ -22,6 +22,20 @@
 }
 
 @font-face {
+  font-family: "Caveat";
+  src: url("/fonts/Caveat-VariableFont_wght.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "DKLemonYellowSun";
+  src: url("/dk_lemon_yellow_sun/DK Lemon Yellow Sun.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
   font-family: "OrdinaryLetter";
   src: url("/fonts/ordinary_letter/Ordinary Letter.otf") format("opentype");
   font-weight: normal;

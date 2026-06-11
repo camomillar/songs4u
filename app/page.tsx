@@ -98,9 +98,9 @@ export default function Home() {
     "/stickers/bears.png", "/stickers/couple.png", "/stickers/angel.png",
     "/stickers/hamster.png", "/stickers/habitt.png", "/stickers/butterfly.png", "/stickers/2hearts.png",
     "/stickers/flor.png", "/stickers/flower2.png", "/stickers/flowers.png",
-    "/stickers/girassol.png", "/stickers/hearts.png", "/stickers/kiss.png",
-    "/stickers/letter.png", "/stickers/camera.png", "/stickers/star.png",
-    "/stickers/star2.png", "/stickers/star3.png", "/stickers/drinks.png",
+    "/stickers/hearts.png", "/stickers/kiss.png",
+    "/stickers/letter.png", "/stickers/camera.png", "/stickers/drinks.png",
+    "/stickers/morango.png", "/stickers/dogcat.png",
   ];
   const toggleSticker = (s: string) => {
     setStickers(prev =>
