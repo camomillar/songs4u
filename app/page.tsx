@@ -116,7 +116,7 @@ export default function Home() {
   const [lang, setLang] = useState<"en" | "pt">("pt");
   const [langOpen, setLangOpen] = useState(false);
   const t = T[lang];
-  const [bgColor, setBgColor] = useState("#FFB3C6");
+  const [bgColor, setBgColor] = useState("#C8A9FA");
   const [particles, setParticles] = useState<"hearts" | "stars" | "notes" | "flowers" | "none">("hearts");
   const [coverImage, setCoverImage] = useState<string | null>(null);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
@@ -126,7 +126,7 @@ export default function Home() {
     { hex: "#0151C7", name: "Blue" },
     { hex: "#FFC65B", name: "Yellow" },
     { hex: "#00897B", name: "Teal" },
-    { hex: "#FFB3C6", name: "Baby Pink" },
+    { hex: "#7B1C3E", name: "Burgundy" },
     { hex: "#C8A9FA", name: "Light Purple" },
     { hex: "#7B2FBE", name: "Purple" },
     { hex: "#111111", name: "Black" },

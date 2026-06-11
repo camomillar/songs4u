@@ -50,6 +50,13 @@
 }
 
 @font-face {
+  font-family: "BiroScript";
+  src: url("/biro_script/Biro_Script_reduced.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
   font-family: "BeautyDemo";
   src: url("/fonts/beauty_2/BeautyDemo.otf") format("opentype");
   font-weight: normal;

@@ -81,10 +81,10 @@ function drawCD(
   ctx.lineWidth = 4;
   ctx.stroke();
 
-  // ── Stacking ring (blue-gray hub area, 30% of disc) ──
+  // ── Stacking ring (blue-gray hub area, 30% of disc — matches JewelCase) ──
   ctx.beginPath();
-  ctx.arc(cx, cy, radius * 0.15, 0, Math.PI * 2);
-  const stackGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius * 0.15);
+  ctx.arc(cx, cy, radius * 0.26, 0, Math.PI * 2);
+  const stackGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius * 0.26);
   stackGrad.addColorStop(0,   "rgba(200,215,230,0.90)");
   stackGrad.addColorStop(0.6, "rgba(180,195,215,0.85)");
   stackGrad.addColorStop(1,   "rgba(160,175,200,0.80)");
@@ -94,9 +94,9 @@ function drawCD(
   ctx.lineWidth = 2;
   ctx.stroke();
 
-  // ── Center hole — dark (#272729 matches real CD / JewelCase) ──
+  // ── Center hole — 48% of ring radius, dark with inset shadow ──
   ctx.beginPath();
-  ctx.arc(cx, cy, radius * 0.11, 0, Math.PI * 2);
+  ctx.arc(cx, cy, radius * 0.106, 0, Math.PI * 2);
   ctx.fillStyle = "#272729";
   ctx.fill();
 
@@ -123,15 +123,18 @@ function drawCD(
   // Proportions derived from JewelCase viewBox 0 0 100 100, CD radius=50:
   //   fontSize / 50 * canvas_radius
   //   arc_radius / 50 * canvas_radius
-  const font = `"PatrickHand", cursive`;
+  const font = `"OrdinaryLetter", cursive`;
   const toLabel   = lang === "pt" ? "para:" : "to:";
   const fromLabel = lang === "pt" ? "de:"   : "from:";
 
-  const fontSize = Math.round(radius * 0.18);
+  // fontSize scaled from JewelCase viewBox (0-100, CD radius=50)
+  // title: 10/50 = 0.20; de/para: 9.5/50 = 0.19
+  const titleSize = Math.round(radius * 0.20);
+  const deParaSize = Math.round(radius * 0.19);
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
 
-  // Title — horizontal lines near top of CD
+  // Title — horizontal lines near top of CD (mirrors JewelCase y=16/27 in viewBox 0-100)
   if (message && message.trim()) {
     const words = message.trim().split(" ");
     const mid = message.length / 2;
@@ -144,22 +147,22 @@ function drawCD(
     const line1 = words.slice(0, splitIdx).join(" ");
     const line2 = words.slice(splitIdx).join(" ") || "";
 
-    ctx.font = `${fontSize}px ${font}`;
-    ctx.fillStyle = "rgba(15,20,50,0.72)";
-    ctx.fillText(line1, cx, cy - radius * 0.55);
+    ctx.font = `${titleSize}px ${font}`;
+    ctx.fillStyle = "rgba(15,20,50,0.95)";
+    ctx.fillText(line1, cx, cy - radius * (line2 ? 0.68 : 0.62));
     if (line2) {
-      ctx.fillStyle = "rgba(15,20,50,0.65)";
-      ctx.fillText(line2, cx, cy - radius * 0.55 + fontSize * 1.3);
+      ctx.fillStyle = "rgba(15,20,50,0.88)";
+      ctx.fillText(line2, cx, cy - radius * 0.46);
     }
   }
 
-  // From (de:) and To (para:) — horizontal lines near bottom of CD
-  ctx.font = `${Math.round(radius * 0.17)}px ${font}`;
-  ctx.fillStyle = "rgba(15,20,50,0.78)";
-  ctx.fillText(`${fromLabel} ${to}`, cx, cy + radius * 0.45);
+  // From/To — horizontal near bottom, close together (mirrors JewelCase y=75/83)
+  ctx.font = `${deParaSize}px ${font}`;
+  ctx.fillStyle = "rgba(15,20,50,0.95)";
+  ctx.fillText(`${fromLabel} ${to}`, cx, cy + radius * 0.50);
   if (from) {
-    ctx.fillStyle = "rgba(15,20,50,0.65)";
-    ctx.fillText(`${toLabel} ${from}`, cx, cy + radius * 0.45 + Math.round(radius * 0.17) * 1.3);
+    ctx.fillStyle = "rgba(15,20,50,0.88)";
+    ctx.fillText(`${toLabel} ${from}`, cx, cy + radius * 0.62);
   }
 }
 
@@ -220,6 +223,18 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
     await font.load();
     document.fonts.add(font);
     await document.fonts.load(`16px DKLemonYellowSun`);
+  } catch { /* fallback */ }
+  try {
+    const font = new FontFace("OrdinaryLetter", "url(/fonts/ordinary_letter/Ordinary Letter.otf)");
+    await font.load();
+    document.fonts.add(font);
+    await document.fonts.load(`16px OrdinaryLetter`);
+  } catch { /* fallback */ }
+  try {
+    const font = new FontFace("Outfit", "url(/Amatic_SC,Caveat,Handlee,Outfit,Patrick_Hand/Outfit/Outfit-VariableFont_wght.ttf)", { weight: "100 900" });
+    await font.load();
+    document.fonts.add(font);
+    await document.fonts.load(`16px Outfit`);
   } catch { /* fallback */ }
 
   // ── Background ──
@@ -368,14 +383,14 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
     ctx.fillStyle = dark ? "rgba(255,255,255,0.92)" : "rgba(15,15,35,0.85)";
     const maxWidth = W - listX - 180;
 
-    // Draw number + artist in bold
-    const boldPrefix = `${i + 1}. ${s.artist} — `;
-    ctx.font = `700 42px PatrickHand, system-ui`;
-    const prefixWidth = ctx.measureText(boldPrefix).width;
-    ctx.fillText(boldPrefix, listX, y);
+    // Draw "N. artist — " in regular
+    ctx.font = `400 42px Outfit, system-ui`;
+    const prefix = `${i + 1}. ${s.artist} — `;
+    const prefixWidth = ctx.measureText(prefix).width;
+    ctx.fillText(prefix, listX, y);
 
-    // Draw song title in regular weight, truncated if needed
-    ctx.font = `400 42px PatrickHand, system-ui`;
+    // Draw song title in extralight
+    ctx.font = `200 42px Outfit, system-ui`;
     let title = s.title;
     while (ctx.measureText(title).width > maxWidth - prefixWidth && title.length > 2) {
       title = title.slice(0, -1);
@@ -399,7 +414,7 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
   // ── Bottom CTA ──
   ctx.textAlign = "left";
   const ctaSub = dark ? "rgba(255,255,255,0.80)" : "rgba(15,15,35,0.40)";
-  const ctaMain = dark ? "#ffffff" : "rgba(15,15,35,0.88)";
+  const ctaMain = dark ? "rgba(255,255,255,0.65)" : "rgba(15,15,35,0.88)";
   ctx.font = `400 33px Raleway, system-ui`;
   ctx.fillStyle = ctaMain;
   ctx.textAlign = "center";
@@ -438,14 +453,14 @@ export default function StoryCard(props: Props) {
       if (!blob) return;
 
       // On mobile: use Web Share API so user can save directly to gallery
-      if (navigator.share) {
+      if (navigator.share && navigator.canShare?.({ files: [new File([blob], filename, { type: "image/png" })] })) {
         const file = new File([blob], filename, { type: "image/png" });
         try {
           await navigator.share({ files: [file], title: "songs4u" });
-          return;
         } catch {
-          // user cancelled or share failed — fall through to download
+          // user cancelled — do nothing, don't fall through to download
         }
+        return;
       }
 
       // Desktop fallback: regular download

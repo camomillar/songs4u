@@ -7,14 +7,14 @@ import { track } from "@vercel/analytics";
 
 const T = {
   en: {
-    clickToOpen: "Click to open",
+    clickToOpen: "Tap to open",
     shareToStory: "Share",
     noPreview: "no preview available",
     madeWith: "Made with ♥ by",
     createOwn: "Create your playlist here",
   },
   pt: {
-    clickToOpen: "Clique para abrir",
+    clickToOpen: "Toque para abrir",
     shareToStory: "Compartilhar",
     noPreview: "prévia não disponível",
     madeWith: "Feito com ♥ por",
@@ -42,7 +42,13 @@ function JewelCaseWrapper({ playlist, playlistId, lang }: { playlist: Valentines
 
   const { isPlaying, ready, loadTrack, togglePlay } = useAudioPlayer(songs[0].previewUrl, next);
   const song = songs[currentIndex];
-  const t = T[lang];
+  const isTouch = typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
+  const t = {
+    ...T[lang],
+    clickToOpen: isTouch
+      ? T[lang].clickToOpen
+      : lang === "pt" ? "Clique para abrir" : "Click to open",
+  };
 
   return (
     <JewelCase

@@ -528,8 +528,9 @@ export default function JewelCase({
                     </span>
                   ) : null)}
                   <p style={{
-                    fontFamily: "'PatrickHand', cursive",
-                    fontSize: 26, color: "rgba(20,20,50,0.82)",
+                    fontFamily: "'BiroScript', cursive",
+                    fontWeight: 400,
+                    fontSize: 23, color: "rgba(20,20,50,0.82)",
                     margin: 0, lineHeight: 1.2,
                     wordBreak: "break-word",
                     textAlign: "left",
@@ -661,13 +662,11 @@ export default function JewelCase({
                     {/* songs 4u <3 logo — right side */}
                     <text x="93" y="53" fontFamily="'BitcountGrid', monospace" fontSize="3" fontWeight="700" fill="rgba(130,130,140,0.70)" textAnchor="end" letterSpacing="0.2" dominantBaseline="middle">songs 4u &lt;3</text>
 
-                    {/* Title — 1 or 2 lines over the top of the CD */}
+                    {/* Title — horizontal lines near top of CD */}
                     {title && (() => {
-                      // Always split into two lines at nearest word boundary to midpoint
                       const words = title.split(" ");
                       const mid = title.length / 2;
-                      let splitIdx = 1, best = Infinity;
-                      let pos = 0;
+                      let splitIdx = 1, best = Infinity, pos = 0;
                       words.forEach((w, i) => {
                         pos += (i > 0 ? 1 : 0) + w.length;
                         const dist = Math.abs(pos - mid);
@@ -677,27 +676,20 @@ export default function JewelCase({
                       const line2 = words.slice(splitIdx).join(" ") || "";
                       return (
                         <>
-                          <text fontFamily="'PatrickHand', cursive" fontSize="9" fill="rgba(15,20,50,0.72)" textAnchor="middle">
-                            <textPath href="#cdArcMsg2" startOffset="50%">{line1}</textPath>
-                          </text>
+                          <text fontFamily="'OrdinaryLetter', cursive" fontSize="10" fill="rgba(15,20,50,0.95)" textAnchor="middle" x="50" y={line2 ? "16" : "19"} dominantBaseline="middle">{line1}</text>
                           {line2 && (
-                            <text fontFamily="'PatrickHand', cursive" fontSize="9" fill="rgba(15,20,50,0.65)" textAnchor="middle">
-                              <textPath href="#cdArcMsg1" startOffset="50%">{line2}</textPath>
-                            </text>
+                            <text fontFamily="'OrdinaryLetter', cursive" fontSize="10" fill="rgba(15,20,50,0.88)" textAnchor="middle" x="50" y="27" dominantBaseline="middle">{line2}</text>
                           )}
                         </>
                       );
                     })()}
 
-
-                    {/* From — bottom inner */}
-                    <text fontFamily="'PatrickHand', cursive" fontSize="9.5" fill="rgba(15,20,50,0.78)" textAnchor="middle">
+                    {/* From/To — arc text on bottom half */}
+                    <text fontFamily="'OrdinaryLetter', cursive" fontSize="9.5" fill="rgba(15,20,50,0.95)" textAnchor="middle">
                       <textPath href="#cdArcBot1" startOffset="50%">{lang === "pt" ? "de:" : "from:"} {to}</textPath>
                     </text>
-
-                    {/* To — bottom outer */}
                     {from && (
-                      <text fontFamily="'PatrickHand', cursive" fontSize="9" fill="rgba(15,20,50,0.65)" textAnchor="middle">
+                      <text fontFamily="'OrdinaryLetter', cursive" fontSize="9.5" fill="rgba(15,20,50,0.88)" textAnchor="middle">
                         <textPath href="#cdArcBot2" startOffset="50%">{lang === "pt" ? "para:" : "to:"} {from}</textPath>
                       </text>
                     )}
