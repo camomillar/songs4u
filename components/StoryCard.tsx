@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import posthog from "posthog-js";
 
 interface Song { title: string; artist: string; }
@@ -412,10 +412,15 @@ async function generateStory(canvas: HTMLCanvasElement, props: Omit<Props, "onCl
   ctx.textAlign = "left";
 }
 
+const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as unknown as Record<string, unknown>).MSStream;
+
 export default function StoryCard(props: Props) {
   const { onClose } = props;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const previewRef = useRef<HTMLCanvasElement>(null);
+  const [ready, setReady] = useState(false);
+  // When file share is unavailable on iOS, show an <img> the user can long-press to save
+  const [saveImgUrl, setSaveImgUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const offscreen = document.createElement("canvas");
@@ -431,30 +436,40 @@ export default function StoryCard(props: Props) {
         canvasRef.current.height = offscreen.height;
         canvasRef.current.getContext("2d")!.drawImage(offscreen, 0, 0);
       }
-    });
+      setReady(true);
+    }).catch(() => setReady(true));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleDownload = () => {
-    if (!canvasRef.current) return;
+  const handleSave = () => {
+    if (!canvasRef.current || !ready) return;
     const filename = `songs4u-${props.to.replace(/\s+/g, "-")}.png`;
 
     canvasRef.current.toBlob(async (blob) => {
       if (!blob) return;
 
-      // On mobile: use Web Share API so user can save directly to gallery
+      // Modern mobile: Web Share API with file support
       if (navigator.share && navigator.canShare?.({ files: [new File([blob], filename, { type: "image/png" })] })) {
         const file = new File([blob], filename, { type: "image/png" });
         try {
           await navigator.share({ files: [file], title: "songs4u" });
           posthog.capture("story_image_saved", { method: "share", lang: props.lang ?? "pt" });
         } catch {
-          // user cancelled — do nothing, don't fall through to download
+          // user cancelled — do nothing
         }
         return;
       }
 
-      // Desktop fallback: regular download
+      // iOS Safari fallback: show <img> so user can long-press → Save to Photos
+      if (isIOS()) {
+        posthog.capture("story_image_saved", { method: "ios-longpress", lang: props.lang ?? "pt" });
+        const reader = new FileReader();
+        reader.onload = e => setSaveImgUrl(e.target?.result as string);
+        reader.readAsDataURL(blob);
+        return;
+      }
+
+      // Desktop / Android fallback: trigger download
       posthog.capture("story_image_saved", { method: "download", lang: props.lang ?? "pt" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -464,6 +479,39 @@ export default function StoryCard(props: Props) {
       URL.revokeObjectURL(url);
     }, "image/png");
   };
+
+  const lang = props.lang ?? "pt";
+
+  // iOS long-press-to-save overlay
+  if (saveImgUrl) {
+    return (
+      <div onClick={() => setSaveImgUrl(null)} style={{
+        position: "fixed", inset: 0,
+        background: "rgba(0,0,0,0.92)", backdropFilter: "blur(10px)",
+        display: "flex", flexDirection: "column",
+        alignItems: "center", justifyContent: "center",
+        zIndex: 400, padding: 16, gap: 16,
+      }}>
+        <p style={{ color: "white", fontFamily: "system-ui", fontSize: 15, fontWeight: 600, textAlign: "center" }}>
+          {lang === "pt" ? "Segure a imagem para salvar" : "Hold the image to save"}
+        </p>
+        <p style={{ color: "rgba(255,255,255,0.55)", fontFamily: "system-ui", fontSize: 12, textAlign: "center", marginTop: -8 }}>
+          {lang === "pt" ? "Toque e segure → Salvar na Fototeca" : 'Tap and hold → Save to Photos'}
+        </p>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={saveImgUrl} alt="songs4u story"
+          onClick={e => e.stopPropagation()}
+          style={{ maxHeight: "70vh", borderRadius: 16, boxShadow: "0 24px 80px rgba(0,0,0,0.6)", objectFit: "contain" }}
+        />
+        <button onClick={() => setSaveImgUrl(null)} style={{
+          padding: "10px 20px", background: "rgba(255,255,255,0.15)",
+          color: "white", border: "none", borderRadius: 24,
+          fontFamily: "system-ui", fontSize: 14, cursor: "pointer",
+        }}>{lang === "pt" ? "Fechar" : "Close"}</button>
+      </div>
+    );
+  }
 
   return (
     <div onClick={onClose} style={{
@@ -477,20 +525,28 @@ export default function StoryCard(props: Props) {
         style={{ borderRadius: 20, boxShadow: "0 24px 80px rgba(0,0,0,0.6)" }} />
       <canvas ref={canvasRef} style={{ display: "none" }} />
       <div onClick={e => e.stopPropagation()} style={{ display: "flex", gap: 10 }}>
-        <button onClick={handleDownload} style={{
+        <button onClick={handleSave} disabled={!ready} style={{
           padding: "12px 28px",
-          background: "linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)",
+          background: ready
+            ? "linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)"
+            : "rgba(255,255,255,0.2)",
           color: "white", border: "none", borderRadius: 24,
-          fontFamily: "system-ui", fontSize: 14, fontWeight: 700, cursor: "pointer",
-        }}>{props.lang === "pt" ? "Salvar imagem" : "Save Image"}</button>
+          fontFamily: "system-ui", fontSize: 14, fontWeight: 700,
+          cursor: ready ? "pointer" : "not-allowed", opacity: ready ? 1 : 0.5,
+          transition: "opacity 0.3s",
+        }}>
+          {ready
+            ? (lang === "pt" ? "Salvar imagem" : "Save Image")
+            : (lang === "pt" ? "Gerando..." : "Generating...")}
+        </button>
         <button onClick={onClose} style={{
           padding: "12px 20px", background: "rgba(255,255,255,0.15)",
           color: "white", border: "none", borderRadius: 24,
           fontFamily: "system-ui", fontSize: 14, cursor: "pointer",
-        }}>{props.lang === "pt" ? "Fechar" : "Close"}</button>
+        }}>{lang === "pt" ? "Fechar" : "Close"}</button>
       </div>
       <p style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, fontFamily: "system-ui" }}>
-        {props.lang === "pt" ? "Salve e publique no seu Story do Instagram" : "Save and upload to your Instagram Story"}
+        {lang === "pt" ? "Salve e publique no seu Story do Instagram" : "Save and upload to your Instagram Story"}
       </p>
     </div>
   );
