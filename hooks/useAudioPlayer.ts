@@ -42,6 +42,20 @@ export function useAudioPlayer(initialTrackUrl: string | undefined, onSongEnd?: 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Update audio src without auto-playing (used when fresh URLs arrive after mount)
+  const silentLoad = (trackUrl: string | undefined) => {
+    const audio = audioRef.current;
+    if (!audio || audio.src === trackUrl) return;
+    const wasPlaying = !audio.paused;
+    audio.pause();
+    setIsPlaying(false);
+    if (!trackUrl) { setReady(true); return; }
+    setReady(false);
+    audio.src = trackUrl;
+    audio.load();
+    if (wasPlaying) audio.play().catch(() => {});
+  };
+
   const loadTrack = (trackUrl: string | undefined) => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -68,5 +82,5 @@ export function useAudioPlayer(initialTrackUrl: string | undefined, onSongEnd?: 
     }
   };
 
-  return { isPlaying, ready, loadTrack, togglePlay };
+  return { isPlaying, ready, loadTrack, silentLoad, togglePlay };
 }

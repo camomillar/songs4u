@@ -42,7 +42,18 @@ function JewelCaseWrapper({ playlist, playlistId, lang }: { playlist: Valentines
     posthog.capture("song_skipped", { direction: "prev", from: currentIndexRef.current, to: pi, total_songs: songs.length });
   };
 
-  const { isPlaying, ready, loadTrack, togglePlay } = useAudioPlayer(songs[0].previewUrl, next);
+  const { isPlaying, ready, loadTrack, silentLoad, togglePlay } = useAudioPlayer(songs[0].previewUrl, next);
+
+  // When fresh URLs arrive (after Deezer refresh), silently reload the current track's src
+  const prevSongs0UrlRef = useRef(songs[0].previewUrl);
+  useEffect(() => {
+    const newUrl = songs[currentIndex]?.previewUrl;
+    if (newUrl && newUrl !== prevSongs0UrlRef.current) {
+      prevSongs0UrlRef.current = newUrl;
+      silentLoad(newUrl);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [songs]);
 
   const handleTogglePlay = () => {
     if (!isPlaying) {
@@ -88,6 +99,28 @@ function JewelCaseWrapper({ playlist, playlistId, lang }: { playlist: Valentines
 export default function SharePageContent({ playlist, playlistId }: { playlist: ValentinesPlaylist; playlistId?: string }) {
   const [lang, setLang] = useState<"en" | "pt">("pt");
   const [langOpen, setLangOpen] = useState(false);
+  const [freshPlaylist, setFreshPlaylist] = useState(playlist);
+
+  // Always re-fetch preview URLs on mount — Deezer CDN URLs expire after a few hours
+  useEffect(() => {
+    const ids = playlist.songs.map(s => s.id).filter(Boolean);
+    if (!ids.length) return;
+    Promise.all(
+      ids.map(id =>
+        fetch(`https://api.deezer.com/track/${id}`)
+          .then(r => r.json())
+          .then(d => ({ id, previewUrl: (d.preview as string | undefined) ?? undefined }))
+          .catch(() => ({ id, previewUrl: undefined }))
+      )
+    ).then(results => {
+      const urlMap = Object.fromEntries(results.map(r => [r.id, r.previewUrl]));
+      setFreshPlaylist(prev => ({
+        ...prev,
+        songs: prev.songs.map(s => ({ ...s, previewUrl: urlMap[s.id] ?? s.previewUrl })),
+      }));
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const isDark = (() => {
     const hex = (playlist.bgColor || "#fff").replace("#", "");
     const r = parseInt(hex.slice(0, 2), 16);
@@ -160,7 +193,7 @@ export default function SharePageContent({ playlist, playlistId }: { playlist: V
         )}
       </div>
 
-      <JewelCaseWrapper playlist={playlist} playlistId={playlistId} lang={lang} />
+      <JewelCaseWrapper playlist={freshPlaylist} playlistId={playlistId} lang={lang} />
     </>
   );
 }
