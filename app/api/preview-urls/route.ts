@@ -1,15 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { fetchPreviewUrls } from "@/lib/spotify-api";
 
 export async function GET(req: NextRequest) {
   const ids = new URL(req.url).searchParams.get("ids");
   if (!ids) return NextResponse.json({ error: "Missing ids" }, { status: 400 });
 
-  try {
-    const urls = await fetchPreviewUrls(ids.split(","));
-    return NextResponse.json(urls);
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : "Failed to fetch previews";
-    return NextResponse.json({ error: msg }, { status: 500 });
-  }
+  const idList = ids.split(",").filter(Boolean);
+
+  const results = await Promise.all(
+    idList.map(id =>
+      fetch(`https://api.deezer.com/track/${id}`, { cache: "no-store" })
+        .then(r => r.json())
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .then((d: any) => [id, (d.preview as string | undefined) ?? null])
+        .catch(() => [id, null])
+    )
+  );
+
+  return NextResponse.json(Object.fromEntries(results));
 }

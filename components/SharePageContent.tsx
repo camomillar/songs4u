@@ -105,20 +105,18 @@ export default function SharePageContent({ playlist, playlistId }: { playlist: V
   useEffect(() => {
     const ids = playlist.songs.map(s => s.id).filter(Boolean);
     if (!ids.length) return;
-    Promise.all(
-      ids.map(id =>
-        fetch(`https://api.deezer.com/track/${id}`)
-          .then(r => r.json())
-          .then(d => ({ id, previewUrl: (d.preview as string | undefined) ?? undefined }))
-          .catch(() => ({ id, previewUrl: undefined }))
-      )
-    ).then(results => {
-      const urlMap = Object.fromEntries(results.map(r => [r.id, r.previewUrl]));
-      setFreshPlaylist(prev => ({
-        ...prev,
-        songs: prev.songs.map(s => ({ ...s, previewUrl: urlMap[s.id] ?? s.previewUrl })),
-      }));
-    });
+    fetch(`/api/preview-urls?ids=${ids.join(",")}`)
+      .then(r => r.json())
+      .then((urlMap: Record<string, string | null>) => {
+        setFreshPlaylist(prev => ({
+          ...prev,
+          songs: prev.songs.map(s => ({
+            ...s,
+            previewUrl: urlMap[s.id] ?? s.previewUrl,
+          })),
+        }));
+      })
+      .catch(() => {});
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const isDark = (() => {
