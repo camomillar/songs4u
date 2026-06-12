@@ -16,11 +16,14 @@ export function useAudioPlayer(initialTrackUrl: string | undefined, onSongEnd?: 
     const onPlay    = () => setIsPlaying(true);
     const onPause   = () => setIsPlaying(false);
     const onEnded   = () => { setIsPlaying(false); onSongEndRef.current?.(); };
+    // If a URL fails to load (expired, network error), re-enable the button so user can skip
+    const onError   = () => { setReady(true); setIsPlaying(false); };
 
     audio.addEventListener("canplay", onCanPlay);
     audio.addEventListener("play",    onPlay);
     audio.addEventListener("pause",   onPause);
     audio.addEventListener("ended",   onEnded);
+    audio.addEventListener("error",   onError);
 
     if (initialTrackUrl) {
       audio.src = initialTrackUrl;
@@ -32,6 +35,7 @@ export function useAudioPlayer(initialTrackUrl: string | undefined, onSongEnd?: 
       audio.removeEventListener("play",    onPlay);
       audio.removeEventListener("pause",   onPause);
       audio.removeEventListener("ended",   onEnded);
+      audio.removeEventListener("error",   onError);
       audio.pause();
       audio.src = "";
     };
@@ -44,8 +48,8 @@ export function useAudioPlayer(initialTrackUrl: string | undefined, onSongEnd?: 
     audio.pause();
     setIsPlaying(false);
     if (!trackUrl) {
-      // No preview available — mark ready so UI doesn't stay stuck
-      setReady(false);
+      // No preview available — keep ready=true so user can still navigate
+      setReady(true);
       return;
     }
     setReady(false);
